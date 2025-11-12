@@ -1,0 +1,29 @@
+name: defect-detection
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - pytorch=2.*
+  - torchvision=0.*
+  - lightning=2.*
+  - torchmetrics=0.*
+  - hydra-core=1.*
+  - mlflow
+  - rich=13.*
+  - pre-commit=3.*
+  - pytest=7.*
+  - numpy
+  - pandas
+  - matplotlib
+  - scienceplots
+  - scikit-learn
+  - tqdm
+  - seaborn
+  - ipykernel
+  - optuna
+  - dvc
+  - pip>=23
+  - pip:
+    - hydra-optuna-sweeper
+    - hydra-colorlog
+    - rootutils
