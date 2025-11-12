@@ -1,0 +1,2 @@
+# path to data directory
+data_repo: ${paths.root_dir}/data
