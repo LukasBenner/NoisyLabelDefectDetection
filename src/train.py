@@ -11,6 +11,7 @@ import torch
 from utils.instantiators import instantiate_callbacks, instantiate_loggers
 from utils.logging_utils import log_hyperparameters, log_training_results
 from utils.pylogger import RankedLogger
+from utils.utils import get_metric_value
 
 rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 
@@ -62,7 +63,11 @@ def train(cfg: DictConfig) -> Tuple[Dict[str, Any], Dict[str, Any]]:
 
 @hydra.main(version_base=None, config_path="../configs", config_name="train.yaml")
 def main(cfg: DictConfig) -> None:
-    train(cfg)
+    metric_dict, _ = train(cfg)
+
+    metric_value = get_metric_value(metric_dict=metric_dict, metric_name=cfg.get("optimized_metric"))
+
+    return metric_value
 
 if __name__ == "__main__":
     main()
