@@ -1,0 +1,19 @@
+_target_: src.models.surface_baseline_module.SurfaceBaselineModule
+
+num_classes: 10
+
+optimizer:
+  _target_: torch.optim.Adam
+  _partial_: true
+  lr: 0.001
+  weight_decay: 0.0001
+
+scheduler: Null
+
+net:
+  _target_: src.models.components.efficientnet_baseline.EfficientNetBaseline
+  num_classes: ${model.num_classes}
+  pretrained: true
+
+# compile model for faster training with pytorch 2.0
+compile: false

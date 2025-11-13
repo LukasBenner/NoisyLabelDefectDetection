@@ -1,4 +1,5 @@
 import os
+import subprocess
 from typing import Any, Dict, Optional, Tuple
 
 from lightning import LightningDataModule
@@ -9,14 +10,14 @@ import torch
 from torch.utils.data import DataLoader, Dataset
 from torchvision import datasets
 from torchvision.transforms import v2
-import dvc.api
 
 
-class SimpleDataModule(LightningDataModule):
+class NoTestDataModule(LightningDataModule):
     def __init__(
         self,
         data_path: str,
         data_repo: str,
+        data_version: str,
         val_split: float = 0.2,
         batch_size: int = 96,
         num_workers: int = 4,
@@ -26,9 +27,8 @@ class SimpleDataModule(LightningDataModule):
     ) -> None:
         super().__init__()
 
-        self.data_url = os.path.join(data_repo, data_path, "train")
+        self.save_hyperparameters(logger=False)
 
-        self.save_hyperparameters()
         self.train_transforms = v2.Compose(
             [
                 v2.Resize((640, 480), antialias=True),
@@ -65,6 +65,27 @@ class SimpleDataModule(LightningDataModule):
         return len(self.base_dataset.classes)
 
     def prepare_data(self):
+        # Construct the full output path where the dataset should be placed
+        output_path = os.path.join(self.hparams.data_repo, self.hparams.data_path)
+        
+        # Only fetch if the dataset doesn't exist locally
+        if not os.path.exists(output_path):
+            subprocess.run(
+                [
+                    "dvc",
+                    "get",
+                    self.hparams.data_repo,
+                    self.hparams.data_path,
+                    "--rev",
+                    self.hparams.data_version,
+                    "--out",
+                    output_path,
+                ],
+                check=True,
+            )
+        
+        self.data_url = os.path.join(output_path, "train")
+
         self.base_dataset = datasets.ImageFolder(root=self.data_url)
 
     def setup(self, stage: Optional[str] = None) -> None:
@@ -75,7 +96,7 @@ class SimpleDataModule(LightningDataModule):
         all_indices = list(range(len(self.base_dataset)))
         all_targets = [self.base_dataset.samples[i][1] for i in all_indices]
 
-        train_indices, test_inidices = train_test_split(
+        train_indices, val_indices = train_test_split(
             all_indices,
             test_size=self.hparams.val_split,
             random_state=self.hparams.seed,
@@ -88,9 +109,9 @@ class SimpleDataModule(LightningDataModule):
             transform=self.train_transforms,
         )
 
-        self.test_dataset = TransformSubset(
+        self.val_dataset = TransformSubset(
             self.base_dataset,
-            test_inidices,
+            val_indices,
             transform=self.test_transforms,
         )
 
@@ -127,10 +148,10 @@ class SimpleDataModule(LightningDataModule):
                 shuffle=True,
                 persistent_workers=True if self.hparams.num_workers > 0 else False,
             )
-    
-    def test_dataloader(self):
+        
+    def val_dataloader(self) -> Any:
         return DataLoader(
-            dataset=self.test_dataset,
+            dataset=self.val_dataset,
             batch_size=self.hparams.batch_size,
             num_workers=self.hparams.num_workers,
             pin_memory=self.hparams.pin_memory,

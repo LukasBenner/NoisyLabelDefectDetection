@@ -1,0 +1,13 @@
+_target_: src.data.no_test_datamodule.NoTestDataModule
+
+defaults:
+  - default
+
+data_path: data/surface
+data_version: surface-v1
+val_split: 0.2
+batch_size: 96
+num_workers: 12
+pin_memory: True
+use_weighted_sampling: False
+seed: ${seed}

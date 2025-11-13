@@ -1,0 +1,30 @@
+# @package _global_
+
+defaults:
+  - default
+  - override /data: no_test_surface_data
+  - override /model: surface_baseline
+  - _self_
+
+experiment_name: SurfaceDefectDetection
+run_name: "baseline_${now:%Y-%m-%d_%H-%M-%S}"
+
+tags:
+  base_model: "efficientnetb0"
+  model_type: "CNN"
+  data_version: "surface-v1"
+  optimization: "baseline"
+
+model:
+  num_classes: 12
+  optimizer: 
+    weight_decay: 0.0
+  scheduler: Null
+
+callbacks:
+  early_stopping:
+    monitor: "val/acc"
+    patience: 10
+    mode: "max"
+
+test: False
