@@ -18,8 +18,12 @@ def main(cfg: DictConfig) -> None:
         cfg: Hydra configuration.
     """
     # Get number of runs and base seed from config
-    num_runs = cfg.get("num_runs", 10)
-    base_seed = cfg.get("seed", 42)
+    
+    if not cfg.get("num_runs"):
+        raise Exception("num_runs not specified")
+    
+    num_runs = cfg.get("num_runs")
+    base_seed = cfg.get("seed")
     
     log.info(f"Starting {num_runs} training runs with base seed {base_seed}")
     

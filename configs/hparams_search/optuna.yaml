@@ -1,0 +1,31 @@
+# Hyperparameter search configuration with Optuna
+defaults:
+  - override hydra/launcher: basic
+  - override hydra/sweeper: optuna
+
+hydra:
+  sweeper:
+    sampler:
+      _target_: optuna.samplers.TPESampler
+      seed: 42
+    direction: maximize
+    study_name: null
+    storage: null
+    n_trials: 20
+    n_jobs: 1
+    params:
+      model.optimizer.lr:
+        type: float
+        low: 1e-5
+        high: 1e-2
+        log: true
+      model.optimizer.weight_decay:
+        type: float
+        low: 1e-6
+        high: 1e-2
+        log: true
+      data.batch_size:
+        type: int
+        low: 16
+        high: 256
+        log: true
