@@ -114,6 +114,7 @@ class SurfaceBaselineModule(LightningModule):
         self.log("train/recall", self.train_recall.compute(), on_step=False, on_epoch=True, prog_bar=False)
         self.log("train/f1", self.train_f1.compute(), on_step=False, on_epoch=True, prog_bar=True)
         self.log("train/lr", self.trainer.optimizers[0].param_groups[0]['lr'], on_step=False, on_epoch=True)
+        self.log("epoch", float(self.current_epoch), on_step=False, on_epoch=True, prog_bar=False)
 
     def validation_step(self, batch: Tuple[torch.Tensor, torch.Tensor], batch_idx: int) -> None:
         """Perform a single validation step on a batch of data from the validation set.

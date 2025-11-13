@@ -9,14 +9,6 @@ seed: 42
 experiment_name: ???
 run_name: ???
 
-trainer:
-  min_epochs: 10
-  max_epochs: 200
-
-data:
-  batch_size: 96
-  num_workers: 12
-
 callbacks:
   model_checkpoint:
     monitor: "val/acc"
