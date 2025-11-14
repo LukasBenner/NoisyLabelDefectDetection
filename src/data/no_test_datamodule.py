@@ -11,6 +11,9 @@ from torch.utils.data import DataLoader, Dataset
 from torchvision import datasets
 from torchvision.transforms import v2
 
+from utils.pylogger import RankedLogger
+
+log = RankedLogger(__name__, rank_zero_only=True)
 
 class NoTestDataModule(LightningDataModule):
     def __init__(
@@ -120,9 +123,12 @@ class NoTestDataModule(LightningDataModule):
         self.class_weights = 1.0 / class_counts
 
         if self.hparams.use_weighted_sampling:
+            log.info("Using weighted random sampler for training dataloader")
             self.sampling_weights = [
                 self.class_weights[target] for target in train_targets
             ]
+        else:
+            log.info("Using standard random sampler for training dataloader")
 
     def train_dataloader(self) -> DataLoader:
         if self.hparams.use_weighted_sampling:
