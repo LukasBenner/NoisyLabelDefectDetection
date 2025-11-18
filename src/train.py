@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Tuple
 import hydra
 import lightning as L
 import rootutils
-from lightning import Callback, LightningDataModule, LightningModule, Trainer
+from lightning import Callback, LightningDataModule, LightningModule, Trainer, seed_everything
 from lightning.pytorch.loggers import Logger
 from omegaconf import DictConfig
 import torch
@@ -19,7 +19,7 @@ log = RankedLogger(__name__, rank_zero_only=True)
 
 
 def train(cfg: DictConfig) -> Tuple[Dict[str, Any], Dict[str, Any]]:
-    torch.set_float32_matmul_precision('high')
+    seed_everything(cfg.get("seed"), workers=True)
 
     log.info(f"Instantiating datamodule <{cfg.data._target_}>")
     datamodule: LightningDataModule = hydra.utils.instantiate(cfg.data)
@@ -63,6 +63,7 @@ def train(cfg: DictConfig) -> Tuple[Dict[str, Any], Dict[str, Any]]:
 
 @hydra.main(version_base="1.2", config_path="../configs", config_name="train.yaml")
 def main(cfg: DictConfig) -> None:
+    torch.set_float32_matmul_precision('high')
     metric_dict, _ = train(cfg)
 
     metric_value = get_metric_value(metric_dict=metric_dict, metric_name=cfg.get("optimized_metric"))

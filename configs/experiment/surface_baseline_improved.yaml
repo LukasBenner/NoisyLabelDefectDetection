@@ -18,13 +18,17 @@ tags:
 model:
   num_classes: 12
   optimizer: 
-    weight_decay: 0.0001
+    lr: 0.0001976
+    weight_decay: 1.5e-5
   scheduler:
     _target_: torch.optim.lr_scheduler.ReduceLROnPlateau
     _partial_: true
     mode: min
     factor: 0.1
     patience: 10
+
+data:
+  batch_size: 32
 
 callbacks:
   early_stopping:

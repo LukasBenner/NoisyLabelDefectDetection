@@ -1,5 +1,4 @@
 import os
-import subprocess
 from typing import Any, Dict, Optional, Tuple
 
 from lightning import LightningDataModule
@@ -19,8 +18,7 @@ class NoTestDataModule(LightningDataModule):
     def __init__(
         self,
         data_path: str,
-        data_repo: str,
-        data_version: str,
+        data_root: str,
         val_split: float = 0.2,
         batch_size: int = 96,
         num_workers: int = 4,
@@ -51,53 +49,41 @@ class NoTestDataModule(LightningDataModule):
             ]
         )
 
-        self.base_dataset: Optional[Dataset] = None
+        self.train_dataset: Optional[Dataset] = None
 
     @property
     def class_names(self) -> Tuple[str, ...]:
         assert (
-            self.base_dataset is not None
+            self.train_dataset is not None
         ), "Dataset not prepared. Call prepare_data() first."
-        return tuple(self.base_dataset.classes)
+        return tuple(self.train_dataset.classes)
 
     @property
     def num_classes(self) -> int:
         assert (
-            self.base_dataset is not None
+            self.train_dataset is not None
         ), "Dataset not prepared. Call prepare_data() first."
-        return len(self.base_dataset.classes)
+        return len(self.train_dataset.classes)
 
     def prepare_data(self):
-        # Construct the full output path where the dataset should be placed
-        output_path = os.path.join(self.hparams.data_repo, self.hparams.data_path)
-        
-        # Only fetch if the dataset doesn't exist locally
-        if not os.path.exists(output_path):
-            subprocess.run(
-                [
-                    "dvc",
-                    "get",
-                    self.hparams.data_repo,
-                    self.hparams.data_path,
-                    "--rev",
-                    self.hparams.data_version,
-                    "--out",
-                    output_path,
-                ],
-                check=True,
-            )
-        
-        self.data_url = os.path.join(output_path, "train")
-
-        self.base_dataset = datasets.ImageFolder(root=self.data_url)
+        """Download/prepare data. Only called on rank 0 in DDP."""
+        # Nothing to do
 
     def setup(self, stage: Optional[str] = None) -> None:
-        assert (
-            self.base_dataset is not None
-        ), "Dataset not prepared. Call prepare_data() first."
+        """Setup datasets. Called on ALL ranks in DDP."""
+        # Load base dataset here (not in prepare_data) so it's available on all ranks
+        if self.train_dataset is None:
+            # Ensure data_url is set
+            if not hasattr(self, "data_url"):
+                output_path = os.path.join(
+                    self.hparams.data_root, self.hparams.data_path
+                )
+                self.train_data_url = os.path.join(output_path, "train")
 
-        all_indices = list(range(len(self.base_dataset)))
-        all_targets = [self.base_dataset.samples[i][1] for i in all_indices]
+            self.train_dataset = datasets.ImageFolder(root=self.train_data_url)
+
+        all_indices = list(range(len(self.train_dataset)))
+        all_targets = [self.train_dataset.samples[i][1] for i in all_indices]
 
         train_indices, val_indices = train_test_split(
             all_indices,
@@ -107,13 +93,13 @@ class NoTestDataModule(LightningDataModule):
         )
 
         self.train_datset = TransformSubset(
-            self.base_dataset,
+            self.train_dataset,
             train_indices,
             transform=self.train_transforms,
         )
 
         self.val_dataset = TransformSubset(
-            self.base_dataset,
+            self.train_dataset,
             val_indices,
             transform=self.test_transforms,
         )
@@ -154,7 +140,7 @@ class NoTestDataModule(LightningDataModule):
                 shuffle=True,
                 persistent_workers=True if self.hparams.num_workers > 0 else False,
             )
-        
+
     def val_dataloader(self) -> Any:
         return DataLoader(
             dataset=self.val_dataset,

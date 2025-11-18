@@ -2,7 +2,7 @@
 
 defaults:
   - default
-  - override /data: no_test_surface_data
+  - override /data: kfold_datamodule
   - override /model: surface_baseline
   - _self_
 
@@ -17,14 +17,19 @@ tags:
 
 model:
   num_classes: 12
-  optimizer: 
-    weight_decay: 0.0
+  optimizer:
+    lr: 0.0003125
+    weight_decay: 2.7e-6
   scheduler: Null
+
+data:
+  n_splits: 5
+  batch_size: 32
 
 callbacks:
   early_stopping:
     monitor: "val/acc"
-    patience: 10
+    patience: 30
     mode: "max"
 
 test: False
