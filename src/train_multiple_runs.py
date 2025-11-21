@@ -3,6 +3,7 @@ from pathlib import Path
 import hydra
 from omegaconf import DictConfig, OmegaConf
 from lightning import seed_everything
+import torch
 
 from train import train
 from utils.pylogger import RankedLogger
@@ -24,6 +25,8 @@ def main(cfg: DictConfig) -> None:
     
     num_runs = cfg.get("num_runs")
     base_seed = cfg.get("seed")
+
+    torch.set_float32_matmul_precision('high')
     
     log.info(f"Starting {num_runs} training runs with base seed {base_seed}")
     

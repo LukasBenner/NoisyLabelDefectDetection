@@ -4,7 +4,7 @@ from typing import Any, Dict, Optional, Tuple
 from lightning import LightningDataModule
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from src.data.components.TransformSubset import TransformSubset
+from data.components.transform_subset import TransformSubset
 import torch
 from torch.utils.data import DataLoader, Dataset
 from torchvision import datasets
@@ -14,7 +14,7 @@ from utils.pylogger import RankedLogger
 
 log = RankedLogger(__name__, rank_zero_only=True)
 
-class NoTestDataModule(LightningDataModule):
+class SurfaceDataModule(LightningDataModule):
     def __init__(
         self,
         data_path: str,
@@ -144,6 +144,16 @@ class NoTestDataModule(LightningDataModule):
     def val_dataloader(self) -> Any:
         return DataLoader(
             dataset=self.val_dataset,
+            batch_size=self.hparams.batch_size,
+            num_workers=self.hparams.num_workers,
+            pin_memory=self.hparams.pin_memory,
+            shuffle=False,
+            persistent_workers=True if self.hparams.num_workers > 0 else False,
+        )
+    
+    def test_dataloader(self):
+        return DataLoader(
+            dataset=self.test_dataset,
             batch_size=self.hparams.batch_size,
             num_workers=self.hparams.num_workers,
             pin_memory=self.hparams.pin_memory,

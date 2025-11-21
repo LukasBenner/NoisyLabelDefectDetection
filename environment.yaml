@@ -6,7 +6,7 @@ dependencies:
   - pytorch=2.*
   - torchvision=0.*
   - lightning=2.*
-  - torchmetrics=0.*
+  - torchmetrics=1.*
   - hydra-core=1.*
   - mlflow
   - rich=13.*
@@ -27,3 +27,5 @@ dependencies:
     - hydra-optuna-sweeper
     - hydra-colorlog
     - rootutils
+    - "git+https://github.com/cleanlab/cleanlab.git#egg=cleanlab[datalab]"
+    - "git+https://github.com/openai/CLIP.git"
