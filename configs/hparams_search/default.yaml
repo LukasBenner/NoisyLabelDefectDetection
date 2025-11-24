@@ -1,13 +1,11 @@
 # @package _global_
 
-optimized_metric: "val/f1_best"
+optimized_metric: "best_val/f1"
 direction: maximize
 
 study_name: null
 
-n_jobs: 1
-
-n_trials: 20
+n_trials: 10
 
 search_space:
   model:
@@ -22,15 +20,3 @@ search_space:
         low: 1.0e-6
         high: 1.0e-2
         log: true
-  
-  data:
-    batch_size:
-      type: "categorical"
-      choices: [32, 64, 96, 128]
-  
-  # Add more hyperparameters as needed
-  # trainer:
-  #   max_epochs:
-  #     type: "int"
-  #     low: 50
-  #     high: 200

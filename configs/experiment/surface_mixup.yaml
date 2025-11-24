@@ -1,6 +1,6 @@
 # @package _global_
 
-run_name: "baseline_improved_${now:%Y-%m-%d_%H-%M-%S}"
+run_name: "mixup_${now:%Y-%m-%d_%H-%M-%S}"
 
 
 optimizer: 
@@ -9,3 +9,6 @@ optimizer:
 scheduler:
   _target_: torch.optim.lr_scheduler.CosineAnnealingLR
   T_max: ${num_epochs}
+mixup:
+  enabled: True
+  alpha: 0.2

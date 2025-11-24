@@ -1,19 +1,21 @@
 """Hyperparameter sweep using Optuna with MLflow parent-child run hierarchy."""
 
-from typing import Any, Dict, List, Optional
+from datetime import date
+from typing import Any, Dict, Optional
 
 import hydra
 import rootutils
-from lightning import Callback, LightningDataModule, LightningModule, Trainer, seed_everything
-from lightning.pytorch.loggers import Logger
-from omegaconf import DictConfig, OmegaConf
+from lightning import Fabric
+from omegaconf import DictConfig, OmegaConf, ListConfig
 import optuna
+from sklearn.model_selection import train_test_split
 import torch
+import torchvision
 
-from utils.instantiators import instantiate_callbacks, instantiate_loggers
-from utils.logging_utils import log_hyperparameters, log_training_results
+from train import calculate_class_weights, save_hyperparameters, setup_data_loaders, setup_metrics, setup_model_and_optimizer, train_one_epoch, validate_one_epoch
 from utils.pylogger import RankedLogger
 from utils.utils import get_metric_value
+from lightning.fabric.loggers.csv_logs import CSVLogger
 
 rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 
@@ -36,11 +38,10 @@ def suggest_hyperparameters(trial: optuna.Trial, search_space: DictConfig) -> Di
         result = {}
         
         for key, value in space.items():
-            full_key = f"{prefix}.{key}" if prefix else key
+            full_key = f"{prefix}.{key}" if prefix else str(key)
             
             if isinstance(value, DictConfig):
                 if "type" in value:
-                    # This is a hyperparameter definition
                     param_type = value.type
                     
                     if param_type == "float":
@@ -79,7 +80,7 @@ def suggest_hyperparameters(trial: optuna.Trial, search_space: DictConfig) -> Di
     return _suggest_recursive(search_space)
 
 
-def update_config_with_suggestions(cfg: DictConfig, suggestions: Dict[str, Any]) -> DictConfig:
+def update_config_with_suggestions(cfg: DictConfig | ListConfig, suggestions: Dict[str, Any]) -> DictConfig | ListConfig :
     """Update configuration with suggested hyperparameters.
     
     Args:
@@ -106,18 +107,32 @@ def update_config_with_suggestions(cfg: DictConfig, suggestions: Dict[str, Any])
 
 @hydra.main(version_base="1.3", config_path="../configs", config_name="sweep.yaml")
 def main(cfg: DictConfig) -> Optional[float]:
-    """Run Optuna hyperparameter sweep with MLflow tracking."""
-
-    n_trials = cfg.get("n_trials", 20)
-    optimized_metric = cfg.get("optimized_metric", "val/f1_best")
+    n_trials = cfg.get("n_trials", 10)
+    optimized_metric = cfg.get("optimized_metric", "best_val/acc")
     direction = cfg.get("direction", "maximize")
     seed = cfg.get("seed", 42)
-
-    torch.set_float32_matmul_precision('high')
-    seed_everything(seed)
     
-    # Save the original output dir
-    original_output_dir = cfg.paths.output_dir
+    device_id = cfg.trainer.device_id
+    fabric = Fabric(accelerator="gpu", precision="16-mixed", devices=[device_id])
+    device = fabric.device
+    fabric.seed_everything(seed)
+    torch.set_float32_matmul_precision('high')
+
+    # Setup logging paths
+    log_path = cfg.get("log_path", "logs")
+    experiment_name = cfg.get("experiment_name")
+    run_name = cfg.get("run_name", date.today().strftime("%Y-%m-%d"))
+    log_path = f"{log_path}/sweep/{experiment_name}/{run_name}"
+
+     # Load initial data to get class info
+    train_data_path = cfg.data.train_data_path
+    test_data_path = cfg.data.test_data_path
+    train_image_folder_set = torchvision.datasets.ImageFolder(root=train_data_path)
+
+    num_classes = len(train_image_folder_set.classes)
+    print(f"Number of classes: {num_classes}")
+    
+    val_split = cfg.data.get("val_split", 0.2)
     
      # Get search space from config
     if "search_space" not in cfg:
@@ -125,63 +140,16 @@ def main(cfg: DictConfig) -> Optional[float]:
     
     search_space = cfg.search_space
     
-    log.info(f"\n{'='*80}")
-    log.info(f"Starting Optuna Sweep")
-    log.info(f"{'='*80}")
-    log.info(f"  Number of trials: {n_trials}")
-    log.info(f"  Optimized metric: {optimized_metric}")
-    log.info(f"  Direction: {direction}")
-    log.info(f"  Seed: {seed}")
-    log.info(f"  Output directory: {original_output_dir}")
-    log.info(f"{'='*80}\n")
-    
-    # Setup MLflow parent run if configured
-    parent_run = None
-    parent_run_id = None
-    
-    if "logger" in cfg and "mlflow" in cfg.logger:
-        try:
-            import mlflow
-            if "tracking_uri" in cfg.logger.mlflow:
-                mlflow.set_tracking_uri(cfg.logger.mlflow.tracking_uri)
-            experiment_name = cfg.get("experiment_name", "optuna_sweep")
-            mlflow.set_experiment(experiment_name)
-            
-            parent_run = mlflow.start_run(run_name=f"optuna_sweep_{cfg.get('run_name', 'default')}")
-            
-            if "tags" in cfg and cfg.tags:
-                mlflow.set_tags(OmegaConf.to_container(cfg.tags, resolve=True))
-            
-            parent_run_id = parent_run.info.run_id
-            
-            # Log sweep configuration
-            mlflow.log_params({
-                "n_trials": n_trials,
-                "optimized_metric": optimized_metric,
-                "direction": direction,
-                "base_seed": seed,
-            })
-            
-            log.info(f"Created MLflow parent run: {parent_run_id}")
-        except Exception as e:
-            log.warning(f"Could not create MLflow parent run: {e}")
-            parent_run = None
-            parent_run_id = None
-    
     # Define objective function for Optuna
     def objective(trial: optuna.Trial) -> float:
         """Objective function for a single trial."""
         try:
             # Create a copy of config for this trial
             run_cfg = OmegaConf.create(OmegaConf.to_container(cfg, resolve=True))
-            
-            # Set unique output directory for this trial
-            run_cfg.paths.output_dir = f"{original_output_dir}/trial_{trial.number}"
+            assert type(run_cfg) is DictConfig
             
             # Suggest hyperparameters from search space
             suggestions = suggest_hyperparameters(trial, search_space)
-            
-            # Update config with suggestions
             run_cfg = update_config_with_suggestions(run_cfg, suggestions)
             
             # Flatten suggestions for logging
@@ -202,67 +170,109 @@ def main(cfg: DictConfig) -> Optional[float]:
                 log.info(f"  {key}: {value}")
             log.info(f"{'='*60}\n")
             
-            # Update run name
-            if "run_name" in run_cfg:
-                run_cfg.run_name = f"{run_cfg.run_name}_trial_{trial.number}"
+            logger = CSVLogger(log_path, name=f"trial_{trial.number + 1}", version="")
+            trial_log_path = log_path + f"/trial_{trial.number + 1}"
 
-            if "trainer" in run_cfg:
-                run_cfg.trainer.default_root_dir = run_cfg.paths.output_dir
+            # Split data
+            all_indices = list(range(len(train_image_folder_set)))
+            all_targets = [train_image_folder_set.samples[i][1] for i in all_indices]
+            train_indices, val_indices = train_test_split(
+                all_indices,
+                test_size=val_split,
+                random_state=seed + trial.number,
+                stratify=all_targets,
+            )
 
-            if "csv" in run_cfg.logger:
-                run_cfg.logger.csv.save_dir = f"{run_cfg.paths.output_dir}"
+            # Setup data loaders
+            train_loader, val_loader, test_loader, classes = setup_data_loaders(
+                train_data_path=train_data_path,
+                test_data_path=test_data_path,
+                train_indices=train_indices,
+                val_indices=val_indices,
+                batch_size=run_cfg.data.get("batch_size"),
+                num_workers=run_cfg.data.get("num_workers", 4),
+                fabric=fabric,
+            )
             
-            # If using MLflow, tag this run as child of parent
-            if parent_run_id and "logger" in run_cfg and "mlflow" in run_cfg.logger:
-                if "tags" not in run_cfg.logger.mlflow:
-                    run_cfg.logger.mlflow.tags = {}
-                run_cfg.logger.mlflow.tags["mlflow.parentRunId"] = str(parent_run_id)
-                run_cfg.logger.mlflow.tags["trial_number"] = str(trial.number)
+            train_targets = [all_targets[i] for i in train_indices]
+            class_weights, samples_per_class = calculate_class_weights(
+                train_targets, num_classes, device
+            )
+
+            # Setup model, optimizer, and criterion
+            model, optimizer, criterion, scheduler = setup_model_and_optimizer(
+                cfg, num_classes, class_weights, fabric
+            )
             
-            # Instantiate components
-            log.info(f"Instantiating datamodule <{run_cfg.data._target_}>")
-            datamodule: LightningDataModule = hydra.utils.instantiate(run_cfg.data)
+            train_metrics = setup_metrics(num_classes, device)
+            val_metrics = setup_metrics(num_classes, device)
             
-            log.info(f"Instantiating model <{run_cfg.model._target_}>")
-            model: LightningModule = hydra.utils.instantiate(run_cfg.model)
+            num_epochs = run_cfg.get("num_epochs")
+            patience = run_cfg.get("early_stopping_patience", 999)
+            epochs_no_improvement = 0
+            best_val_acc = 0.0
+            best_val_f1 = 0.0
+            best_epoch = -1
             
-            log.info("Instantiating callbacks...")
-            callbacks: List[Callback] = instantiate_callbacks(run_cfg.get("callbacks"))
+            # Save hyperparameters once
+
+            save_hyperparameters(trial_log_path, run_cfg, num_classes, samples_per_class, class_weights)
+
+            for epoch in range(num_epochs):   
+                train_result = train_one_epoch(
+                    run_cfg,
+                    model=model,
+                    train_loader=train_loader,
+                    optimizer=optimizer,
+                    criterion=criterion,
+                    metrics=train_metrics,
+                    fabric=fabric,
+                    epoch=epoch,
+                    num_epochs=num_epochs,
+                    num_classes=num_classes,
+                    run_idx=trial.number,
+                )
+                train_result["epoch"] = epoch + 1
+                train_result["lr"] = optimizer.param_groups[0]["lr"]
+                logger.log_metrics(train_result)
             
-            log.info("Instantiating loggers...")
-            loggers: List[Logger] = instantiate_loggers(run_cfg.get("logger"))
+                # Validate one epoch
+                val_result = validate_one_epoch(
+                    model=model,
+                    val_loader=val_loader,
+                    criterion=criterion,
+                    metrics=val_metrics,
+                    epoch=epoch,
+                    run_idx=trial.number,
+                )
+
+                if scheduler:
+                    scheduler.step()
+
+                # Early stopping check
+                current_val_acc = val_result["val/acc"]
+                current_val_f1 = val_result["val/f1"]
+
+                best_val_f1 = max(best_val_f1, current_val_f1)
+                if current_val_acc > best_val_acc:
+                    best_val_acc = current_val_acc
+                    epochs_no_improvement = 0
+                else:
+                    epochs_no_improvement += 1
+                
+                val_result["epoch"] = epoch + 1
+                val_result["best_val/acc"] = best_val_acc
+                val_result["best_val/f1"] = best_val_f1
+                logger.log_metrics(val_result)
+                logger.save()
+                
+                if epochs_no_improvement >= patience:
+                    break
             
-            log.info(f"Instantiating trainer <{run_cfg.trainer._target_}>")
-            trainer: Trainer = hydra.utils.instantiate(run_cfg.trainer, callbacks=callbacks, logger=loggers)
-            
-            object_dict = {
-                "cfg": run_cfg,
-                "datamodule": datamodule,
-                "model": model,
-                "callbacks": callbacks,
-                "logger": loggers,
-                "trainer": trainer,
-            }
-            
-            if loggers:
-                log.info("Logging hyperparameters!")
-                log_hyperparameters(object_dict)
-            
-            log.info("Starting training!")
-            trainer.fit(model=model, datamodule=datamodule)
-            
-            # Collect final metrics
-            metric_dict = {}
-            if loggers:
-                log.info("Logging training results!")
-                metric_dict = log_training_results(trainer, model)
-            
-            # Get the optimized metric value
-            metric_value = get_metric_value(metric_dict, optimized_metric)
+            metric_value = get_metric_value(val_result, optimized_metric)
             
             if metric_value is None:
-                log.warning(f"Metric '{optimized_metric}' not found in results. Available metrics: {list(metric_dict.keys())}")
-                # Return a default value based on direction
+                log.warning(f"Metric '{optimized_metric}' not found in results. Available metrics: {list(val_result.keys())}")
                 metric_value = float('-inf') if direction == "maximize" else float('inf')
             
             log.info(f"\nTrial {trial.number} completed: {optimized_metric} = {metric_value:.4f}\n")
@@ -277,60 +287,33 @@ def main(cfg: DictConfig) -> Optional[float]:
             return float('-inf') if direction == "maximize" else float('inf')
     
     # Create Optuna study
-    try:
-        study_name = cfg.get("study_name", f"optuna_study_{cfg.get('experiment_name', 'default')}")
-        
-        # Create study with direction
-        study = optuna.create_study(
-            study_name=study_name,
-            direction=direction,
-            sampler=optuna.samplers.TPESampler(seed=seed),
-        )
-        
-        log.info(f"Created Optuna study: {study_name}")
-        
-        # Run optimization
-        study.optimize(objective, n_trials=n_trials)
-        
-        # Log best results
-        log.info(f"\n{'='*80}")
-        log.info("OPTIMIZATION COMPLETED")
-        log.info(f"{'='*80}")
-        log.info(f"Best trial: {study.best_trial.number}")
-        log.info(f"Best {optimized_metric}: {study.best_value:.4f}")
-        log.info(f"Best hyperparameters:")
-        for key, value in study.best_params.items():
-            log.info(f"  {key}: {value}")
-        log.info(f"{'='*80}\n")
-        
-        # Log to MLflow parent run
-        if parent_run:
-            try:
-                import mlflow
-                mlflow.log_params({f"best_{k}": v for k, v in study.best_params.items()})
-                mlflow.log_metric("best_value", study.best_value)
-                mlflow.log_metric("best_trial", study.best_trial.number)
-                
-                # Log optimization history
-                for trial in study.trials:
-                    if trial.state == optuna.trial.TrialState.COMPLETE:
-                        mlflow.log_metric(f"trial_{trial.number}_value", trial.value, step=trial.number)
-                
-                log.info(f"Logged best results to MLflow parent run: {parent_run_id}")
-            except Exception as e:
-                log.warning(f"Could not log to MLflow: {e}")
-        
-        return study.best_value
-        
-    finally:
-        # Close MLflow parent run
-        if parent_run:
-            try:
-                import mlflow
-                mlflow.end_run()
-                log.info("Closed MLflow parent run")
-            except Exception as e:
-                log.warning(f"Could not close MLflow parent run: {e}")
+
+    study_name = cfg.get("study_name", f"optuna_study_{cfg.get('experiment_name', 'default')}")
+    
+    # Create study with direction
+    study = optuna.create_study(
+        study_name=study_name,
+        direction=direction,
+        sampler=optuna.samplers.TPESampler(seed=seed),
+    )
+    
+    log.info(f"Created Optuna study: {study_name}")
+    
+    # Run optimization
+    study.optimize(objective, n_trials=n_trials)
+    
+    # Log best results
+    log.info(f"\n{'='*80}")
+    log.info("OPTIMIZATION COMPLETED")
+    log.info(f"{'='*80}")
+    log.info(f"Best trial: {study.best_trial.number}")
+    log.info(f"Best {optimized_metric}: {study.best_value:.4f}")
+    log.info(f"Best hyperparameters:")
+    for key, value in study.best_params.items():
+        log.info(f"  {key}: {value}")
+    log.info(f"{'='*80}\n")
+    
+    return study.best_value
 
 
 if __name__ == "__main__":

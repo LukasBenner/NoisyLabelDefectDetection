@@ -1,0 +1,14 @@
+# @package _global_
+
+defaults:
+  - default
+  - _self_
+
+search_space:
+  mixup:
+    alpha:
+      type: "float"
+      low: 0.01
+      high: 3.0
+      log: true
+  

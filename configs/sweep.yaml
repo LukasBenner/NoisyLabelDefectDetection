@@ -1,36 +1,40 @@
+# @package _global_
+
 defaults:
-  - paths: default
-  - data: ???
-  - trainer: gpu
-  - model: ???
-  - callbacks: default
-  - hydra: default
-  - logger: many_loggers
   - _self_
-
-  # experiment configs allow for version control of specific hyperparameters
-  # e.g. best hyperparameters for given model and datamodule
   - experiment: null
-
-  # config for hyperparameter optimization
   - hparams_search: default
 
-  # optional local config for machine/user specific settings
-  # it's optional since it doesn't need to exist and is excluded from version control
-  - optional local: default
+experiment_name: SurfaceDefectDetection
+run_name: "baseline_${now:%Y-%m-%d_%H-%M-%S}"
 
-  # debugging config (enable through command line, e.g. `python train.py debug=default)
-  - debug: null
+log_path: ./logs
 
-# task name, determines output directory path
-task_name: "sweep"
+seed: 42
+num_epochs: 50
+early_stopping_patience: 10
 
-# set False to skip model training
-train: True
+model:
+  _target_: src.models.components.mobile_net.MobileNet
+  pretrained: true
 
-# evaluate on test set, using best model weights achieved during training
-# lightning chooses best weights based on the metric specified in checkpoint callback
-test: Fals
+optimizer:
+  _target_: torch.optim.AdamW
+  lr: 0.00032
+  weight_decay: 0.0
 
-# simply provide checkpoint path to resume training
-ckpt_path: null
+scheduler: Null
+
+data:
+  train_data_path: ./data/surface/train
+  test_data_path: ./data/surface/test
+  batch_size: 32
+  num_workers: 4
+
+trainer:
+  device_id: 0
+  compile: true
+
+hydra:
+  run:
+    dir: ${log_path}/sweep/${experiment_name}/${run_name}
