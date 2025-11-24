@@ -74,8 +74,8 @@ def suggest_hyperparameters(
 
 
 def update_config_with_suggestions(
-    cfg: DictConfig | ListConfig, suggestions: Dict[str, Any]
-) -> DictConfig | ListConfig:
+    cfg: DictConfig, suggestions: Dict[str, Any]
+) -> DictConfig:
     """Update configuration with suggested hyperparameters.
 
     Args:
@@ -96,6 +96,7 @@ def update_config_with_suggestions(
                 config[key] = value
 
     cfg_copy = OmegaConf.create(OmegaConf.to_container(cfg, resolve=True))
+    assert isinstance(cfg_copy, DictConfig), "Config must be a DictConfig"
     _update_recursive(cfg_copy, suggestions)
     return cfg_copy
 
@@ -200,24 +201,20 @@ def main(cfg: DictConfig) -> Optional[float]:
 
             # Setup model, optimizer, and criterion
             model, optimizer, criterion, scheduler = setup_model_and_optimizer(
-                cfg, num_classes, class_weights, fabric
+                run_cfg, num_classes, class_weights, fabric
             )
 
             train_metrics = setup_metrics(num_classes, device)
             val_metrics = setup_metrics(num_classes, device)
 
-            num_epochs = run_cfg.get("num_epochs")
-            patience = run_cfg.get("early_stopping_patience", 999)
+            num_epochs = OmegaConf.select(run_cfg, "num_epochs", default=10)
+            patience = OmegaConf.select(run_cfg, "early_stopping_patience", default=999)
             epochs_no_improvement = 0
             best_val_acc = 0.0
             best_val_f1 = 0.0
-            best_epoch = -1
 
-            # Save hyperparameters once
-
-            save_hyperparameters(
-                trial_log_path, run_cfg, num_classes, samples_per_class, class_weights
-            )
+            # Save hyperparameters
+            save_hyperparameters(trial_log_path, run_cfg, num_classes)
 
             for epoch in range(num_epochs):
                 train_result = train_one_epoch(

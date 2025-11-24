@@ -1,5 +1,4 @@
 import os
-from typing import Any, Dict
 
 from datetime import date
 import hydra
@@ -365,8 +364,6 @@ def save_hyperparameters(
     log_path: str,
     cfg: DictConfig,
     num_classes: int,
-    samples_per_class: np.ndarray,
-    class_weights: torch.Tensor,
 ):
     """Save hyperparameters to a YAML file."""
     os.makedirs(f"{log_path}", exist_ok=True)
@@ -375,17 +372,18 @@ def save_hyperparameters(
 
         f.write(OmegaConf.to_yaml(cfg, resolve=True))
         f.write(f"\nnum_classes: {num_classes}\n")
-        f.write(f"class_counts: {samples_per_class.tolist()}\n")
-        f.write(f"class_weights: {class_weights.tolist()}\n")
 
 
 @hydra.main(version_base="1.3", config_path="../configs", config_name="train.yaml")
 def main(cfg: DictConfig) -> None:
+    num_runs = cfg.get("num_runs", 1)
     seed = cfg.get("seed", 42)
+
     device_id = cfg.trainer.device_id
     fabric = Fabric(accelerator="gpu", precision="16-mixed", devices=[device_id])
     device = fabric.device
     fabric.seed_everything(seed)
+    torch.set_float32_matmul_precision("high")
 
     # Setup logging paths
     log_path = cfg.get("log_path", "logs")
@@ -401,10 +399,15 @@ def main(cfg: DictConfig) -> None:
     num_classes = len(train_image_folder_set.classes)
     print(f"Number of classes: {num_classes}")
 
-    num_runs = cfg.get("num_runs", 1)
     val_split = cfg.data.get("val_split", 0.2)
+
+    save_hyperparameters(
+        log_path + "/summary",
+        cfg,
+        num_classes,
+    )
+
     all_metrics = []
-    hyperparams_logged = False
 
     # Training loop over multiple runs
     for run_idx in range(num_runs):
@@ -454,17 +457,6 @@ def main(cfg: DictConfig) -> None:
         best_val_acc = 0.0
         best_val_f1 = 0.0
         best_epoch = -1
-
-        # Save hyperparameters once
-        if not hyperparams_logged:
-            save_hyperparameters(
-                log_path + "/summary",
-                cfg,
-                num_classes,
-                samples_per_class,
-                class_weights,
-            )
-            hyperparams_logged = True
 
         # Training epochs
         for epoch in range(num_epochs):
