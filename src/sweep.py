@@ -242,6 +242,7 @@ def main(cfg: DictConfig) -> Optional[float]:
                     metrics=val_metrics,
                     epoch=epoch,
                     run_idx=trial.number,
+                    num_classes=num_classes,
                 )
 
                 if scheduler:

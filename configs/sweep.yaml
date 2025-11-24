@@ -11,8 +11,8 @@ run_name: "baseline_${now:%Y-%m-%d_%H-%M-%S}"
 log_path: ./logs
 
 seed: 42
-num_epochs: 50
-early_stopping_patience: 10
+num_epochs: 100
+early_stopping_patience: 20
 
 model:
   _target_: src.models.components.mobile_net.MobileNet

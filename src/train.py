@@ -23,6 +23,7 @@ from torchmetrics import MeanMetric
 from lightning.fabric.loggers.csv_logs import CSVLogger
 from lightning.fabric import Fabric
 
+from models.components.gce_loss import GceLoss
 from utils.pylogger import RankedLogger
 
 import tqdm
@@ -134,7 +135,12 @@ def setup_model_and_optimizer(
 ):
     """Setup model, optimizer, criterion, and optional scheduler."""
     model = hydra.utils.instantiate(cfg.model, num_classes=num_classes)
-    criterion = torch.nn.CrossEntropyLoss(weight=class_weights)
+    
+    if cfg.get("mae_loss"):
+        criterion = torch.nn.L1Loss()
+    else:
+        criterion = torch.nn.CrossEntropyLoss(weight=class_weights)
+
     optimizer = hydra.utils.instantiate(cfg.get("optimizer"), model.parameters())
 
     scheduler_cfg = cfg.get("scheduler", None)
@@ -205,12 +211,15 @@ def train_one_epoch(
         ncols=100,
         mininterval=0.2,
     )
-
+    
     use_mixup = cfg.mixup.get("enabled", False)
     mixup = None
     if use_mixup:
         alpha = cfg.mixup.get("alpha", 1.0)
         mixup = v2.MixUp(num_classes=num_classes, alpha=alpha)
+    
+    # Check if using L1Loss (needs one-hot targets)
+    use_one_hot = not isinstance(criterion, torch.nn.CrossEntropyLoss)
 
     for batch in train_bar:
         inputs, targets = batch
@@ -219,13 +228,15 @@ def train_one_epoch(
             targets_for_metrics = targets.argmax(dim=1)
         else:
             targets_for_metrics = targets
+            # Convert to one-hot for L1Loss
+            if use_one_hot:
+                targets = torch.nn.functional.one_hot(targets, num_classes=num_classes).float()
 
         optimizer.zero_grad(set_to_none=True)
         outputs = model(inputs)
         loss = criterion(outputs, targets)
         fabric.backward(loss)
-        optimizer.step()
-
+        optimizer.step()        
         with torch.no_grad():
             preds = torch.argmax(outputs, dim=1)
             metrics["loss"].update(loss)
@@ -253,10 +264,14 @@ def validate_one_epoch(
     metrics: dict,
     epoch: int,
     run_idx: int,
+    num_classes: int = None,
 ):
     """Validate model for one epoch."""
     model.eval()
     reset_metrics(metrics)
+    
+    # Check if using L1Loss (needs one-hot targets)
+    use_one_hot = not isinstance(criterion, torch.nn.CrossEntropyLoss)
 
     with torch.no_grad():
         val_bar = tqdm.tqdm(
@@ -268,15 +283,21 @@ def validate_one_epoch(
         )
         for batch in val_bar:
             inputs, targets = batch
+            targets_for_metrics = targets
+            
+            # Convert to one-hot for L1Loss
+            if use_one_hot and num_classes is not None:
+                targets = torch.nn.functional.one_hot(targets, num_classes=num_classes).float()
+            
             outputs = model(inputs)
             loss = criterion(outputs, targets)
 
             preds = torch.argmax(outputs, dim=1)
             metrics["loss"].update(loss)
-            metrics["acc"].update(preds, targets)
-            metrics["precision"].update(preds, targets)
-            metrics["recall"].update(preds, targets)
-            metrics["f1"].update(preds, targets)
+            metrics["acc"].update(preds, targets_for_metrics)
+            metrics["precision"].update(preds, targets_for_metrics)
+            metrics["recall"].update(preds, targets_for_metrics)
+            metrics["f1"].update(preds, targets_for_metrics)
 
             val_bar.set_postfix(
                 {
@@ -296,26 +317,35 @@ def test_model(
     criterion,
     metrics: dict,
     device: torch.device,
+    num_classes: int = None,
 ):
     """Test the model and return metrics."""
     model.eval()
     reset_metrics(metrics)
+    
+    # Check if using L1Loss (needs one-hot targets)
+    use_one_hot = not isinstance(criterion, torch.nn.CrossEntropyLoss)
 
     with torch.no_grad():
         for batch in test_loader:
             inputs, targets = batch
             inputs = inputs.to(device)
             targets = targets.to(device)
+            targets_for_metrics = targets
+            
+            # Convert to one-hot for L1Loss
+            if use_one_hot and num_classes is not None:
+                targets = torch.nn.functional.one_hot(targets, num_classes=num_classes).float()
 
             outputs = model(inputs)
             loss = criterion(outputs, targets)
 
             preds = torch.argmax(outputs, dim=1)
             metrics["loss"].update(loss)
-            metrics["acc"].update(preds, targets)
-            metrics["precision"].update(preds, targets)
-            metrics["recall"].update(preds, targets)
-            metrics["f1"].update(preds, targets)
+            metrics["acc"].update(preds, targets_for_metrics)
+            metrics["precision"].update(preds, targets_for_metrics)
+            metrics["recall"].update(preds, targets_for_metrics)
+            metrics["f1"].update(preds, targets_for_metrics)
 
     return compute_metrics(metrics, "test")
 
@@ -486,6 +516,7 @@ def main(cfg: DictConfig) -> None:
                 metrics=val_metrics,
                 epoch=epoch,
                 run_idx=run_idx,
+                num_classes=num_classes,
             )
 
             if scheduler:
@@ -526,6 +557,7 @@ def main(cfg: DictConfig) -> None:
             criterion=criterion,
             metrics=test_metrics,
             device=device,
+            num_classes=num_classes,
         )
 
         final_test_metrics = {

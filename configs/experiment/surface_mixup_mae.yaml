@@ -1,0 +1,15 @@
+# @package _global_
+
+run_name: "mixup_mae${now:%Y-%m-%d_%H-%M-%S}"
+
+
+optimizer: 
+  lr: 0.00032
+  weight_decay: 1.5e-5
+scheduler:
+  _target_: torch.optim.lr_scheduler.CosineAnnealingLR
+  T_max: ${num_epochs}
+mixup:
+  enabled: True
+  alpha: 0.2
+mae_loss: True

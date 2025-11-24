@@ -8,15 +8,14 @@ study_name: null
 n_trials: 10
 
 search_space:
-  model:
-    optimizer:
-      lr:
-        type: "float"
-        low: 1.0e-5
-        high: 1.0e-2
-        log: true
-      weight_decay:
-        type: "float"
-        low: 1.0e-6
-        high: 1.0e-2
-        log: true
+  optimizer:
+    lr:
+      type: "float"
+      low: 1.0e-5
+      high: 1.0e-2
+      log: true
+    weight_decay:
+      type: "float"
+      low: 1.0e-6
+      high: 1.0e-2
+      log: true
