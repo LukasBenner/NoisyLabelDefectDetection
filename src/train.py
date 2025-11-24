@@ -24,10 +24,13 @@ from torchmetrics import MeanMetric
 from lightning.fabric.loggers.csv_logs import CSVLogger
 from lightning.fabric import Fabric
 
+from utils.pylogger import RankedLogger
+
 import tqdm
 
 rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 
+log = RankedLogger(__name__, rank_zero_only=True)
 
 train_transforms = v2.Compose(
     [
@@ -84,7 +87,7 @@ def setup_data_loaders(
         shuffle=True,
         num_workers=num_workers,
         pin_memory=True,
-        persistent_workers=False
+        persistent_workers=False,
     )
     val_loader = torch.utils.data.DataLoader(
         val_dataset,
@@ -92,7 +95,7 @@ def setup_data_loaders(
         shuffle=False,
         num_workers=num_workers,
         pin_memory=True,
-        persistent_workers=False
+        persistent_workers=False,
     )
     test_loader = torch.utils.data.DataLoader(
         test_dataset,
@@ -100,7 +103,7 @@ def setup_data_loaders(
         shuffle=False,
         num_workers=num_workers,
         pin_memory=True,
-        persistent_workers=False
+        persistent_workers=False,
     )
 
     if fabric:
@@ -111,12 +114,17 @@ def setup_data_loaders(
     return train_loader, val_loader, test_loader, train_image_folder_set.classes
 
 
-def calculate_class_weights(train_targets: list, num_classes: int, device: torch.device):
+def calculate_class_weights(
+    train_targets: list, num_classes: int, device: torch.device
+):
     """Calculate class weights for handling class imbalance."""
     samples_per_class = np.bincount(train_targets, minlength=num_classes)
     inv_freq = 1.0 / np.maximum(samples_per_class, 1)
     class_weights = inv_freq / inv_freq.sum() * num_classes
-    return torch.tensor(class_weights, dtype=torch.float32).to(device), samples_per_class
+    return (
+        torch.tensor(class_weights, dtype=torch.float32).to(device),
+        samples_per_class,
+    )
 
 
 def setup_model_and_optimizer(
@@ -144,9 +152,15 @@ def setup_metrics(num_classes: int, device: torch.device):
     """Setup metrics for training, validation, or testing."""
     return {
         "loss": MeanMetric().to(device),
-        "acc": MulticlassAccuracy(num_classes=num_classes, average="weighted").to(device),
-        "precision": MulticlassPrecision(num_classes=num_classes, average="weighted").to(device),
-        "recall": MulticlassRecall(num_classes=num_classes, average="weighted").to(device),
+        "acc": MulticlassAccuracy(num_classes=num_classes, average="weighted").to(
+            device
+        ),
+        "precision": MulticlassPrecision(
+            num_classes=num_classes, average="weighted"
+        ).to(device),
+        "recall": MulticlassRecall(num_classes=num_classes, average="weighted").to(
+            device
+        ),
         "f1": MulticlassF1Score(num_classes=num_classes, average="weighted").to(device),
     }
 
@@ -192,7 +206,7 @@ def train_one_epoch(
         ncols=100,
         mininterval=0.2,
     )
-    
+
     use_mixup = cfg.mixup.get("enabled", False)
     mixup = None
     if use_mixup:
@@ -307,11 +321,15 @@ def test_model(
     return compute_metrics(metrics, "test")
 
 
-def calculate_summary_statistics(all_metrics: list) -> tuple[pd.DataFrame, pd.DataFrame]:
+def calculate_summary_statistics(
+    all_metrics: list,
+) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Calculate summary statistics across multiple runs."""
     all_metrics_df = pd.DataFrame(all_metrics)
     summary_statistics = []
-    metrics_to_analyze = [m for m in all_metrics_df.columns if m not in ["run_idx", "best_val/epoch"]]
+    metrics_to_analyze = [
+        m for m in all_metrics_df.columns if m not in ["run_idx", "best_val/epoch"]
+    ]
 
     for metric in metrics_to_analyze:
         values = all_metrics_df[metric].dropna()
@@ -354,19 +372,21 @@ def save_hyperparameters(
     os.makedirs(f"{log_path}", exist_ok=True)
     with open(f"{log_path}/hyperparameters.yaml", "w") as f:
         from omegaconf import OmegaConf
+
         f.write(OmegaConf.to_yaml(cfg, resolve=True))
         f.write(f"\nnum_classes: {num_classes}\n")
         f.write(f"class_counts: {samples_per_class.tolist()}\n")
         f.write(f"class_weights: {class_weights.tolist()}\n")
 
 
-def train(cfg: DictConfig) -> Dict[str, Any]:
+@hydra.main(version_base="1.3", config_path="../configs", config_name="train.yaml")
+def main(cfg: DictConfig) -> None:
     seed = cfg.get("seed", 42)
     device_id = cfg.trainer.device_id
     fabric = Fabric(accelerator="gpu", precision="16-mixed", devices=[device_id])
     device = fabric.device
     fabric.seed_everything(seed)
-    
+
     # Setup logging paths
     log_path = cfg.get("log_path", "logs")
     experiment_name = cfg.get("experiment_name")
@@ -377,7 +397,7 @@ def train(cfg: DictConfig) -> Dict[str, Any]:
     train_data_path = cfg.data.train_data_path
     test_data_path = cfg.data.test_data_path
     train_image_folder_set = torchvision.datasets.ImageFolder(root=train_data_path)
-    
+
     num_classes = len(train_image_folder_set.classes)
     print(f"Number of classes: {num_classes}")
 
@@ -426,7 +446,7 @@ def train(cfg: DictConfig) -> Dict[str, Any]:
         train_metrics = setup_metrics(num_classes, device)
         val_metrics = setup_metrics(num_classes, device)
         test_metrics = setup_metrics(num_classes, device)
-        
+
         # Training configuration
         num_epochs = cfg.get("num_epochs")
         patience = cfg.get("early_stopping_patience", 999)
@@ -437,7 +457,13 @@ def train(cfg: DictConfig) -> Dict[str, Any]:
 
         # Save hyperparameters once
         if not hyperparams_logged:
-            save_hyperparameters(log_path + "/summary", cfg, num_classes, samples_per_class, class_weights)
+            save_hyperparameters(
+                log_path + "/summary",
+                cfg,
+                num_classes,
+                samples_per_class,
+                class_weights,
+            )
             hyperparams_logged = True
 
         # Training epochs
@@ -522,22 +548,15 @@ def train(cfg: DictConfig) -> Dict[str, Any]:
 
         logger.finalize("success")
         logger.save()
-        print(f"Run {run_idx + 1}/{num_runs} | test/acc: {final_test_metrics['test/acc']:.4f} test/f1: {final_test_metrics['test/f1']:.4f}")
+        print(
+            f"Run {run_idx + 1}/{num_runs} | test/acc: {final_test_metrics['test/acc']:.4f} test/f1: {final_test_metrics['test/f1']:.4f}"
+        )
 
     # Calculate and save summary statistics
     all_metrics_df, summary_df = calculate_summary_statistics(all_metrics)
     os.makedirs(f"{log_path}/summary", exist_ok=True)
     all_metrics_df.to_csv(f"{log_path}/summary/summary_metrics.csv", index=False)
     summary_df.to_csv(f"{log_path}/summary/summary_statistics.csv", index=False)
-    
-    return {"all_metrics": all_metrics, "summary_df": summary_df}
-
-
-@hydra.main(
-    version_base="1.3", config_path="../configs", config_name="train.yaml"
-)
-def main(cfg: DictConfig) -> None:
-    train(cfg)
 
 
 if __name__ == "__main__":
