@@ -20,15 +20,15 @@ def main(cfg: DictConfig) -> None:
     """
     # Get number of runs and base seed from config
     
-    if not cfg.get("num_runs"):
-        raise Exception("num_runs not specified")
+    if not cfg.get("n_runs"):
+        raise Exception("n_runs not specified")
     
-    num_runs = cfg.get("num_runs")
+    n_runs = cfg.get("n_runs")
     base_seed = cfg.get("seed")
 
     torch.set_float32_matmul_precision('high')
     
-    log.info(f"Starting {num_runs} training runs with base seed {base_seed}")
+    log.info(f"Starting {n_runs} training runs with base seed {base_seed}")
     
     if "logger" in cfg and "mlflow" in cfg.logger:
         try:
@@ -38,14 +38,14 @@ def main(cfg: DictConfig) -> None:
             experiment_name = cfg.get("experiment_name")
             mlflow.set_experiment(experiment_name)
             
-            parent_run = mlflow.start_run(run_name=f"multi_run_{cfg.run_name}_{num_runs}_runs")
+            parent_run = mlflow.start_run(run_name=f"multi_run_{cfg.run_name}_{n_runs}_runs")
             mlflow.set_tags(cfg.tags)
 
             parent_run_id = parent_run.info.run_id
             
             # Log multi-run config
             mlflow.log_params({
-                "num_runs": num_runs,
+                "n_runs": n_runs,
                 "base_seed": base_seed
             })
             
@@ -72,11 +72,11 @@ def main(cfg: DictConfig) -> None:
     log.info(f"{'='*80}\n")
     
     try:
-        for run_idx in range(num_runs):
+        for run_idx in range(n_runs):
             current_seed = base_seed + run_idx
             
             log.info(f"\n{'='*80}")
-            log.info(f"Starting run {run_idx + 1}/{num_runs} with seed {current_seed}")
+            log.info(f"Starting run {run_idx + 1}/{n_runs} with seed {current_seed}")
             log.info(f"{'='*80}\n")
             
             # Create a copy of config and update seed
@@ -152,7 +152,7 @@ def main(cfg: DictConfig) -> None:
             output_dir.mkdir(parents=True, exist_ok=True)
             
             experiment_name = cfg.get("experiment_name", "experiment")
-            results_file = output_dir / f"results_{experiment_name}_{num_runs}runs.csv"
+            results_file = output_dir / f"results_{experiment_name}_{n_runs}runs.csv"
             df.to_csv(results_file, index=False)
             log.info(f"Saved detailed results to: {results_file}")
             
@@ -211,7 +211,7 @@ def main(cfg: DictConfig) -> None:
             
             # Save statistics summary
             stats_df = pd.DataFrame(stats_results)
-            stats_file = output_dir / f"statistics_{experiment_name}_{num_runs}runs.csv"
+            stats_file = output_dir / f"statistics_{experiment_name}_{n_runs}runs.csv"
             stats_df.to_csv(stats_file, index=False)
             log.info(f"Saved statistics summary to: {stats_file}")
             

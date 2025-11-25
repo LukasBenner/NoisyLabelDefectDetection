@@ -1,0 +1,19 @@
+# @package _global_
+
+defaults:
+  - default
+  - _self_
+
+search_space:
+  loss:
+    alpha:
+      type: "float"
+      low: 0.001
+      high: 20
+      log: true
+    beta:
+      type: "float"
+      low: 0.001
+      high: 20
+      log: true
+  

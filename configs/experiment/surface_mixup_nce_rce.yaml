@@ -1,0 +1,18 @@
+# @package _global_
+
+run_name: "mixup_nce_rce_${now:%Y-%m-%d_%H-%M-%S}"
+
+
+optimizer: 
+  lr: 0.0001
+  weight_decay: 0.0004
+scheduler:
+  _target_: torch.optim.lr_scheduler.CosineAnnealingLR
+  T_max: ${num_epochs}
+loss:
+  _target_: src.models.components.loss.NCEandRCE
+  alpha: 14.9
+  beta: 1.2
+mixup:
+  enabled: True
+  alpha: 0.04

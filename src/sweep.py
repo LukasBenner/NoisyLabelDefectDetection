@@ -159,7 +159,7 @@ def main(cfg: DictConfig) -> Optional[float]:
                     if isinstance(v, dict):
                         _flatten(v, key)
                     else:
-                        flat_suggestions[k] = v
+                        flat_suggestions[key] = v
 
             _flatten(suggestions)
 
@@ -242,7 +242,6 @@ def main(cfg: DictConfig) -> Optional[float]:
                     metrics=val_metrics,
                     epoch=epoch,
                     run_idx=trial.number,
-                    num_classes=num_classes,
                 )
 
                 if scheduler:

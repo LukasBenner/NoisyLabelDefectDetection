@@ -23,7 +23,6 @@ from torchmetrics import MeanMetric
 from lightning.fabric.loggers.csv_logs import CSVLogger
 from lightning.fabric import Fabric
 
-from models.components.gce_loss import GceLoss
 from utils.pylogger import RankedLogger
 
 import tqdm
@@ -87,7 +86,7 @@ def setup_data_loaders(
         shuffle=True,
         num_workers=num_workers,
         pin_memory=True,
-        persistent_workers=False,
+        persistent_workers=True,
     )
     val_loader = torch.utils.data.DataLoader(
         val_dataset,
@@ -95,7 +94,7 @@ def setup_data_loaders(
         shuffle=False,
         num_workers=num_workers,
         pin_memory=True,
-        persistent_workers=False,
+        persistent_workers=True,
     )
     test_loader = torch.utils.data.DataLoader(
         test_dataset,
@@ -103,7 +102,7 @@ def setup_data_loaders(
         shuffle=False,
         num_workers=num_workers,
         pin_memory=True,
-        persistent_workers=False,
+        persistent_workers=True,
     )
 
     if fabric:
@@ -136,10 +135,7 @@ def setup_model_and_optimizer(
     """Setup model, optimizer, criterion, and optional scheduler."""
     model = hydra.utils.instantiate(cfg.model, num_classes=num_classes)
     
-    if cfg.get("mae_loss"):
-        criterion = torch.nn.L1Loss()
-    else:
-        criterion = torch.nn.CrossEntropyLoss(weight=class_weights)
+    criterion = hydra.utils.instantiate(cfg.loss, num_classes=num_classes)
 
     optimizer = hydra.utils.instantiate(cfg.get("optimizer"), model.parameters())
 
@@ -212,14 +208,10 @@ def train_one_epoch(
         mininterval=0.2,
     )
     
-    use_mixup = cfg.mixup.get("enabled", False)
     mixup = None
-    if use_mixup:
+    if cfg.get("mixup", None) is not None:
         alpha = cfg.mixup.get("alpha", 1.0)
         mixup = v2.MixUp(num_classes=num_classes, alpha=alpha)
-    
-    # Check if using L1Loss (needs one-hot targets)
-    use_one_hot = not isinstance(criterion, torch.nn.CrossEntropyLoss)
 
     for batch in train_bar:
         inputs, targets = batch
@@ -228,10 +220,7 @@ def train_one_epoch(
             targets_for_metrics = targets.argmax(dim=1)
         else:
             targets_for_metrics = targets
-            # Convert to one-hot for L1Loss
-            if use_one_hot:
-                targets = torch.nn.functional.one_hot(targets, num_classes=num_classes).float()
-
+            
         optimizer.zero_grad(set_to_none=True)
         outputs = model(inputs)
         loss = criterion(outputs, targets)
@@ -263,15 +252,11 @@ def validate_one_epoch(
     criterion,
     metrics: dict,
     epoch: int,
-    run_idx: int,
-    num_classes: int = None,
+    run_idx: int
 ):
     """Validate model for one epoch."""
     model.eval()
     reset_metrics(metrics)
-    
-    # Check if using L1Loss (needs one-hot targets)
-    use_one_hot = not isinstance(criterion, torch.nn.CrossEntropyLoss)
 
     with torch.no_grad():
         val_bar = tqdm.tqdm(
@@ -284,10 +269,6 @@ def validate_one_epoch(
         for batch in val_bar:
             inputs, targets = batch
             targets_for_metrics = targets
-            
-            # Convert to one-hot for L1Loss
-            if use_one_hot and num_classes is not None:
-                targets = torch.nn.functional.one_hot(targets, num_classes=num_classes).float()
             
             outputs = model(inputs)
             loss = criterion(outputs, targets)
@@ -316,15 +297,11 @@ def test_model(
     test_loader,
     criterion,
     metrics: dict,
-    device: torch.device,
-    num_classes: int = None,
+    device: torch.device
 ):
     """Test the model and return metrics."""
     model.eval()
     reset_metrics(metrics)
-    
-    # Check if using L1Loss (needs one-hot targets)
-    use_one_hot = not isinstance(criterion, torch.nn.CrossEntropyLoss)
 
     with torch.no_grad():
         for batch in test_loader:
@@ -332,10 +309,6 @@ def test_model(
             inputs = inputs.to(device)
             targets = targets.to(device)
             targets_for_metrics = targets
-            
-            # Convert to one-hot for L1Loss
-            if use_one_hot and num_classes is not None:
-                targets = torch.nn.functional.one_hot(targets, num_classes=num_classes).float()
 
             outputs = model(inputs)
             loss = criterion(outputs, targets)
@@ -406,7 +379,7 @@ def save_hyperparameters(
 
 @hydra.main(version_base="1.3", config_path="../configs", config_name="train.yaml")
 def main(cfg: DictConfig) -> None:
-    num_runs = cfg.get("num_runs", 1)
+    n_runs = cfg.get("n_runs", 1)
     seed = cfg.get("seed", 42)
 
     device_id = cfg.trainer.device_id
@@ -440,7 +413,7 @@ def main(cfg: DictConfig) -> None:
     all_metrics = []
 
     # Training loop over multiple runs
-    for run_idx in range(num_runs):
+    for run_idx in range(n_runs):
         logger = CSVLogger(log_path, name=f"run_{run_idx + 1}", version="")
 
         # Split data
@@ -515,8 +488,7 @@ def main(cfg: DictConfig) -> None:
                 criterion=criterion,
                 metrics=val_metrics,
                 epoch=epoch,
-                run_idx=run_idx,
-                num_classes=num_classes,
+                run_idx=run_idx
             )
 
             if scheduler:
@@ -556,8 +528,7 @@ def main(cfg: DictConfig) -> None:
             test_loader=test_loader,
             criterion=criterion,
             metrics=test_metrics,
-            device=device,
-            num_classes=num_classes,
+            device=device
         )
 
         final_test_metrics = {
@@ -573,7 +544,7 @@ def main(cfg: DictConfig) -> None:
         logger.finalize("success")
         logger.save()
         print(
-            f"Run {run_idx + 1}/{num_runs} | test/acc: {final_test_metrics['test/acc']:.4f} test/f1: {final_test_metrics['test/f1']:.4f}"
+            f"Run {run_idx + 1}/{n_runs} | test/acc: {final_test_metrics['test/acc']:.4f} test/f1: {final_test_metrics['test/f1']:.4f}"
         )
 
     # Calculate and save summary statistics
