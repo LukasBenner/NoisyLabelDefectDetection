@@ -1,0 +1,15 @@
+# @package _global_
+
+run_name: "baseline_sgd_${now:%Y-%m-%d_%H-%M-%S}"
+
+
+optimizer:
+  _target_: torch.optim.SGD
+  lr: 0.00032
+  momentum: 0
+  weight_decay: 1.5e-5
+scheduler:
+  _target_: torch.optim.lr_scheduler.CosineAnnealingLR
+  T_max: ${num_epochs}
+loss:
+  _target_: src.models.components.loss.CELoss

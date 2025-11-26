@@ -4,10 +4,12 @@ defaults:
   - default
   - _self_
 
+study_name: mixup
+
 search_space:
   mixup:
     alpha:
-      type: "float"
+      type: float
       low: 0.01
       high: 3.0
       log: true

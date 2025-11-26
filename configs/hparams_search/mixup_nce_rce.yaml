@@ -4,21 +4,23 @@ defaults:
   - default
   - _self_
 
+study_name: mixup_nce_rce
+
 search_space:
   mixup:
     alpha:
-      type: "float"
+      type: float
       low: 0.01
       high: 3.0
       log: true
   loss:
     alpha:
-      type: "float"
+      type: float
       low: 0.001
       high: 20
       log: true
     beta:
-      type: "float"
+      type: float
       low: 0.001
       high: 20
       log: true

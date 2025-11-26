@@ -135,7 +135,7 @@ def setup_model_and_optimizer(
     """Setup model, optimizer, criterion, and optional scheduler."""
     model = hydra.utils.instantiate(cfg.model, num_classes=num_classes)
     
-    criterion = hydra.utils.instantiate(cfg.loss, num_classes=num_classes)
+    criterion = hydra.utils.instantiate(cfg.loss, num_classes=num_classes, weight=class_weights)
 
     optimizer = hydra.utils.instantiate(cfg.get("optimizer"), model.parameters())
 

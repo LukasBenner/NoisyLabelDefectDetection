@@ -2,6 +2,18 @@ import torch
 import torch.nn.functional as F
 import numpy as np
 
+
+class CELoss(torch.nn.Module):
+    def __init__(self, num_classes, weight) -> None:
+        super(CELoss, self).__init__()
+        self.num_classes = num_classes
+        self.weight = weight
+        self.cross_entropy = torch.nn.CrossEntropyLoss(weight=self.weight)
+        
+    def forward(self, pred, labels):
+        loss = self.cross_entropy(pred, labels)
+        return loss
+
 class SCELoss(torch.nn.Module):
     def __init__(self, alpha, beta, num_classes=10):
         super(SCELoss, self).__init__()
