@@ -202,7 +202,7 @@ def train_one_epoch(
 
     train_bar = tqdm.tqdm(
         train_loader,
-        desc=f"Run {run_idx + 1}, Epoch {epoch + 1}/{num_epochs}",
+        desc=f"Run {run_idx}, Epoch {epoch + 1}/{num_epochs}",
         leave=False,
         ncols=100,
         mininterval=0.2,
@@ -261,7 +261,7 @@ def validate_one_epoch(
     with torch.no_grad():
         val_bar = tqdm.tqdm(
             val_loader,
-            desc=f"Run {run_idx + 1}, Val Epoch {epoch + 1}",
+            desc=f"Run {run_idx}, Val Epoch {epoch + 1}",
             leave=False,
             ncols=100,
             mininterval=0.2,
@@ -367,6 +367,7 @@ def save_hyperparameters(
     log_path: str,
     cfg: DictConfig,
     num_classes: int,
+    class_weights: torch.Tensor | None = None,
 ):
     """Save hyperparameters to a YAML file."""
     os.makedirs(f"{log_path}", exist_ok=True)
@@ -375,6 +376,8 @@ def save_hyperparameters(
 
         f.write(OmegaConf.to_yaml(cfg, resolve=True))
         f.write(f"\nnum_classes: {num_classes}\n")
+        if class_weights is not None:
+            f.write(f"class_weights: {class_weights.tolist()}\n")
 
 
 @hydra.main(version_base="1.3", config_path="../configs", config_name="train.yaml")
@@ -400,7 +403,6 @@ def main(cfg: DictConfig) -> None:
     train_image_folder_set = torchvision.datasets.ImageFolder(root=train_data_path)
 
     num_classes = len(train_image_folder_set.classes)
-    print(f"Number of classes: {num_classes}")
 
     val_split = cfg.data.get("val_split", 0.2)
 
@@ -414,7 +416,7 @@ def main(cfg: DictConfig) -> None:
 
     # Training loop over multiple runs
     for run_idx in range(n_runs):
-        logger = CSVLogger(log_path, name=f"run_{run_idx + 1}", version="")
+        logger = CSVLogger(log_path, name=f"run_{run_idx}", version="")
 
         # Split data
         all_indices = list(range(len(train_image_folder_set)))
@@ -505,7 +507,7 @@ def main(cfg: DictConfig) -> None:
                 best_epoch = epoch + 1
                 epochs_no_improvement = 0
 
-                best_model_path = f"{log_path}/run_{run_idx + 1}/best_model.pth"
+                best_model_path = f"{log_path}/run_{run_idx}/best_model.pth"
                 torch.save(model.state_dict(), best_model_path)
             else:
                 epochs_no_improvement += 1
@@ -520,7 +522,7 @@ def main(cfg: DictConfig) -> None:
                 break
 
         # Test loop
-        ckpt_path = f"{log_path}/run_{run_idx + 1}/best_model.pth"
+        ckpt_path = f"{log_path}/run_{run_idx}/best_model.pth"
         model.load_state_dict(torch.load(ckpt_path, map_location=device))
 
         test_result = test_model(
@@ -532,7 +534,7 @@ def main(cfg: DictConfig) -> None:
         )
 
         final_test_metrics = {
-            "run_idx": run_idx + 1,
+            "run_idx": run_idx,
             **test_result,
             "best_val/acc": best_val_acc,
             "best_val/f1": best_val_f1,
@@ -543,8 +545,8 @@ def main(cfg: DictConfig) -> None:
 
         logger.finalize("success")
         logger.save()
-        print(
-            f"Run {run_idx + 1}/{n_runs} | test/acc: {final_test_metrics['test/acc']:.4f} test/f1: {final_test_metrics['test/f1']:.4f}"
+        log.info(
+            f"Run {run_idx}/{n_runs} | test/acc: {final_test_metrics['test/acc']:.4f} test/f1: {final_test_metrics['test/f1']:.4f}"
         )
 
     # Calculate and save summary statistics

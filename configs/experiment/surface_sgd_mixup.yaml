@@ -1,16 +1,19 @@
 # @package _global_
 
-run_name: "${now:%Y-%m-%d_%H-%M-%S}_sgd"
+run_name: "${now:%Y-%m-%d_%H-%M-%S}_sgd_mixup"
 
 optimizer:
   _target_: torch.optim.SGD
-  lr: 0.06959
-  momentum: 0.1616
-  weight_decay: 3.1045e-05
+  lr: 0.07016
+  momentum: 0.6844
+  weight_decay: 3.19570e-06
 scheduler:
   _target_: torch.optim.lr_scheduler.CosineAnnealingLR
   T_max: ${num_epochs}
 loss:
   _target_: src.models.components.loss.CELoss
+mixup:
+  enabled: True
+  alpha: 0.586630
 data:
-  batch_size: 32
+  batch_size: 64

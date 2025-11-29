@@ -18,6 +18,7 @@ from train import (
     setup_data_loaders,
     setup_metrics,
     setup_model_and_optimizer,
+    test_model,
     train_one_epoch,
     validate_one_epoch,
 )
@@ -31,9 +32,8 @@ log = RankedLogger(__name__, rank_zero_only=True)
 
 
 def suggest_hyperparameters(
-    trial: optuna.Trial, search_space: DictConfig
+    trial: optuna.trial.BaseTrial, search_space: DictConfig
 ) -> Dict[str, Any]:
-    suggested = {}
 
     def _suggest_recursive(space: DictConfig, prefix: str = ""):
         """Recursively suggest hyperparameters."""
@@ -126,7 +126,6 @@ def main(cfg: DictConfig) -> Optional[float]:
     train_image_folder_set = torchvision.datasets.ImageFolder(root=train_data_path)
 
     num_classes = len(train_image_folder_set.classes)
-    print(f"Number of classes: {num_classes}")
 
     val_split = cfg.data.get("val_split", 0.2)
 
@@ -170,8 +169,8 @@ def main(cfg: DictConfig) -> Optional[float]:
                 log.info(f"  {key}: {value}")
             log.info(f"{'='*60}\n")
 
-            logger = CSVLogger(log_path, name=f"trial_{trial.number + 1}", version="")
-            trial_log_path = log_path + f"/trial_{trial.number + 1}"
+            logger = CSVLogger(log_path, name=f"trial_{trial.number}", version="")
+            trial_log_path = log_path + f"/trial_{trial.number}"
 
             # Split data
             all_indices = list(range(len(train_image_folder_set)))
@@ -214,7 +213,7 @@ def main(cfg: DictConfig) -> Optional[float]:
             best_val_f1 = 0.0
 
             # Save hyperparameters
-            save_hyperparameters(trial_log_path, run_cfg, num_classes)
+            save_hyperparameters(trial_log_path, run_cfg, num_classes, class_weights)
 
             for epoch in range(num_epochs):
                 train_result = train_one_epoch(
@@ -255,6 +254,10 @@ def main(cfg: DictConfig) -> Optional[float]:
                 if current_val_acc > best_val_acc:
                     best_val_acc = current_val_acc
                     epochs_no_improvement = 0
+
+                    best_model_path = f"{log_path}/trial_{trial.number}/best_model.pth"
+                    torch.save(model.state_dict(), best_model_path)
+
                 else:
                     epochs_no_improvement += 1
 
@@ -310,15 +313,59 @@ def main(cfg: DictConfig) -> Optional[float]:
     study.optimize(objective, n_trials=n_trials)
 
     # Log best results
-    log.info(f"\n{'='*80}")
+    log.info(f"{'='*60}")
     log.info("OPTIMIZATION COMPLETED")
-    log.info(f"{'='*80}")
+    log.info(f"{'='*60}")
     log.info(f"Best trial: {study.best_trial.number}")
     log.info(f"Best {optimized_metric}: {study.best_value:.4f}")
     log.info(f"Best hyperparameters:")
     for key, value in study.best_params.items():
         log.info(f"  {key}: {value}")
-    log.info(f"{'='*80}\n")
+    log.info(f"{'='*60}\n")
+
+    # Load best model checkpoint and perform final evaluation on test set
+    best_model_path = f"{log_path}/trial_{study.best_trial.number}/best_model.pth"
+
+    # Rebuild best config
+    best_suggestions = suggest_hyperparameters(
+        optuna.trial.FixedTrial(study.best_params), search_space
+    )
+    best_cfg = update_config_with_suggestions(cfg, best_suggestions)
+    run_cfg = OmegaConf.create(OmegaConf.to_container(best_cfg, resolve=True))
+
+    # Load class weights
+    train_loader, val_loader, test_loader, classes = setup_data_loaders(
+        train_data_path=train_data_path,
+        test_data_path=test_data_path,
+        train_indices=list(
+            range(len(train_image_folder_set))
+        ),
+        val_indices=[],
+        batch_size=run_cfg.data.get("batch_size"),
+        num_workers=run_cfg.data.get("num_workers", 4),
+        fabric=fabric,
+    )
+
+    train_targets = [train_image_folder_set.samples[i][1] for i in range(len(train_image_folder_set))]
+    class_weights, samples_per_class = calculate_class_weights(
+        train_targets, num_classes, device
+    )
+
+    model, optimizer, criterion, scheduler = setup_model_and_optimizer(
+            run_cfg, num_classes, class_weights, fabric
+            )
+    model.load_state_dict(torch.load(best_model_path, map_location=device))
+    metrics = setup_metrics(num_classes, device)
+    test_result = test_model(
+        model=model,
+        test_loader=test_loader,
+        criterion=criterion,
+        metrics=metrics,
+        device=device
+    )
+    log.info(f"Final test results with best hyperparameters:")
+    for key, value in test_result.items():
+        log.info(f"  {key}: {value:.4f}")
 
     return study.best_value
 

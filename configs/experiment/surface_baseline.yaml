@@ -1,8 +1,13 @@
 # @package _global_
 
-run_name: "baseline_${now:%Y-%m-%d_%H-%M-%S}"
+run_name: "${now:%Y-%m-%d_%H-%M-%S}_baseline"
 
 optimizer:
-  lr: 0.00032
+  _target_: torch.optim.AdamW
+  lr: 0.000115
   weight_decay: 0.0
 scheduler: Null
+loss:
+  _target_: src.models.components.loss.CELoss
+data:
+  batch_size: 32

@@ -1,12 +1,11 @@
 # @package _global_
 
-run_name: "${now:%Y-%m-%d_%H-%M-%S}_sgd"
+run_name: "${now:%Y-%m-%d_%H-%M-%S}_scheduler"
 
 optimizer:
-  _target_: torch.optim.SGD
-  lr: 0.06959
-  momentum: 0.1616
-  weight_decay: 3.1045e-05
+  _target_: torch.optim.AdamW
+  lr: 0.0002404
+  weight_decay: 0.0005284
 scheduler:
   _target_: torch.optim.lr_scheduler.CosineAnnealingLR
   T_max: ${num_epochs}
