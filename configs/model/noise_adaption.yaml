@@ -1,12 +1,15 @@
-_target_: src.models.base_robust_module.BaseRobustModule
+_target_: src.models.noise_adaption_module.NoiseAdaptionModule
 
 num_classes: 10  # Will be set dynamically from datamodule
 
-# Base network
+# Base network (without noise adaption layer - it will be added by the module)
 net:
-  _target_: src.models.components.efficient_net.EfficientNet
+  _target_: src.models.components.mobile_net.MobileNet
   num_classes: ${model.num_classes}
   pretrained: true
+
+# Noise adaption layer parameters
+init_value: 0.9  # Initial diagonal value for transition matrix (assumes 90% correct labels)
 
 # Optimizer configuration (partial instantiation)
 optimizer:

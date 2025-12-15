@@ -1,13 +1,15 @@
 # @package _global_
 
 defaults:
-  - /model: base
+  - /model: noise_adaption
   - _self_
 
-experiment_name: "SGD"
-run_name: "${now:%Y-%m-%d_%H-%M-%S}_sgd"
+# Experiment name
+experiment_name: "NoiseAdaption_S"
+run_name: "${now:%Y-%m-%d_%H-%M-%S}_noiseAdaption_s"
 
 model:
+  init_value: 0.9
   optimizer:
     _target_: torch.optim.SGD
     lr: 0.06959
@@ -16,8 +18,6 @@ model:
   scheduler:
     _target_: torch.optim.lr_scheduler.CosineAnnealingLR
     T_max: ${num_epochs}
-  criterion:
-    _target_: src.models.components.loss.CELoss
 
 data:
   batch_size: 32

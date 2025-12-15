@@ -1,18 +1,20 @@
 # @package _global_
 
 defaults:
-  - /model: baseline
-  - /data: surface_data
+  - /model: base
+  - _self_
 
 experiment_name: "Baseline"
 run_name: "${now:%Y-%m-%d_%H-%M-%S}_baseline"
 
-optimizer:
-  _target_: torch.optim.AdamW
-  lr: 0.000115
-  weight_decay: 0.0
-scheduler: Null
-loss:
-  _target_: src.models.components.loss.CELoss
+model:
+  optimizer:
+    _target_: torch.optim.AdamW
+    lr: 0.000115
+    weight_decay: 0.0
+  scheduler: Null
+  criterion:
+    _target_: src.models.components.loss.CELoss
+
 data:
   batch_size: 32

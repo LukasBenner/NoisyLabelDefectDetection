@@ -5,24 +5,15 @@ defaults:
   - paths: default
   - trainer: gpu
   - callbacks: default
+  - data: surface_data
   - experiment: null
 
 research_name: SurfaceDefectDetection
-run_name: "baseline_${now:%Y-%m-%d_%H-%M-%S}"
 
 log_path: ./logs
 
 seed: 42
 n_runs: 10
-num_epochs: 300
-early_stopping_patience: 30
-
-optimizer:
-  _target_: torch.optim.AdamW
-  lr: 0.00032
-  weight_decay: 0.0
-
-scheduler: Null
 
 data:
   batch_size: 32
