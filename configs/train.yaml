@@ -2,9 +2,12 @@
 
 defaults:
   - _self_
+  - paths: default
+  - trainer: gpu
+  - callbacks: default
   - experiment: null
 
-experiment_name: SurfaceDefectDetection
+research_name: SurfaceDefectDetection
 run_name: "baseline_${now:%Y-%m-%d_%H-%M-%S}"
 
 log_path: ./logs
@@ -14,10 +17,6 @@ n_runs: 10
 num_epochs: 300
 early_stopping_patience: 30
 
-model:
-  _target_: src.models.components.mobile_net.MobileNet
-  pretrained: true
-
 optimizer:
   _target_: torch.optim.AdamW
   lr: 0.00032
@@ -26,15 +25,9 @@ optimizer:
 scheduler: Null
 
 data:
-  train_data_path: ./data/surface/train
-  test_data_path: ./data/surface/test
   batch_size: 32
   num_workers: 4
 
-trainer:
-  device_id: 0
-  compile: true
-
 hydra:
   run:
-    dir: ${log_path}/train/${experiment_name}/${run_name}
+    dir: ${log_path}/train/${research_name}/${experiment_name}/${run_name}

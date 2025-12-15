@@ -1,5 +1,10 @@
 # @package _global_
 
+defaults:
+  - /model: baseline
+  - /data: surface_data
+
+experiment_name: "Baseline"
 run_name: "${now:%Y-%m-%d_%H-%M-%S}_baseline"
 
 optimizer:

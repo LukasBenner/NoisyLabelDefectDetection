@@ -1,4 +1,4 @@
-_target_: src.data.no_test_datamodule.NoTestDataModule
+_target_: src.data.surface_datamodule.SurfaceDataModule
 
 defaults:
   - default

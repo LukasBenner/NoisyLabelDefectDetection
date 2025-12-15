@@ -1,0 +1,30 @@
+_target_: src.models.base_robust_module.BaseRobustModule
+
+num_classes: 10  # Will be set dynamically from datamodule
+
+# Base network
+net:
+  _target_: src.models.components.efficient_net.EfficientNet
+  num_classes: ${model.num_classes}
+  pretrained: true
+
+# Optimizer configuration (partial instantiation)
+optimizer:
+  _target_: torch.optim.AdamW
+  _partial_: true
+  lr: 0.001
+  weight_decay: 0.01
+
+# Scheduler configuration (partial instantiation)
+scheduler:
+  _target_: torch.optim.lr_scheduler.CosineAnnealingLR
+  _partial_: true
+  T_max: ${num_epochs}
+  eta_min: 0.00001
+
+criterion:
+  _target_: src.models.components.loss.CELoss
+  _partial_: true
+
+# Model compilation
+compile: false

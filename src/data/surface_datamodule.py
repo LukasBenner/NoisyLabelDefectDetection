@@ -72,15 +72,16 @@ class SurfaceDataModule(LightningDataModule):
     def setup(self, stage: Optional[str] = None) -> None:
         """Setup datasets. Called on ALL ranks in DDP."""
         # Load base dataset here (not in prepare_data) so it's available on all ranks
-        if self.train_dataset is None:
+        if self.train_dataset is None or self.test_dataset is None:
             # Ensure data_url is set
-            if not hasattr(self, "data_url"):
-                output_path = os.path.join(
-                    self.hparams.data_root, self.hparams.data_path
-                )
-                self.train_data_url = os.path.join(output_path, "train")
+            output_path = os.path.join(
+                self.hparams.data_root, self.hparams.data_path
+            )
+            self.train_data_url = os.path.join(output_path, "train")
+            self.test_data_url = os.path.join(output_path, "test")
 
             self.train_dataset = datasets.ImageFolder(root=self.train_data_url)
+            self.test_dataset_full = datasets.ImageFolder(root=self.test_data_url)
 
         all_indices = list(range(len(self.train_dataset)))
         all_targets = [self.train_dataset.samples[i][1] for i in all_indices]
@@ -101,6 +102,12 @@ class SurfaceDataModule(LightningDataModule):
         self.val_dataset = TransformSubset(
             self.train_dataset,
             val_indices,
+            transform=self.test_transforms,
+        )
+
+        self.test_dataset = TransformSubset(
+            self.test_dataset_full,
+            list(range(len(self.test_dataset_full))),
             transform=self.test_transforms,
         )
 

@@ -4,7 +4,7 @@ import numpy as np
 
 
 class CELoss(torch.nn.Module):
-    def __init__(self, num_classes, weight) -> None:
+    def __init__(self, num_classes, weight=None) -> None:
         super(CELoss, self).__init__()
         self.num_classes = num_classes
         self.weight = weight
