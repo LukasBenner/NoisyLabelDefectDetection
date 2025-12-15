@@ -22,7 +22,7 @@ optimizer:
 scheduler:
   _target_: torch.optim.lr_scheduler.CosineAnnealingLR
   _partial_: true
-  T_max: ${num_epochs}
+  T_max: ${trainer.max_epochs}
   eta_min: 0.00001
 
 criterion:

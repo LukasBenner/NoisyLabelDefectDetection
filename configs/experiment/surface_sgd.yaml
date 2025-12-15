@@ -15,7 +15,7 @@ model:
     weight_decay: 3.1045e-05
   scheduler:
     _target_: torch.optim.lr_scheduler.CosineAnnealingLR
-    T_max: ${num_epochs}
+    T_max: ${trainer.max_epochs}
   criterion:
     _target_: src.models.components.loss.CELoss
 

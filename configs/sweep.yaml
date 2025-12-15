@@ -11,7 +11,6 @@ run_name: "baseline_${now:%Y-%m-%d_%H-%M-%S}"
 log_path: ./logs
 
 seed: 42
-num_epochs: 150
 early_stopping_patience: 20
 
 model:

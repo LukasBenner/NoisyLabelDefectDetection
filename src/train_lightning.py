@@ -139,16 +139,22 @@ def train_single_run(
         log.warning("No best checkpoint found, testing with final model")
         trainer.test(model=model, datamodule=datamodule)
 
-    # Extract metrics
+    # Extract metrics (convert tensors to floats)
+    def to_float(value):
+        """Convert tensor or numeric value to float."""
+        if hasattr(value, 'item'):
+            return float(value.item())
+        return float(value)
+    
     test_metrics = {
         "run_idx": run_idx,
-        "test/loss": trainer.callback_metrics.get("test/loss", 0.0),
-        "test/acc": trainer.callback_metrics.get("test/acc", 0.0),
-        "test/precision": trainer.callback_metrics.get("test/precision", 0.0),
-        "test/recall": trainer.callback_metrics.get("test/recall", 0.0),
-        "test/f1": trainer.callback_metrics.get("test/f1", 0.0),
-        "val/acc_best": trainer.callback_metrics.get("val/acc_best", 0.0),
-        "val/f1_best": trainer.callback_metrics.get("val/f1_best", 0.0),
+        "test/loss": to_float(trainer.callback_metrics.get("test/loss", 0.0)),
+        "test/acc": to_float(trainer.callback_metrics.get("test/acc", 0.0)),
+        "test/precision": to_float(trainer.callback_metrics.get("test/precision", 0.0)),
+        "test/recall": to_float(trainer.callback_metrics.get("test/recall", 0.0)),
+        "test/f1": to_float(trainer.callback_metrics.get("test/f1", 0.0)),
+        "val/acc_best": to_float(trainer.callback_metrics.get("val/acc_best", 0.0)),
+        "val/f1_best": to_float(trainer.callback_metrics.get("val/f1_best", 0.0)),
     }
 
     log.info(
