@@ -1,13 +1,15 @@
 # @package _global_
 
 defaults:
-  - _self_
   - paths: default
   - trainer: gpu
-  - callbacks: default
+  - callbacks: 
+    - default
+    - optuna_pruning
   - data: surface_data
   - experiment: null
   - hparams_search: default
+  - _self_
 
 research_name: SurfaceDefectDetection
 

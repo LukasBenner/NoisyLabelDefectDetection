@@ -1,0 +1,5 @@
+
+optuna_pruning:
+  _target_: optuna.integration.PyTorchLightningPruningCallback
+  _partial_: true
+  monitor: "val/acc"

@@ -25,6 +25,7 @@ dependencies:
   - pip>=23
   - pip:
     - hydra-optuna-sweeper
+    - optuna-integration[pytorch_lightning]
     - hydra-colorlog
     - rootutils
     - "git+https://github.com/cleanlab/cleanlab.git#egg=cleanlab[datalab]"

@@ -187,14 +187,24 @@ def main(cfg: DictConfig) -> Optional[float]:
                 datamodule=datamodule
             )
 
-            # Setup callbacks with checkpoint directory override
+            # Setup callbacks and finalize any factories (e.g., Optuna pruning)
             callbacks: List[Callback] = instantiate_callbacks(run_cfg.get("callbacks"))
-            
-            # Update ModelCheckpoint dirpath to use trial-specific directory
-            for callback in callbacks:
-                if isinstance(callback, ModelCheckpoint) and callback.dirpath is None:
-                    callback.dirpath = str(trial_dir / "checkpoints")
-                    log.info(f"Set checkpoint directory to: {callback.dirpath}")
+
+            finalized_callbacks: List[Callback] = []
+            for cb in callbacks:
+                # Update ModelCheckpoint dirpath to use trial-specific directory
+                if isinstance(cb, ModelCheckpoint) and cb.dirpath is None:
+                    cb.dirpath = str(trial_dir / "checkpoints")
+                    log.info(f"Set checkpoint directory to: {cb.dirpath}")
+                # Finalize partial/factory callbacks that require the Optuna trial
+                if callable(cb):
+                    try:
+                        cb = cb(trial)  # works for _partial_ callbacks expecting trial
+                        log.info(f"Finalized instantiation of callback {cb}")
+                    except TypeError:
+                        pass
+                finalized_callbacks.append(cb)
+            callbacks = finalized_callbacks
 
             # Setup logger
             logger = CSVLogger(
