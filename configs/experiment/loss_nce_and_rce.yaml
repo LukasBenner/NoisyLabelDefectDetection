@@ -1,0 +1,25 @@
+# @package _global_
+
+defaults:
+  - /model: base
+  - _self_
+
+experiment_name: "Loss_NCE_RCE"
+run_name: "${now:%Y-%m-%d_%H-%M-%S}"
+
+model:
+  optimizer:
+    _target_: torch.optim.SGD
+    lr: 0.01
+    momentum: 0.09
+    weight_decay: 0.001
+  scheduler:
+    _target_: torch.optim.lr_scheduler.CosineAnnealingLR
+    T_max: ${trainer.max_epochs}
+  criterion:
+    _target_: src.models.components.loss.NCEandRCE
+    alpha: 1.0
+    beta: 1.0
+
+data:
+  batch_size: 32

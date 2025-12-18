@@ -4,13 +4,13 @@ from typing import Any, Dict, Optional, Tuple
 from lightning import LightningDataModule
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from data.components.transform_subset import TransformSubset
+from src.data.components.transform_subset import TransformSubset
 import torch
 from torch.utils.data import DataLoader, Dataset
 from torchvision import datasets
 from torchvision.transforms import v2
 
-from utils.pylogger import RankedLogger
+from src.utils.pylogger import RankedLogger
 
 log = RankedLogger(__name__, rank_zero_only=True)
 

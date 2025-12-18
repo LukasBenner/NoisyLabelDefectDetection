@@ -129,6 +129,32 @@ def train_single_run(
     log.info(f"Starting training for run {run_idx}")
     trainer.fit(model=model, datamodule=datamodule)
 
+    # Extract validation-best metrics right after fit.
+    # NOTE: Lightning's `trainer.callback_metrics` will be updated/overwritten by the test loop,
+    # so reading val metrics after `trainer.test()` often yields missing values.
+    def to_float(value):
+        """Convert tensor or numeric value to float."""
+        if value is None:
+            return None
+        if hasattr(value, "item"):
+            return float(value.item())
+        return float(value)
+
+    val_acc_best = trainer.callback_metrics.get("val/acc_best")
+    val_f1_best = trainer.callback_metrics.get("val/f1_best")
+
+    # Fallback: read directly from the model metrics if not present.
+    if val_acc_best is None and hasattr(model, "val_acc_best"):
+        try:
+            val_acc_best = model.val_acc_best.compute()
+        except Exception:
+            val_acc_best = None
+    if val_f1_best is None and hasattr(model, "val_f1_best"):
+        try:
+            val_f1_best = model.val_f1_best.compute()
+        except Exception:
+            val_f1_best = None
+
     # Test the model on best checkpoint
     log.info(f"Starting testing for run {run_idx}")
     best_model_path = trainer.checkpoint_callback.best_model_path
@@ -140,12 +166,6 @@ def train_single_run(
         trainer.test(model=model, datamodule=datamodule)
 
     # Extract metrics (convert tensors to floats)
-    def to_float(value):
-        """Convert tensor or numeric value to float."""
-        if hasattr(value, 'item'):
-            return float(value.item())
-        return float(value)
-    
     test_metrics = {
         "run_idx": run_idx,
         "test/loss": to_float(trainer.callback_metrics.get("test/loss", 0.0)),
@@ -153,8 +173,8 @@ def train_single_run(
         "test/precision": to_float(trainer.callback_metrics.get("test/precision", 0.0)),
         "test/recall": to_float(trainer.callback_metrics.get("test/recall", 0.0)),
         "test/f1": to_float(trainer.callback_metrics.get("test/f1", 0.0)),
-        "val/acc_best": to_float(trainer.callback_metrics.get("val/acc_best", 0.0)),
-        "val/f1_best": to_float(trainer.callback_metrics.get("val/f1_best", 0.0)),
+        "val/acc_best": to_float(val_acc_best) if val_acc_best is not None else 0.0,
+        "val/f1_best": to_float(val_f1_best) if val_f1_best is not None else 0.0,
     }
 
     log.info(

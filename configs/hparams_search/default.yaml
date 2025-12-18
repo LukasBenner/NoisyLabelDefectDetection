@@ -1,6 +1,6 @@
 # @package _global_
 
-optimized_metric: best_val/f1
+optimized_metric: val/f1_best
 direction: maximize
 
 study_name: null

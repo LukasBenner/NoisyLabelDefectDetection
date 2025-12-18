@@ -1,0 +1,46 @@
+# @package _global_
+
+defaults:
+  - default
+  - _self_
+
+study_name: loss_gce_and_mae
+
+search_space:
+  optimizer:
+    lr:
+      type: float
+      low: 1.0e-3
+      high: 1.0e-1
+      log: true
+    weight_decay:
+      type: float
+      low: 1.0e-6
+      high: 1.0e-2
+      log: true
+    momentum:
+      type: float
+      low: 1.0e-2
+      high: 1.0
+      log: true
+  data:
+    batch_size:
+      type: "categorical"
+      choices: [32, 64, 96, 128]
+  criterion:
+    alpha:
+      type: float
+      low: 0.001
+      high: 20
+      log: true
+    beta:
+      type: float
+      low: 0.001
+      high: 20
+      log: true
+    q:
+      type: float
+      low: 0.01
+      high: 1.0
+      log: true
+

@@ -2,31 +2,19 @@
 
 defaults:
   - _self_
+  - paths: default
+  - trainer: gpu
+  - callbacks: default
+  - data: surface_data
   - experiment: null
   - hparams_search: default
 
-experiment_name: SurfaceDefectDetection
-run_name: "baseline_${now:%Y-%m-%d_%H-%M-%S}"
+research_name: SurfaceDefectDetection
 
 log_path: ./logs
 
 seed: 42
-early_stopping_patience: 20
-
-model:
-  _target_: src.models.components.mobile_net.MobileNet
-  pretrained: true
-
-data:
-  train_data_path: ./data/surface/train
-  test_data_path: ./data/surface/test
-  batch_size: 32
-  num_workers: 4
-
-trainer:
-  device_id: 0
-  compile: true
 
 hydra:
   run:
-    dir: ${log_path}/sweep/${experiment_name}/${run_name}
+    dir: ${log_path}/sweep/${research_name}/${experiment_name}/${run_name}
