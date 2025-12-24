@@ -1,6 +1,7 @@
 import torch
 import torch.nn.functional as F
 import numpy as np
+from typing import Optional
 
 
 class CELoss(torch.nn.Module):
@@ -47,8 +48,9 @@ class ReverseCrossEntropy(torch.nn.Module):
     def forward(self, pred, labels):
         pred = F.softmax(pred, dim=1)
         pred = torch.clamp(pred, min=1e-7, max=1.0)
-        labels = torch.clamp(labels, min=1e-4, max=1.0)
-        rce = (-1*torch.sum(pred * torch.log(labels), dim=1))
+        label_one_hot = torch.nn.functional.one_hot(labels, self.num_classes).float()
+        label_one_hot = torch.clamp(label_one_hot, min=1e-4, max=1.0)
+        rce = (-1*torch.sum(pred * torch.log(label_one_hot), dim=1))
         return self.scale * rce.mean()
 
 
@@ -75,9 +77,9 @@ class NormalizedCrossEntropy(torch.nn.Module):
         self.scale = scale
 
     def forward(self, pred, labels):
-        pred = F.log_softmax(pred, dim=1)    
-        labels = labels.long()
-        nce = -1 * torch.sum(labels * pred, dim=1) / (- pred.sum(dim=1))
+        pred = F.log_softmax(pred, dim=1)
+        label_one_hot = torch.nn.functional.one_hot(labels, self.num_classes).float()
+        nce = -1 * torch.sum(label_one_hot * pred, dim=1) / (- pred.sum(dim=1))
         return self.scale * nce.mean()
 
 
@@ -155,8 +157,6 @@ class NCEandRCE(torch.nn.Module):
         self.rce = ReverseCrossEntropy(scale=beta, num_classes=num_classes, weight=weight)
 
     def forward(self, pred, labels):
-        if labels.dim() < 2:
-            labels = torch.nn.functional.one_hot(labels, num_classes=self.num_classes).long()
         return self.nce(pred, labels) + self.rce(pred, labels)
 
 
@@ -323,7 +323,7 @@ class FocalLoss(torch.nn.Module):
 
 
 class NormalizedFocalLoss(torch.nn.Module):
-    def __init__(self, scale=1.0, gamma=0.0, num_classes=10, alpha=None, size_average=True):
+    def __init__(self, scale=1.0, gamma=0.0, num_classes=10, alpha=None, size_average=True, weight=None):
         super(NormalizedFocalLoss, self).__init__()
         self.gamma = gamma
         self.size_average = size_average

@@ -18,15 +18,10 @@ search_space:
       low: 1.0e-6
       high: 1.0e-2
       log: true
-    momentum:
-      type: float
-      low: 1.0e-2
-      high: 1.0
-      log: true
   data:
     batch_size:
       type: "categorical"
-      choices: [32, 64, 96, 128]
+      choices: [32, 64, 96]
   criterion:
     alpha:
       type: float

@@ -1,0 +1,21 @@
+# @package _global_
+
+defaults:
+  - /model: meta_reweight
+  - override /data: meta_reweight
+  - _self_
+
+experiment_name: "MetaReweight"
+run_name: "${now:%Y-%m-%d_%H-%M-%S}_meta_reweight"
+
+n_runs: 1
+
+model:
+  lr: 1e-3
+  weight_decay: 1e-3
+  inner_lr: 1e-4
+
+
+trainer:
+  min_epochs: 0
+  max_epochs: 1

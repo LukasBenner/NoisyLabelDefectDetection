@@ -4,7 +4,7 @@ num_classes: 10  # Will be set dynamically from datamodule
 
 # Base network
 net:
-  _target_: src.models.components.mobile_net.MobileNet
+  _target_: src.models.components.efficient_net.EfficientNet
   num_classes: ${model.num_classes}
   pretrained: true
 

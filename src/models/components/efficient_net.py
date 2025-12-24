@@ -14,11 +14,11 @@ class EfficientNet(nn.Module):
 
         # Load pretrained EfficientNetB0 or initialize from scratch
         if pretrained:
-            self.model = models.efficientnet_b0(
-                weights=models.EfficientNet_B0_Weights.IMAGENET1K_V1
+            self.model = models.efficientnet_v2_l(
+                weights=models.EfficientNet_V2_L_Weights.IMAGENET1K_V1
             )
         else:
-            self.model = models.efficientnet_b0(weights=None)
+            self.model = models.efficientnet_v2_l(weights=None)
 
         # Replace classifier head
         num_ftrs = self.model.classifier[1].in_features

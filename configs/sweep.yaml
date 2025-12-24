@@ -3,9 +3,7 @@
 defaults:
   - paths: default
   - trainer: gpu
-  - callbacks: 
-    - default
-    - optuna_pruning
+  - callbacks: default
   - data: surface_data
   - experiment: null
   - hparams_search: default

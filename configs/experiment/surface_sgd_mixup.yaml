@@ -5,7 +5,7 @@ defaults:
   - _self_
 
 experiment_name: "Mixup"
-run_name: "${now:%Y-%m-%d_%H-%M-%S}_mixup"
+run_name: "${now:%Y-%m-%d_%H-%M-%S}"
 
 model:
   optimizer:

@@ -4,15 +4,15 @@ defaults:
   - /model: base
   - _self_
 
-experiment_name: "Loss_CE"
+experiment_name: "SGD"
 run_name: "${now:%Y-%m-%d_%H-%M-%S}"
 
 model:
   optimizer:
     _target_: torch.optim.SGD
-    lr: 0.01
-    momentum: 0.09
-    weight_decay: 0.001
+    lr: 0.06959
+    momentum: 0.1616
+    weight_decay: 3.1045e-05
   scheduler:
     _target_: torch.optim.lr_scheduler.CosineAnnealingLR
     T_max: ${trainer.max_epochs}

@@ -115,8 +115,6 @@ def main(cfg: DictConfig) -> Optional[float]:
     log.info("Setting up initial datamodule to get dataset info")
     temp_datamodule = hydra.utils.instantiate(cfg.data, seed=seed)
     temp_datamodule.setup()
-    num_classes = temp_datamodule.num_classes
-    log.info(f"Number of classes: {num_classes}")
 
     # Get search space from config
     if "search_space" not in cfg:
@@ -170,7 +168,6 @@ def main(cfg: DictConfig) -> Optional[float]:
             hparams_file = trial_dir / "hyperparameters.yaml"
             with open(hparams_file, "w") as f:
                 f.write(OmegaConf.to_yaml(run_cfg, resolve=True))
-                f.write(f"\nnum_classes: {num_classes}\n")
                 f.write(f"trial_number: {trial.number}\n")
                 f.write(f"trial_seed: {trial_seed}\n")
 
@@ -183,7 +180,6 @@ def main(cfg: DictConfig) -> Optional[float]:
             log.info(f"Instantiating model for trial {trial.number}")
             model = hydra.utils.instantiate(
                 run_cfg.model,
-                num_classes=num_classes,
                 datamodule=datamodule
             )
 
@@ -304,7 +300,6 @@ def main(cfg: DictConfig) -> Optional[float]:
     # Setup model with best config
     best_model = hydra.utils.instantiate(
         best_cfg.model,
-        num_classes=num_classes,
         datamodule=best_datamodule
     )
     

@@ -115,13 +115,17 @@ def train_single_run(
         name="",
         version="",
     )
+    
+    from lightning.pytorch.profilers.advanced import AdvancedProfiler
 
+    profiler = AdvancedProfiler(dirpath=run_save_dir)
     # Instantiate trainer
     log.info(f"Instantiating trainer for run {run_idx}")
     trainer: Trainer = hydra.utils.instantiate(
         cfg.trainer, 
         callbacks=callbacks, 
-        logger=logger
+        logger=logger,
+        profiler=profiler
     )
 
     # Train the model
