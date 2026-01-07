@@ -10,15 +10,15 @@ run_name: "${now:%Y-%m-%d_%H-%M-%S}"
 model:
   optimizer:
     _target_: torch.optim.AdamW
-    lr: 0.000115
-    weight_decay: 0.0
+    lr: 0.013
+    weight_decay: 1.08e-06
   scheduler:
     _target_: torch.optim.lr_scheduler.CosineAnnealingLR
     T_max: ${trainer.max_epochs}
   criterion:
     _target_: src.models.components.loss.SCELoss
-    alpha: 1.0
-    beta: 1.0
+    alpha: 0.033
+    beta: 0.053
 
 data:
   batch_size: 32

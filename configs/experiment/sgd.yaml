@@ -10,9 +10,9 @@ run_name: "${now:%Y-%m-%d_%H-%M-%S}"
 model:
   optimizer:
     _target_: torch.optim.SGD
-    lr: 0.06959
-    momentum: 0.1616
-    weight_decay: 3.1045e-05
+    lr: 0.024
+    momentum: 0.011
+    weight_decay: 1.081e-06
   scheduler:
     _target_: torch.optim.lr_scheduler.CosineAnnealingLR
     T_max: ${trainer.max_epochs}
@@ -20,4 +20,4 @@ model:
     _target_: src.models.components.loss.CELoss
 
 data:
-  batch_size: 32
+  batch_size: 64

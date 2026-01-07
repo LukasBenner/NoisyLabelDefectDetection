@@ -12,7 +12,6 @@ class EfficientNet(nn.Module):
         """
         super().__init__()
 
-        # Load pretrained EfficientNetB0 or initialize from scratch
         if pretrained:
             self.model = models.efficientnet_v2_l(
                 weights=models.EfficientNet_V2_L_Weights.IMAGENET1K_V1

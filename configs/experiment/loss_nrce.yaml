@@ -10,14 +10,14 @@ run_name: "${now:%Y-%m-%d_%H-%M-%S}"
 model:
   optimizer:
     _target_: torch.optim.AdamW
-    lr: 0.000115
-    weight_decay: 0.0
+    lr: 0.012
+    weight_decay: 3.18e-05
   scheduler:
     _target_: torch.optim.lr_scheduler.CosineAnnealingLR
     T_max: ${trainer.max_epochs}
   criterion:
     _target_: src.models.components.loss.NormalizedReverseCrossEntropy
-    scale: 1.0
+    scale: 0.19
 
 data:
-  batch_size: 32
+  batch_size: 64

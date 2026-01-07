@@ -4,15 +4,17 @@ defaults:
   - /model: base
   - _self_
 
-experiment_name: "Baseline"
-run_name: "${now:%Y-%m-%d_%H-%M-%S}_baseline"
+experiment_name: "Loss_CE"
+run_name: "${now:%Y-%m-%d_%H-%M-%S}"
 
 model:
   optimizer:
     _target_: torch.optim.AdamW
     lr: 0.000115
     weight_decay: 0.0
-  scheduler: Null
+  scheduler:
+    _target_: torch.optim.lr_scheduler.CosineAnnealingLR
+    T_max: ${trainer.max_epochs}
   criterion:
     _target_: src.models.components.loss.CELoss
 
