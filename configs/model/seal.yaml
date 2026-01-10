@@ -1,6 +1,8 @@
-_target_: src.models.base_robust_module.BaseRobustModule
+_target_: src.models.seal_module.SEALIterationModule
 
 num_classes: 10
+
+epochs_per_iteration: 10  # Number of epochs per iteration (T in algorithm)
 
 # Base network
 net:
@@ -12,19 +14,15 @@ net:
 optimizer:
   _target_: torch.optim.AdamW
   _partial_: true
-  lr: 0.001
-  weight_decay: 0.01
+  lr: 0.003
+  weight_decay: 0.0003
 
 # Scheduler configuration (partial instantiation)
 scheduler:
   _target_: torch.optim.lr_scheduler.CosineAnnealingLR
   _partial_: true
-  T_max: ${trainer.max_epochs}
+  T_max: 30  # Total epochs = num_iterations * epochs_per_iteration
   eta_min: 0.00001
-
-criterion:
-  _target_: src.models.components.loss.CELoss
-  _partial_: true
 
 # Model compilation
 compile: false

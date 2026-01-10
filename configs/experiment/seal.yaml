@@ -1,0 +1,30 @@
+# @package _global_
+
+defaults:
+  - /model: seal
+  - override /data: seal
+  - _self_
+
+experiment_name: "SEAL"
+
+n_runs: 1
+
+model:
+  epochs_per_iteration: 30
+  num_iterations: 4
+  optimizer:
+    _target_: torch.optim.SGD
+    _partial_: true
+    lr: 0.01
+    momentum: 0.9
+    weight_decay: 3e-05
+  scheduler:
+    _target_: torch.optim.lr_scheduler.CosineAnnealingLR
+    _partial_: true
+    T_max: 120  # 3 iterations * 10 epochs
+
+callbacks:
+  early_stopping:
+    patience: 50
+    monitor: "val/acc"
+    mode: "max"

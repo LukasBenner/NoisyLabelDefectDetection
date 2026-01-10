@@ -26,4 +26,4 @@ search_space:
   data:
     batch_size:
       type: "categorical"
-      choices: [32, 64, 96]
+      choices: [32, 64]

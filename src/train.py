@@ -26,6 +26,8 @@ rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 
 from src.utils.pylogger import RankedLogger
 
+from lightning import seed_everything
+
 log = RankedLogger(__name__, rank_zero_only=True)
 
 
@@ -75,7 +77,6 @@ def train_single_run(
     base_save_dir: Path
 ) -> Dict[str, Any]:
     """Train a single run with a specific seed."""
-    from lightning import seed_everything
     
     # Set seed for this run
     seed = cfg.get("seed", 42) + run_idx
@@ -89,8 +90,9 @@ def train_single_run(
     # Instantiate datamodule with run-specific seed
     log.info(f"Instantiating datamodule for run {run_idx}")
     datamodule = hydra.utils.instantiate(cfg.data, seed=seed)
+    datamodule.prepare_data()
     datamodule.setup()
-
+    
     # Instantiate model
     log.info(f"Instantiating model for run {run_idx}")
     model = hydra.utils.instantiate(

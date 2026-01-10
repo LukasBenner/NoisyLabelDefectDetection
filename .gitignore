@@ -1,6 +1,7 @@
 # ignore newly added data
 data/new_data
 data/gan_data
+data_tmp
 
 # Created by https://www.toptal.com/developers/gitignore/api/linux,macos,python,visualstudiocode,jupyternotebooks
 # Edit at https://www.toptal.com/developers/gitignore?templates=linux,macos,python,visualstudiocode,jupyternotebooks

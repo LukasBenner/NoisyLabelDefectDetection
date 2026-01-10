@@ -1,6 +1,6 @@
 _target_: src.models.noise_adaption_module.NoiseAdaptionModule
 
-num_classes: 10  # Will be set dynamically from datamodule
+num_classes: 10
 
 # Base network (without noise adaption layer - it will be added by the module)
 net:

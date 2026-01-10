@@ -1,15 +1,17 @@
 # @package _global_
 
 defaults:
+  - _self_
   - paths: default
   - trainer: gpu
   - callbacks: default
   - data: surface_data
   - experiment: null
   - hparams_search: default
-  - _self_
 
 research_name: SurfaceDefectDetection
+run_name_postfix: ""
+run_name: "${now:%Y-%m-%d_%H-%M-%S}_${run_name_postfix}"
 
 log_path: ./logs
 

@@ -6,7 +6,6 @@ defaults:
 
 # Experiment name
 experiment_name: "NoiseAdaption_S"
-run_name: "${now:%Y-%m-%d_%H-%M-%S}"
 
 model:
   init_value: 0.9

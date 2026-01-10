@@ -1,0 +1,34 @@
+# @package _global_
+
+defaults:
+  - override /data: cifar100
+  - override /callbacks: cifar
+  - _self_
+
+experiment_name: "Loss_CE"
+research_name: "Cifar100"
+
+n_runs: 1
+
+model:
+  _target_: src.models.base_robust_module.BaseRobustModule
+  num_classes: 100
+  net:
+    _target_: src.models.components.res_net.ResNet34
+    num_classes: ${model.num_classes}
+  optimizer:
+    _target_: torch.optim.SGD
+    _partial_: true
+    lr: 0.1
+    momentum: 0.9
+    weight_decay: 1e-05
+  scheduler:
+    _target_: torch.optim.lr_scheduler.CosineAnnealingLR
+    T_max: ${trainer.max_epochs}
+    _partial_: true
+  criterion:
+    _target_: src.models.components.loss.CELoss
+    _partial_: true
+
+trainer:
+  max_epochs: 200

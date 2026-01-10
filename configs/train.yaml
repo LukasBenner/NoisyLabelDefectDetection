@@ -5,19 +5,17 @@ defaults:
   - paths: default
   - trainer: gpu
   - callbacks: default
-  - data: surface_data
+  - data: holdout
   - experiment: null
 
 research_name: SurfaceDefectDetection
+run_name_postfix: ""
+run_name: "${now:%Y-%m-%d_%H-%M-%S}_${run_name_postfix}"
 
 log_path: ./logs
 
 seed: 42
 n_runs: 10
-
-data:
-  batch_size: 32
-  num_workers: 4
 
 hydra:
   run:
