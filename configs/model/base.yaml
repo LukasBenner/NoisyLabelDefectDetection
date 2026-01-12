@@ -20,7 +20,6 @@ scheduler:
   _target_: torch.optim.lr_scheduler.CosineAnnealingLR
   _partial_: true
   T_max: ${trainer.max_epochs}
-  eta_min: 0.00001
 
 criterion:
   _target_: src.models.components.loss.CELoss

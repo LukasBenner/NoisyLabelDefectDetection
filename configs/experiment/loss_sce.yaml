@@ -25,4 +25,4 @@ model:
 
 data:
   batch_size: 32
-  pretrained: false
+  image1k_norm: false

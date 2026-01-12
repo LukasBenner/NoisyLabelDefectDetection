@@ -7,13 +7,13 @@ defaults:
   - _self_
 
 experiment_name: "SEAL"
-run_name_postfix: "not_pretrained"
+run_name_postfix: "pretrained"
 
 n_runs: 3
 
 model:
   net:
-    pretrained: false
+    pretrained: true
   epochs_per_iteration: 50
   num_iterations: 6
   optimizer:
@@ -29,4 +29,4 @@ model:
 
 data:
   batch_size: 32
-  image1k_norm: false
+  image1k_norm: true

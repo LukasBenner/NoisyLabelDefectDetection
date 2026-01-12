@@ -1,9 +1,9 @@
 _target_: src.data.holdout_datamodule.HoldoutDataModule
 
-train_path: ${paths.root_dir}/data/surface/train_new
+train_path: ${paths.root_dir}/data/surface/train
 val_path: ${paths.root_dir}/data/surface/val
-test_path: ${paths.root_dir}/data/surface/test_new
-batch_size: 8
+test_path: ${paths.root_dir}/data/surface/test
+batch_size: 32
 num_workers: 4
 pin_memory: True
 seed: ${seed}

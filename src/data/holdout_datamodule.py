@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Optional
 
 from torch.utils.data import DataLoader
 from lightning import LightningDataModule
@@ -15,7 +15,7 @@ class HoldoutDataModule(LightningDataModule):
         train_path: str,
         val_path: str,
         test_path: str,
-        pretrained: bool = True,
+        image1k_norm: bool = True,
         batch_size: int = 96,
         num_workers: int = 4,
         pin_memory: bool = True,
@@ -31,13 +31,13 @@ class HoldoutDataModule(LightningDataModule):
         mean_custom = [0.3299, 0.3896, 0.4599]
         std_custom = [0.2219, 0.2155, 0.2540]
         
-        mean = mean_image1k if pretrained else mean_custom
-        std = std_image1k if pretrained else std_custom
+        mean = mean_image1k if image1k_norm else mean_custom
+        std = std_image1k if image1k_norm else std_custom
         
         self.train_transforms = v2.Compose(
             [
                 v2.Resize(480, antialias=True),
-                v2.RandomCrop(480),
+                v2.RandomCrop(480, padding=8),
                 v2.RandomHorizontalFlip(p=0.5),
                 v2.RandomVerticalFlip(p=0.5),
                 v2.RandomRotation(degrees=(-5,5)),
@@ -97,7 +97,7 @@ class HoldoutDataModule(LightningDataModule):
             batch_size=self.hparams.batch_size,
             num_workers=self.hparams.num_workers,
             pin_memory=self.hparams.pin_memory,
-            shuffle=True,  # Don't shuffle to maintain index mapping
+            shuffle=True,
             drop_last=False,
             persistent_workers=True if self.hparams.num_workers > 0 else False,
         )

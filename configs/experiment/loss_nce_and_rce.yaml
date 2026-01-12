@@ -2,24 +2,32 @@
 
 defaults:
   - /model: base
+  - override /data: holdout
+  - override /callbacks: cifar
   - _self_
 
 experiment_name: "Loss_NCE_RCE"
+run_name_postfix: "not_pretrained"
+
+n_runs: 3
 
 model:
+  net:
+    pretrained: false
   optimizer:
     _target_: torch.optim.SGD
     _partial_: true
-    lr: 0.01
+    lr: 0.1
     momentum: 0.9
-    weight_decay: 3e-05
+    weight_decay: 1e-05
   scheduler:
     _target_: torch.optim.lr_scheduler.CosineAnnealingLR
     T_max: ${trainer.max_epochs}
   criterion:
     _target_: src.models.components.loss.NCEandRCE
-    alpha: 50
+    alpha: 10
     beta: 0.1
 
 data:
   batch_size: 64
+  image1k_norm: false
