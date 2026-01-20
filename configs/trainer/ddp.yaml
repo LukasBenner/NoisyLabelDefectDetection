@@ -1,0 +1,9 @@
+defaults:
+  - gpu
+
+# Multi-GPU DDP training
+# Override on CLI with e.g. `trainer=ddp trainer.devices=[0,1]`
+strategy: ddp_find_unused_parameters_true
+
+# Default to GPU 0 and 1
+devices: [0, 1]

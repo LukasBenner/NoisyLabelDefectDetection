@@ -1,0 +1,31 @@
+# @package _global_
+
+defaults:
+  - /model: base
+  - override /data: holdout
+  - _self_
+
+experiment_name: "Baseline"
+run_name_postfix: "pretrained"
+
+n_runs: 3
+
+model:
+  net:
+    pretrained: true
+  optimizer:
+    _target_: torch.optim.AdamW
+    _partial_: true
+    lr: 0.00872
+    weight_decay: 0.00156
+  scheduler: Null
+  criterion:
+    _target_: src.models.components.loss.CELoss
+
+data:
+  batch_size: 32
+  image1k_norm: true
+
+callbacks:
+  early_stopping:
+    patience: 30

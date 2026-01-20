@@ -37,10 +37,10 @@ class HoldoutDataModule(LightningDataModule):
         self.train_transforms = v2.Compose(
             [
                 v2.Resize(480, antialias=True),
-                v2.RandomCrop(480, padding=8),
+                v2.RandomResizedCrop(480, scale=(0.5,1)),
                 v2.RandomHorizontalFlip(p=0.5),
                 v2.RandomVerticalFlip(p=0.5),
-                v2.RandomRotation(degrees=(-5,5)),
+                v2.RandomRotation(degrees=(-10,10)),
                 v2.ToImage(),
                 v2.ToDtype(torch.float32, scale=True),
                 v2.Normalize(mean=mean, std=std),
@@ -62,34 +62,35 @@ class HoldoutDataModule(LightningDataModule):
         return len(self.train_ds.classes)
 
     def setup(self, stage: Optional[str] = None):
-        self.train_ds = ImageFolder(self.hparams.train_path)
-        self.val_ds = ImageFolder(self.hparams.val_path)
-        self.test_ds = ImageFolder(self.hparams.test_path)
-        
-        idxs_train = list(range(len(self.train_ds)))
-        idxs_val = list(range(len(self.val_ds)))
-        idxs_test = list(range(len(self.test_ds)))
-        
-        self.train_dataset = TransformSubset(
-            self.train_ds,
-            idxs_train,
-            transform=self.train_transforms,
-            return_index=False,
-        )
-
-        self.val_dataset = TransformSubset(
-            self.val_ds,
-            idxs_val,
-            transform=self.test_transforms,
-            return_index=False,
-        )
-
-        self.test_dataset = TransformSubset(
-            self.test_ds,
-            idxs_test,
-            transform=self.test_transforms,
-            return_index=False,
-        )
+        if stage == "fit":
+            self.train_ds = ImageFolder(self.hparams.train_path)
+            idxs_train = list(range(len(self.train_ds)))
+            self.train_dataset = TransformSubset(
+                self.train_ds,
+                idxs_train,
+                transform=self.train_transforms,
+                return_index=False,
+            )
+            
+        if stage == "fit" or stage == "validate":
+            self.val_ds = ImageFolder(self.hparams.val_path)
+            idxs_val = list(range(len(self.val_ds)))
+            self.val_dataset = TransformSubset(
+                self.val_ds,
+                idxs_val,
+                transform=self.test_transforms,
+                return_index=False,
+            )
+            
+        if stage == "test" or stage == "predict":
+            self.test_ds = ImageFolder(self.hparams.test_path)
+            idxs_test = list(range(len(self.test_ds)))
+            self.test_dataset = TransformSubset(
+                self.test_ds,
+                idxs_test,
+                transform=self.test_transforms,
+                return_index=False,
+            )
         
     def train_dataloader(self) -> DataLoader:
         return DataLoader(
@@ -113,6 +114,16 @@ class HoldoutDataModule(LightningDataModule):
         )
 
     def test_dataloader(self) -> DataLoader:
+        return DataLoader(
+            self.test_dataset,
+            batch_size=self.hparams.batch_size,
+            num_workers=self.hparams.num_workers,
+            pin_memory=self.hparams.pin_memory,
+            shuffle=False,
+            persistent_workers=True if self.hparams.num_workers > 0 else False,
+        )
+        
+    def predict_dataloader(self) -> DataLoader:
         return DataLoader(
             self.test_dataset,
             batch_size=self.hparams.batch_size,

@@ -4,20 +4,24 @@ from torchvision import models
 
 
 class MobileNet(nn.Module):
-    def __init__(self, num_classes: int, pretrained: bool = True) -> None:
+    def __init__(self, num_classes: int, pretrained: bool = True, variant: str = "small",) -> None:
         """Initialize MobileNet.
 
         :param num_classes: Number of output classes.
         :param pretrained: Whether to use pretrained ImageNet weights. Defaults to True.
         """
         super().__init__()
+        
+        variant = variant.lower().strip()
+        if variant not in {"large", "small"}:
+            raise ValueError(f"Unknown variant='{variant}'. Expected 'large' or 'small'.")
 
-        if pretrained:
-            self.model = models.mobilenet_v3_small(
-                weights=models.MobileNet_V3_Small_Weights.IMAGENET1K_V1
-            )
+        if variant == "large":
+            weights = models.MobileNet_V3_Large_Weights.IMAGENET1K_V2 if pretrained else None
+            self.model = models.mobilenet_v3_large(weights=weights)
         else:
-            self.model = models.mobilenet_v3_small(weights=None)
+            weights = models.MobileNet_V3_Small_Weights.IMAGENET1K_V1 if pretrained else None
+            self.model = models.mobilenet_v3_small(weights=weights)
 
         # Replace classifier head
         num_ftrs = self.model.classifier[3].in_features

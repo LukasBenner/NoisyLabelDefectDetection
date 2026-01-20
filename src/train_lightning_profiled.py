@@ -161,21 +161,33 @@ def train_single_run(
     # Test the model on best checkpoint
     log.info(f"Starting testing for run {run_idx}")
     best_model_path = trainer.checkpoint_callback.best_model_path
+
+    test_dir = run_save_dir / "final_test"
+    test_dir.mkdir(parents=True, exist_ok=True)
+    test_logger = CSVLogger(save_dir=test_dir, name="", version="")
+    test_trainer: Trainer = hydra.utils.instantiate(
+        cfg.trainer,
+        callbacks=[],
+        logger=test_logger,
+        devices=1,
+        strategy="auto",
+    )
+
     if best_model_path:
         log.info(f"Loading best checkpoint: {best_model_path}")
-        trainer.test(model=model, datamodule=datamodule, ckpt_path=best_model_path)
+        test_trainer.test(model=model, datamodule=datamodule, ckpt_path=best_model_path)
     else:
         log.warning("No best checkpoint found, testing with final model")
-        trainer.test(model=model, datamodule=datamodule)
+        test_trainer.test(model=model, datamodule=datamodule)
 
     # Extract metrics (convert tensors to floats)
     test_metrics = {
         "run_idx": run_idx,
-        "test/loss": to_float(trainer.callback_metrics.get("test/loss", 0.0)),
-        "test/acc": to_float(trainer.callback_metrics.get("test/acc", 0.0)),
-        "test/precision": to_float(trainer.callback_metrics.get("test/precision", 0.0)),
-        "test/recall": to_float(trainer.callback_metrics.get("test/recall", 0.0)),
-        "test/f1": to_float(trainer.callback_metrics.get("test/f1", 0.0)),
+        "test/loss": to_float(test_trainer.callback_metrics.get("test/loss", 0.0)),
+        "test/acc": to_float(test_trainer.callback_metrics.get("test/acc", 0.0)),
+        "test/precision": to_float(test_trainer.callback_metrics.get("test/precision", 0.0)),
+        "test/recall": to_float(test_trainer.callback_metrics.get("test/recall", 0.0)),
+        "test/f1": to_float(test_trainer.callback_metrics.get("test/f1", 0.0)),
         "val/acc_best": to_float(val_acc_best) if val_acc_best is not None else 0.0,
         "val/f1_best": to_float(val_f1_best) if val_f1_best is not None else 0.0,
     }

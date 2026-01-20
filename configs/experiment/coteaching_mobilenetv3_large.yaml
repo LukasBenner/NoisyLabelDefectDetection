@@ -1,0 +1,19 @@
+# @package _global_
+
+defaults:
+  - /model: coteaching_mobilenetv3_large
+  - override /data: holdout
+  - _self_
+
+experiment_name: "CoTeaching-MobileNetV3-Large"
+run_name_postfix: "coteaching"
+
+n_runs: 3
+
+data:
+  batch_size: 32
+  image1k_norm: true
+
+callbacks:
+  early_stopping:
+    patience: 30

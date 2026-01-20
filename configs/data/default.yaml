@@ -1,2 +1,0 @@
-# path to data directory
-data_root: ${paths.root_dir}/data

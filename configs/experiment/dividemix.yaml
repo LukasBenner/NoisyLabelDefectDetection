@@ -1,0 +1,31 @@
+# @package _global_
+
+defaults:
+  - /model: dividemix
+  - override /data: dividemix
+  - override /callbacks: cifar
+  - _self_
+
+experiment_name: "DivideMix"
+run_name_postfix: "baseline"
+
+n_runs: 3
+
+trainer:
+  reload_dataloaders_every_n_epochs: 1
+
+model:
+  net1:
+    pretrained: true
+  net2:
+    pretrained: true
+  warmup_epochs: 5
+  p_threshold: 0.5
+  lambda_u: 0
+  temperature: 0.5
+  mixup_alpha: 0.5
+  rampup_length: 16
+
+data:
+  batch_size: 128
+  image1k_norm: true

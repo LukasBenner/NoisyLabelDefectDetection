@@ -7,19 +7,20 @@ defaults:
   - _self_
 
 experiment_name: "Loss_CE"
-run_name_postfix: "pretrained"
+run_name_postfix: "resnet_pretrained"
 
 n_runs: 3
 
 model:
   net:
+    _target_: src.models.components.res_net.ResNet50
     pretrained: true
   optimizer:
     _target_: torch.optim.SGD
     _partial_: true
     lr: 0.1
     momentum: 0.9
-    weight_decay: 1e-05
+    weight_decay: 0.0001
   scheduler:
     _target_: torch.optim.lr_scheduler.CosineAnnealingLR
     T_max: ${trainer.max_epochs}

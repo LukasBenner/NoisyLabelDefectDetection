@@ -61,10 +61,13 @@ class BaseRobustModule(LightningModule):
             )
         
         # Initialize criterion with num_classes and class_weights
-        self.criterion = criterion(
-            num_classes=self.num_classes,
-            weight=class_weights
-        )
+        if criterion is not None:
+            self.criterion = criterion(
+                num_classes=num_classes,
+                weight=class_weights
+            )
+        else:
+            raise Exception("criterion has to be set")
 
         # Metrics for train/val/test
         self.train_acc = MulticlassAccuracy(num_classes=num_classes, average="weighted")

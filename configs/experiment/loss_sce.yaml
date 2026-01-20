@@ -8,21 +8,21 @@ experiment_name: "Loss_SCE"
 
 model:
   net:
-    pretrained: false
+    pretrained: true
   optimizer:
     _target_: torch.optim.SGD
     _partial_: true
-    lr: 0.01
+    lr: 0.1
     momentum: 0.9
-    weight_decay: 3e-05
+    weight_decay: 1e-05
   scheduler:
     _target_: torch.optim.lr_scheduler.CosineAnnealingLR
     T_max: ${trainer.max_epochs}
   criterion:
     _target_: src.models.components.loss.SCELoss
     alpha: 5.0
-    beta: 1.0
+    beta: 0.1
 
 data:
   batch_size: 32
-  image1k_norm: false
+  image1k_norm: true

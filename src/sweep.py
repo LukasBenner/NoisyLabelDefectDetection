@@ -322,7 +322,8 @@ def main(cfg: DictConfig) -> Optional[float]:
     
     test_trainer = Trainer(
         accelerator=best_cfg.trainer.get("accelerator", "gpu"),
-        devices=best_cfg.trainer.get("devices", 1),
+        devices=1,
+        strategy="auto",
         logger=test_logger,
     )
     
