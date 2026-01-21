@@ -79,9 +79,9 @@ def train_single_run(
     """Train a single run with a specific seed."""
     
     # Set seed for this run
-    seed = cfg.get("seed", 42) + run_idx
+    seed = cfg.get("seed", 42) + (run_idx - 1)
     seed_everything(seed, workers=True)
-    log.info(f"Run {run_idx + 1}/{cfg.n_runs} with seed {seed}")
+    log.info(f"Run {run_idx}/{cfg.n_runs} with seed {seed}")
 
     # Create run-specific directory (for checkpoints and metrics only)
     run_save_dir = base_save_dir / f"run_{run_idx}"
@@ -191,7 +191,7 @@ def train_single_run(
     }
 
     log.info(
-        f"Run {run_idx + 1}/{cfg.n_runs} completed | "
+        f"Run {run_idx}/{cfg.n_runs} completed | "
         f"test/acc: {test_metrics['test/acc']:.4f} | "
         f"test/f1: {test_metrics['test/f1']:.4f}"
     )
@@ -234,11 +234,11 @@ def main(cfg: DictConfig) -> None:
 
     # Run multiple training runs
     all_metrics = []
-    for run_idx in range(n_runs):
+    for run_idx in range(1, n_runs + 1):
         run_metrics = train_single_run(
             cfg=cfg,
             run_idx=run_idx,
-            base_save_dir=base_save_dir
+            base_save_dir=base_save_dir,
         )
         all_metrics.append(run_metrics)
 

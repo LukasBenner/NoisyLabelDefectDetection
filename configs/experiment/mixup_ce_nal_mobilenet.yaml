@@ -1,13 +1,13 @@
 # @package _global_
 
 defaults:
-  - /model: mixup
+  - /model: mixup_nal
   - override /data: holdout
   - override /callbacks: cifar
   - _self_
 
-experiment_name: "Mixup"
-run_name_postfix: "ce_stronger_aug"
+experiment_name: "Mixup_NAL"
+run_name_postfix: "complex_nal"
 
 n_runs: 5
 
@@ -19,17 +19,20 @@ model:
   optimizer:
     _target_: torch.optim.SGD
     _partial_: true
-    lr: 0.01
+    lr: 0.005
     momentum: 0.9
-    weight_decay: 0.0001
+    weight_decay: 0.00001
   scheduler:
     _target_: torch.optim.lr_scheduler.CosineAnnealingLR
     T_max: ${trainer.max_epochs}
   criterion:
     _target_: src.models.components.loss.CELoss
   mixup_alpha: 0.05
+  noise_init_epoch: 30
+  noise_instance_epoch: 60
+  instance_hidden_dim: 256
+  noise_init_eps: 1.0e-6
 
 data:
   batch_size: 32
   image1k_norm: true
-  num_workers: 8

@@ -7,9 +7,9 @@ export OMP_NUM_THREADS=1
 export MKL_NUM_THREADS=1
 
 python src/train.py \
-    experiment=loss_nce_and_rce_resnet \
+    experiment=loss_ce_mobilenet \
     trainer.devices=[$GPU_ID]
 
 python src/train.py \
-    experiment=loss_nce_and_rce \
+    experiment=loss_nce_and_rce_mobilenet \
     trainer.devices=[$GPU_ID]

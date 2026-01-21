@@ -75,9 +75,9 @@ def _find_checkpoint_callback(callbacks: List[Callback]) -> Optional[ModelCheckp
 
 
 def train_single_run(cfg: DictConfig, run_idx: int, base_save_dir: Path) -> Dict[str, Any]:
-    seed = cfg.get("seed", 42) + run_idx
+    seed = cfg.get("seed", 42) + (run_idx - 1)
     seed_everything(seed, workers=True)
-    log.info(f"Run {run_idx + 1}/{cfg.n_runs} with seed {seed}")
+    log.info(f"Run {run_idx}/{cfg.n_runs} with seed {seed}")
 
     run_save_dir = base_save_dir / f"run_{run_idx}"
     run_save_dir.mkdir(parents=True, exist_ok=True)
@@ -172,7 +172,7 @@ def train_single_run(cfg: DictConfig, run_idx: int, base_save_dir: Path) -> Dict
     }
 
     log.info(
-        f"Run {run_idx + 1}/{cfg.n_runs} completed | "
+        f"Run {run_idx}/{cfg.n_runs} completed | "
         f"test/acc: {test_metrics['test/acc']:.4f} | test/f1: {test_metrics['test/f1']:.4f}"
     )
     return test_metrics
@@ -205,7 +205,7 @@ def main(cfg: DictConfig) -> None:
         f.write(OmegaConf.to_yaml(cfg, resolve=True))
 
     all_metrics: List[Dict[str, Any]] = []
-    for run_idx in range(n_runs):
+    for run_idx in range(1, n_runs + 1):
         run_metrics = train_single_run(cfg=cfg, run_idx=run_idx, base_save_dir=base_save_dir)
         all_metrics.append(run_metrics)
 

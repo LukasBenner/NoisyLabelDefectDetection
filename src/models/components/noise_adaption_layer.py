@@ -111,3 +111,80 @@ class NoiseAdaptionNet(nn.Module):
     def get_transition_matrix(self) -> torch.Tensor:
         """Get the learned noise transition matrix."""
         return self.noise_layer.get_transition_matrix()
+
+
+class InstanceNoiseAdaptionNet(nn.Module):
+    """Noise adaption with instance-dependent transition via a small MLP."""
+
+    def __init__(
+        self,
+        base_net: nn.Module,
+        num_classes: int,
+        init_value: float = 0.9,
+        feature_dim: int | None = None,
+        hidden_dim: int = 128,
+    ) -> None:
+        super().__init__()
+        self.base_net = base_net
+        self.num_classes = num_classes
+
+        if feature_dim is None:
+            feature_dim = self._infer_feature_dim(base_net, num_classes)
+
+        self.base_transition = nn.Parameter(
+            self._init_transition(num_classes=num_classes, init_value=init_value)
+        )
+
+        self.mlp = nn.Sequential(
+            nn.Linear(feature_dim, hidden_dim),
+            nn.ReLU(inplace=True),
+            nn.Linear(hidden_dim, num_classes * num_classes),
+        )
+        nn.init.zeros_(self.mlp[-1].weight)
+        nn.init.zeros_(self.mlp[-1].bias)
+
+    @staticmethod
+    def _init_transition(num_classes: int, init_value: float) -> torch.Tensor:
+        init_matrix = torch.eye(num_classes) * init_value
+        init_matrix += (1.0 - init_value) / (num_classes - 1) * (1 - torch.eye(num_classes))
+        return init_matrix
+
+    @staticmethod
+    def _infer_feature_dim(base_net: nn.Module, num_classes: int) -> int:
+        if hasattr(base_net, "feature_dim"):
+            return int(getattr(base_net, "feature_dim"))
+        if hasattr(base_net, "out_dim"):
+            return int(getattr(base_net, "out_dim"))
+        if hasattr(base_net, "model") and hasattr(base_net.model, "classifier"):
+            classifier = base_net.model.classifier
+            if isinstance(classifier, nn.Sequential) and len(classifier) > 0:
+                first = classifier[0]
+                if isinstance(first, nn.Linear):
+                    return int(first.in_features)
+        return int(num_classes)
+
+    def _extract_features(self, x: torch.Tensor, logits: torch.Tensor) -> torch.Tensor:
+        if hasattr(self.base_net, "forward_features"):
+            return self.base_net.forward_features(x)
+        return logits
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        logits = self.base_net(x)
+        probs = F.softmax(logits, dim=1)
+
+        features = self._extract_features(x, logits)
+        delta = self.mlp(features).view(-1, self.num_classes, self.num_classes)
+        transition_logits = self.base_transition.unsqueeze(0) + delta
+        transition = F.softmax(transition_logits, dim=2)
+
+        adapted_probs = torch.bmm(probs.unsqueeze(1), transition.transpose(1, 2)).squeeze(1)
+        adapted_probs = torch.clamp(adapted_probs, min=1e-7, max=1.0)
+        adapted_logits = torch.log(adapted_probs)
+        return adapted_logits
+
+    def get_clean_output(self, x: torch.Tensor) -> torch.Tensor:
+        return self.base_net(x)
+
+    def get_transition_matrix(self) -> torch.Tensor:
+        with torch.no_grad():
+            return F.softmax(self.base_transition, dim=1)

@@ -1,0 +1,31 @@
+_target_: src.models.mixup_noise_adaption_module.MixupNoiseAdaptionModule
+
+num_classes: 10
+
+net:
+  _target_: src.models.components.mobile_net.MobileNet
+  num_classes: ${model.num_classes}
+  pretrained: true
+  variant: large
+
+optimizer:
+  _target_: torch.optim.AdamW
+  _partial_: true
+  lr: 0.001
+  weight_decay: 0.0001
+
+scheduler:
+  _target_: torch.optim.lr_scheduler.CosineAnnealingLR
+  _partial_: true
+  T_max: ${trainer.max_epochs}
+
+criterion:
+  _target_: src.models.components.loss.CELoss
+  _partial_: true
+
+mixup_alpha: 0.2
+noise_init_epoch: 5
+noise_instance_epoch: 10
+instance_hidden_dim: 128
+noise_init_eps: 1.0e-6
+compile: false
