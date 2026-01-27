@@ -19,4 +19,4 @@ model:
     _target_: src.models.components.loss.CELoss
 
 data:
-  batch_size: 64
+  batch_size: 32

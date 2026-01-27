@@ -4,7 +4,7 @@ defaults:
   - _self_
   - paths: default
   - trainer: gpu
-  - callbacks: default
+  - callbacks: with_early_stopping
   - data: holdout
   - experiment: null
 

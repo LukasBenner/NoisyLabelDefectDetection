@@ -21,4 +21,4 @@ model:
     enabled: True
     alpha: 0.586630
 data:
-  batch_size: 64
+  batch_size: 32

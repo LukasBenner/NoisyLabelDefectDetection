@@ -1,5 +1,3 @@
-"""LightningModule for Mixup training."""
-
 from __future__ import annotations
 
 from typing import Any
@@ -9,8 +7,6 @@ from src.models.base_robust_module import BaseRobustModule
 
 
 class MixupModule(BaseRobustModule):
-    """Mixup training module built on top of BaseRobustModule."""
-
     def __init__(
         self,
         *args,
@@ -64,16 +60,9 @@ class MixupModule(BaseRobustModule):
         preds = torch.argmax(logits, dim=1)
 
         self.train_loss(loss)
-        self.train_acc(preds, targets)
-        self.train_precision(preds, targets)
-        self.train_recall(preds, targets)
-        self.train_f1(preds, targets)
+        self.train_metrics(preds, targets)
 
         self.log("train/loss", self.train_loss, on_step=False, on_epoch=True, prog_bar=True)
-        self.log("train/acc", self.train_acc, on_step=False, on_epoch=True, prog_bar=True)
-        self.log("train/precision", self.train_precision, on_step=False, on_epoch=True)
-        self.log("train/recall", self.train_recall, on_step=False, on_epoch=True)
-        self.log("train/f1", self.train_f1, on_step=False, on_epoch=True)
-        self.log("train/mixup_lambda", lam, on_step=False, on_epoch=True)
+        self.log_dict(self.train_metrics, on_step=False, on_epoch=True, prog_bar=False)
 
         return loss

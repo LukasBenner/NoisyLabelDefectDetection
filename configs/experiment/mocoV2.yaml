@@ -2,7 +2,7 @@
 
 defaults:
   - override /data: holdout
-  - override /callbacks: cifar
+  - override /callbacks: no_early_stopping
   - _self_
 
 experiment_name: "MoCoV2"

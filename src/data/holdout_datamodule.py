@@ -7,6 +7,7 @@ from torchvision.transforms import v2
 import torch
 
 from data.components.transform_subset import TransformSubset
+from data.components.transforms import BaselineTransforms, MediumTransforms, StrongTransforms
 
 
 class HoldoutDataModule(LightningDataModule):
@@ -15,6 +16,7 @@ class HoldoutDataModule(LightningDataModule):
         train_path: str,
         val_path: str,
         test_path: str,
+        transforms: str = "improved",
         image1k_norm: bool = True,
         batch_size: int = 96,
         num_workers: int = 4,
@@ -33,34 +35,32 @@ class HoldoutDataModule(LightningDataModule):
         
         mean = mean_image1k if image1k_norm else mean_custom
         std = std_image1k if image1k_norm else std_custom
+
+        if transforms == "baseline":
+            self.train_transforms = BaselineTransforms.train_transforms(mean, std)
+            self.test_transforms = BaselineTransforms.eval_transforms(mean, std)
         
-        self.train_transforms = v2.Compose(
-            [
-                v2.Resize(480, antialias=True),
-                v2.RandomResizedCrop(480, scale=(0.5,1)),
-                v2.RandomHorizontalFlip(p=0.5),
-                v2.RandomVerticalFlip(p=0.5),
-                v2.RandomRotation(degrees=(-10,10)),
-                v2.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.1, hue=0.05),
-                v2.ToImage(),
-                v2.ToDtype(torch.float32, scale=True),
-                v2.Normalize(mean=mean, std=std),
-            ]
-        )
-        self.test_transforms = v2.Compose(
-            [
-                v2.Resize(480, antialias=True),
-                v2.CenterCrop(480),
-                v2.ToImage(),
-                v2.ToDtype(torch.float32, scale=True),
-                v2.Normalize(mean=mean, std=std),
-            ]
-        )
+        elif transforms == "medium":
+            self.train_transforms = MediumTransforms.train_transforms(mean, std)
+            self.test_transforms = MediumTransforms.eval_transforms(mean, std)
+            
+        elif transforms == "strong":
+            self.train_transforms = StrongTransforms.train_transforms(mean, std)
+            self.test_transforms = StrongTransforms.eval_transforms(mean, std)
+        
+        else:
+            raise ValueError(f"Transforms '{transforms}' not recognized.")
         
     @property
     def num_classes(self) -> int:
         assert self.train_ds is not None, "Dataset not prepared. Call setup() first."
         return len(self.train_ds.classes)
+    
+    @property
+    def class_weights(self) -> torch.Tensor:
+        assert hasattr(self, "_class_weights"), "Class weights not computed. Call setup('fit') first."
+        return self._class_weights
+        
 
     def setup(self, stage: Optional[str] = None):
         if stage == "fit":
@@ -72,6 +72,13 @@ class HoldoutDataModule(LightningDataModule):
                 transform=self.train_transforms,
                 return_index=False,
             )
+            
+            targets = torch.tensor(self.train_ds.targets, dtype=torch.long)
+            num_classes = len(self.train_ds.classes)
+            counts = torch.bincount(targets, minlength=num_classes).float()
+            counts = torch.clamp(counts, min=1.0)
+            N = counts.sum()
+            self._class_weights = N / (num_classes * counts)
             
         if stage == "fit" or stage == "validate":
             self.val_ds = ImageFolder(self.hparams.val_path)

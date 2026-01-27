@@ -2,7 +2,7 @@
 
 defaults:
   - override /data: cifar100
-  - override /callbacks: cifar
+  - override /callbacks: no_early_stopping
   - _self_
 
 experiment_name: "Loss_NCE_RCE"
@@ -19,7 +19,7 @@ model:
   optimizer:
     _target_: torch.optim.SGD
     _partial_: true
-    lr: 0.1
+    lr: 0.01
     momentum: 0.9
     weight_decay: 1e-05
   scheduler:

@@ -1,0 +1,7 @@
+_target_: src.data.baseline_datamodule.BaselineDataModule
+
+data_path: /srv/defectDetectionDataset/surface_baseline
+batch_size: 32
+num_workers: 8
+pin_memory: True
+seed: ${seed}

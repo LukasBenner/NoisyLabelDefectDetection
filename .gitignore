@@ -1,7 +1,15 @@
+notebooks/data_cleaning/artifacts/cluster_samples
+
+#ignore resources and outputs for synthetic data generation
+synthetic/output
+synthetic/resources
+
 # ignore newly added data
 data/new_data
 data/gan_data
 data/unlabeled_ssl_data
+data/stylegan
+data/lora_train
 data_tmp
 
 # Created by https://www.toptal.com/developers/gitignore/api/linux,macos,python,visualstudiocode,jupyternotebooks

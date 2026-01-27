@@ -14,7 +14,6 @@ class ResNet50(nn.Module):
 
         if pretrained:
             self.model = models.resnet50(weights=models.ResNet50_Weights.IMAGENET1K_V2)
-            # Replace the final fully connected layer
             num_features = self.model.fc.in_features
             self.model.fc = nn.Linear(num_features, num_classes)
         else:

@@ -30,3 +30,9 @@ dependencies:
     - rootutils
     - "git+https://github.com/cleanlab/cleanlab.git#egg=cleanlab[datalab]"
     - "git+https://github.com/openai/CLIP.git"
+    - withoutbg
+    - transformers
+    - pillow
+    - timm
+    - einops
+    - streamlit

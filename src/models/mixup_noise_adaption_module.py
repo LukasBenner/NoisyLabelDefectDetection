@@ -1,5 +1,3 @@
-"""LightningModule for Mixup training with delayed Noise Adaption Layer."""
-
 from __future__ import annotations
 
 from typing import Any, Optional
@@ -12,8 +10,6 @@ from src.models.mixup_module import MixupModule
 
 
 class MixupNoiseAdaptionModule(MixupModule):
-    """Mixup module that initializes a noise adaption layer after N epochs."""
-
     def __init__(
         self,
         *args,
@@ -182,16 +178,21 @@ class MixupNoiseAdaptionModule(MixupModule):
         preds = torch.argmax(logits, dim=1)
 
         self.val_loss(loss)
-        self.val_acc(preds, targets)
-        self.val_precision(preds, targets)
-        self.val_recall(preds, targets)
-        self.val_f1(preds, targets)
+        self.val_metrics(preds, targets)
+
+        if self.log_per_class:
+            self.val_per_class(preds, targets)
 
         self.log("val/loss", self.val_loss, on_step=False, on_epoch=True, prog_bar=True)
-        self.log("val/acc", self.val_acc, on_step=False, on_epoch=True, prog_bar=True)
-        self.log("val/precision", self.val_precision, on_step=False, on_epoch=True)
-        self.log("val/recall", self.val_recall, on_step=False, on_epoch=True)
-        self.log("val/f1", self.val_f1, on_step=False, on_epoch=True)
+        # Show the primary metric on prog bar
+        self.log_dict(
+            {k: v for k, v in self.val_metrics.items() if k != "val/f1_macro"},
+            on_step=False,
+            on_epoch=True,
+            prog_bar=False,
+        )
+        self.log("val/f1_macro", self.val_metrics["val/f1_macro"], on_step=False, on_epoch=True, prog_bar=True)
+
 
     def test_step(self, batch: Any, batch_idx: int) -> None:
         inputs, targets = batch
@@ -200,13 +201,24 @@ class MixupNoiseAdaptionModule(MixupModule):
         preds = torch.argmax(logits, dim=1)
 
         self.test_loss(loss)
-        self.test_acc(preds, targets)
-        self.test_precision(preds, targets)
-        self.test_recall(preds, targets)
-        self.test_f1(preds, targets)
+        self.test_metrics(preds, targets)
+
+        if self.log_per_class:
+            self.test_per_class(preds, targets)
 
         self.log("test/loss", self.test_loss, on_step=False, on_epoch=True, prog_bar=True)
-        self.log("test/acc", self.test_acc, on_step=False, on_epoch=True, prog_bar=True)
-        self.log("test/precision", self.test_precision, on_step=False, on_epoch=True)
-        self.log("test/recall", self.test_recall, on_step=False, on_epoch=True)
-        self.log("test/f1", self.test_f1, on_step=False, on_epoch=True)
+        self.log_dict(
+            {k: v for k, v in self.test_metrics.items() if k != "test/f1_macro"},
+            on_step=False,
+            on_epoch=True,
+            prog_bar=False,
+        )
+        self.log("test/f1_macro", self.test_metrics["test/f1_macro"], on_step=False, on_epoch=True, prog_bar=True)
+
+    def on_test_epoch_end(self) -> None:
+        if self.log_per_class:
+            pc = self.test_per_class.compute()
+            for i in range(self.num_classes):
+                self.log(f"test/precision_c{i}", pc["test/per_class/precision"][i], sync_dist=True)
+                self.log(f"test/recall_c{i}", pc["test/per_class/recall"][i], sync_dist=True)
+                self.log(f"test/f1_c{i}", pc["test/per_class/f1"][i], sync_dist=True)

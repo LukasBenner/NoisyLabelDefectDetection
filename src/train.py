@@ -1,9 +1,3 @@
-"""
-Train script using PyTorch Lightning.
-
-This replaces the old manual training loop with Lightning's Trainer API.
-"""
-
 import os
 from datetime import date
 from pathlib import Path
@@ -25,7 +19,6 @@ from utils.instantiators import instantiate_callbacks
 rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 
 from src.utils.pylogger import RankedLogger
-
 from lightning import seed_everything
 
 log = RankedLogger(__name__, rank_zero_only=True)
@@ -37,14 +30,13 @@ def calculate_summary_statistics(
     """Calculate summary statistics across multiple runs."""
     all_metrics_df = pd.DataFrame(all_metrics)
     summary_statistics = []
-    metrics_to_analyze = [
-        m for m in all_metrics_df.columns if m not in ["run_idx"]
-    ]
+    metrics_to_analyze = [m for m in all_metrics_df.columns if m not in ["run_idx"]]
 
     for metric in metrics_to_analyze:
         values = all_metrics_df[metric].dropna()
         n = len(values)
         mean = values.mean()
+        median = values.median()
         std = values.std(ddof=1)
         se = std / np.sqrt(n) if n > 0 else 0.0
 
@@ -60,6 +52,7 @@ def calculate_summary_statistics(
             {
                 "metric": metric,
                 "mean": mean,
+                "median": median,
                 "std": std,
                 "ci_lower": ci_lower,
                 "ci_upper": ci_upper,
@@ -71,13 +64,9 @@ def calculate_summary_statistics(
     return all_metrics_df, pd.DataFrame(summary_statistics)
 
 
-def train_single_run(
-    cfg: DictConfig,
-    run_idx: int,
-    base_save_dir: Path
-) -> Dict[str, Any]:
+def train_single_run(cfg: DictConfig, run_idx: int, base_save_dir: Path) -> Dict[str, Any]:
     """Train a single run with a specific seed."""
-    
+
     # Set seed for this run
     seed = cfg.get("seed", 42) + (run_idx - 1)
     seed_everything(seed, workers=True)
@@ -91,20 +80,17 @@ def train_single_run(
     log.info(f"Instantiating datamodule for run {run_idx}")
     datamodule = hydra.utils.instantiate(cfg.data, seed=seed)
     datamodule.prepare_data()
-    datamodule.setup()
-    
+    datamodule.setup(stage="fit")
+
     # Instantiate model
     log.info(f"Instantiating model for run {run_idx}")
-    model = hydra.utils.instantiate(
-        cfg.model, 
-        datamodule=datamodule
-    )
+    model = hydra.utils.instantiate(cfg.model, datamodule=datamodule)
 
     # Setup callbacks with checkpoint directory override
     from lightning.pytorch.callbacks import ModelCheckpoint
-    
+
     callbacks: List[Callback] = instantiate_callbacks(cfg.get("callbacks"))
-    
+
     # Update ModelCheckpoint dirpath to use run-specific directory
     for callback in callbacks:
         if isinstance(callback, ModelCheckpoint) and callback.dirpath is None:
@@ -112,19 +98,11 @@ def train_single_run(
             log.info(f"Set checkpoint directory to: {callback.dirpath}")
 
     # Setup logger
-    logger = CSVLogger(
-        save_dir=run_save_dir,
-        name="",
-        version="",
-    )
+    logger = CSVLogger(save_dir=run_save_dir, name="", version="")
 
     # Instantiate trainer
     log.info(f"Instantiating trainer for run {run_idx}")
-    trainer: Trainer = hydra.utils.instantiate(
-        cfg.trainer, 
-        callbacks=callbacks, 
-        logger=logger
-    )
+    trainer: Trainer = hydra.utils.instantiate(cfg.trainer, callbacks=callbacks, logger=logger)
 
     # Train the model
     log.info(f"Starting training for run {run_idx}")
@@ -141,20 +119,14 @@ def train_single_run(
             return float(value.item())
         return float(value)
 
-    val_acc_best = trainer.callback_metrics.get("val/acc_best")
-    val_f1_best = trainer.callback_metrics.get("val/f1_best")
+    val_f1_macro_best = trainer.callback_metrics.get("val/f1_macro_best")
 
-    # Fallback: read directly from the model metrics if not present.
-    if val_acc_best is None and hasattr(model, "val_acc_best"):
+    # Fallback: read directly from the model if not present.
+    if val_f1_macro_best is None and hasattr(model, "val_f1_macro_best"):
         try:
-            val_acc_best = model.val_acc_best.compute()
+            val_f1_macro_best = model.val_f1_macro_best.compute()
         except Exception:
-            val_acc_best = None
-    if val_f1_best is None and hasattr(model, "val_f1_best"):
-        try:
-            val_f1_best = model.val_f1_best.compute()
-        except Exception:
-            val_f1_best = None
+            val_f1_macro_best = None
 
     # Test the model on best checkpoint
     log.info(f"Starting testing for run {run_idx}")
@@ -178,22 +150,47 @@ def train_single_run(
         log.warning("No best checkpoint found, testing with final model")
         test_trainer.test(model=model, datamodule=datamodule)
 
-    # Extract metrics (convert tensors to floats)
-    test_metrics = {
+    # Extract test metrics
+    cm = test_trainer.callback_metrics
+
+    test_metrics: Dict[str, Any] = {
         "run_idx": run_idx,
-        "test/loss": to_float(test_trainer.callback_metrics.get("test/loss", 0.0)),
-        "test/acc": to_float(test_trainer.callback_metrics.get("test/acc", 0.0)),
-        "test/precision": to_float(test_trainer.callback_metrics.get("test/precision", 0.0)),
-        "test/recall": to_float(test_trainer.callback_metrics.get("test/recall", 0.0)),
-        "test/f1": to_float(test_trainer.callback_metrics.get("test/f1", 0.0)),
-        "val/acc_best": to_float(val_acc_best) if val_acc_best is not None else 0.0,
-        "val/f1_best": to_float(val_f1_best) if val_f1_best is not None else 0.0,
+
+        # Primary reporting (imbalance + equal class importance)
+        "test/f1_macro": to_float(cm.get("test/f1_macro")),
+        "test/precision_macro": to_float(cm.get("test/precision_macro")),
+        "test/recall_macro": to_float(cm.get("test/recall_macro")),
+
+        # Context / secondary metrics
+        "test/acc": to_float(cm.get("test/acc")),
+        "test/f1_weighted": to_float(cm.get("test/f1_weighted")),
+        "test/precision_weighted": to_float(cm.get("test/precision_weighted")),
+        "test/recall_weighted": to_float(cm.get("test/recall_weighted")),
+        "test/loss": to_float(cm.get("test/loss")),
+
+        # Best validation metric(s)
+        "val/f1_macro_best": to_float(val_f1_macro_best),
     }
+
+    # Optionally capture per-class test metrics if your model logs them (e.g., test/f1_c0..c9)
+    # This keeps the script compatible whether per-class logging is enabled or not.
+    n_classes = None
+    try:
+        n_classes = int(getattr(datamodule, "num_classes"))
+    except Exception:
+        n_classes = None
+
+    if n_classes is not None and n_classes > 0:
+        for i in range(n_classes):
+            for metric_name in ("precision", "recall", "f1"):
+                key = f"test/{metric_name}_c{i}"
+                if key in cm:
+                    test_metrics[key] = to_float(cm.get(key))
 
     log.info(
         f"Run {run_idx}/{cfg.n_runs} completed | "
-        f"test/acc: {test_metrics['test/acc']:.4f} | "
-        f"test/f1: {test_metrics['test/f1']:.4f}"
+        f"test/acc: {(test_metrics.get('test/acc') or 0.0):.4f} | "
+        f"test/f1_macro: {(test_metrics.get('test/f1_macro') or 0.0):.4f}"
     )
 
     return test_metrics
@@ -203,15 +200,15 @@ def train_single_run(
 def main(cfg: DictConfig) -> None:
     """
     Main training function using PyTorch Lightning.
-    
+
     Supports multiple runs with different seeds for statistical robustness.
     """
-    torch.set_float32_matmul_precision('medium')
-    
+    torch.set_float32_matmul_precision("medium")
+
     # Print configuration
     if cfg.get("print_config"):
         log.info(f"Config:\n{OmegaConf.to_yaml(cfg)}")
-    
+
     log_path = cfg.get("log_path", "logs")
     research_name = cfg.get("research_name", "default")
     experiment_name = cfg.get("experiment_name", "default")
@@ -233,23 +230,19 @@ def main(cfg: DictConfig) -> None:
     log.info(f"Saved hyperparameters to: {hparams_file}")
 
     # Run multiple training runs
-    all_metrics = []
+    all_metrics: List[Dict[str, Any]] = []
     for run_idx in range(1, n_runs + 1):
-        run_metrics = train_single_run(
-            cfg=cfg,
-            run_idx=run_idx,
-            base_save_dir=base_save_dir,
-        )
+        run_metrics = train_single_run(cfg=cfg, run_idx=run_idx, base_save_dir=base_save_dir)
         all_metrics.append(run_metrics)
 
     # Calculate and save summary statistics
     if n_runs > 1:
         log.info("Calculating summary statistics across runs")
         all_metrics_df, summary_df = calculate_summary_statistics(all_metrics)
-        
+
         all_metrics_df.to_csv(summary_dir / "all_runs_metrics.csv", index=False)
         summary_df.to_csv(summary_dir / "summary_statistics.csv", index=False)
-        
+
         log.info(f"\nSummary Statistics:\n{summary_df.to_string()}")
         log.info(f"Saved summary to: {summary_dir}")
     else:

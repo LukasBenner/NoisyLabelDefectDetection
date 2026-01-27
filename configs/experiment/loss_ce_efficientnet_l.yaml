@@ -3,23 +3,25 @@
 defaults:
   - /model: base
   - override /data: holdout
-  - override /callbacks: cifar
+  - override /callbacks: with_early_stopping
   - _self_
 
 experiment_name: "Loss_CE"
-run_name_postfix: "not_pretrained"
+run_name_postfix: "efficientnet_l"
 
-n_runs: 3
+n_runs: 5
 
 model:
   net:
-    pretrained: false
+    _target_: src.models.components.efficient_net.EfficientNet
+    pretrained: true
+    variant: large
   optimizer:
     _target_: torch.optim.SGD
     _partial_: true
-    lr: 0.1
+    lr: 0.01
     momentum: 0.9
-    weight_decay: 1e-05
+    weight_decay: 1e-5
   scheduler:
     _target_: torch.optim.lr_scheduler.CosineAnnealingLR
     T_max: ${trainer.max_epochs}
@@ -28,4 +30,9 @@ model:
 
 data:
   batch_size: 32
-  image1k_norm: false
+  image1k_norm: true
+  transforms: medium
+
+callbacks:
+  early_stopping:
+    patience: 50

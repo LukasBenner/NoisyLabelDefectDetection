@@ -1,13 +1,13 @@
 # @package _global_
 
 defaults:
-  - /model: mixup
+  - /model: base
   - override /data: holdout
-  - override /callbacks: cifar
+  - override /callbacks: with_early_stopping
   - _self_
 
-experiment_name: "Mixup"
-run_name_postfix: "ce_mobilenetv3_large"
+experiment_name: "Loss_CE"
+run_name_postfix: "mobilenet_small"
 
 n_runs: 5
 
@@ -15,22 +15,24 @@ model:
   net:
     _target_: src.models.components.mobile_net.MobileNet
     pretrained: true
-    variant: large
+    variant: small
   optimizer:
     _target_: torch.optim.SGD
     _partial_: true
-    lr: 0.005
+    lr: 0.01
     momentum: 0.9
-    weight_decay: 0.00001
+    weight_decay: 1e-5
   scheduler:
     _target_: torch.optim.lr_scheduler.CosineAnnealingLR
     T_max: ${trainer.max_epochs}
   criterion:
-    _target_: src.models.components.loss.NCEandRCE
-    alpha: 1
-    beta: 0.1
-  mixup_alpha: 0.1
+    _target_: src.models.components.loss.CELoss
 
 data:
   batch_size: 32
   image1k_norm: true
+  transforms: medium
+
+callbacks:
+  early_stopping:
+    patience: 50

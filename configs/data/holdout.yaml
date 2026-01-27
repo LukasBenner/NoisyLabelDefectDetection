@@ -4,7 +4,8 @@ train_path: ${paths.root_dir}/data/surface/train
 val_path: ${paths.root_dir}/data/surface/val
 test_path: ${paths.root_dir}/data/surface/test
 batch_size: 32
-num_workers: 4
+num_workers: 8
 pin_memory: True
 image1k_norm: true
+transforms: medium
 seed: ${seed}
