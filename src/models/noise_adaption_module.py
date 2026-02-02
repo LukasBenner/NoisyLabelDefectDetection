@@ -1,147 +1,224 @@
-"""LightningModule for training with Noise Adaption Layer."""
+from __future__ import annotations
 
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 import torch
-from torch import nn
+from torch.utils.data import DataLoader
 
+from src.models.components.noise_adaption_layer import NoiseAdaptionNet, InstanceNoiseAdaptionNet
 from src.models.base_robust_module import BaseRobustModule
-from src.models.components.noise_adaption_layer import NoiseAdaptionNet
 
 
 class NoiseAdaptionModule(BaseRobustModule):
-    """
-    LightningModule that uses a Noise Adaption Layer for handling noisy labels.
-    
-    This module wraps a base network with a learnable noise transition matrix
-    that adapts the model's predictions to account for label noise during training.
-    
-    The noise adaption layer learns a confusion matrix T where T[i,j] represents
-    the probability that a sample with true label i is mislabeled as j.
-    
-    Args:
-        net: Base neural network (e.g., EfficientNet, ResNet)
-        num_classes: Number of classes
-        init_value: Initial diagonal value for noise transition matrix (default: 0.9)
-        trainable_noise: Whether the noise transition matrix is trainable (default: True)
-        optimizer: Optimizer (partial instantiation)
-        scheduler: Learning rate scheduler (partial instantiation)
-        criterion: Loss function (partial instantiation)
-        compile: Whether to compile the model with torch.compile
-        datamodule: DataModule for accessing data properties
-    """
-    
     def __init__(
         self,
-        net: nn.Module,
-        num_classes: int,
-        init_value: float = 0.9,
-        optimizer: Optional[torch.optim.Optimizer] = None,
-        scheduler: Optional[torch.optim.lr_scheduler._LRScheduler] = None,
-        criterion: Optional[nn.Module] = None,
-        compile: bool = False,
-        datamodule: Optional[Any] = None,
+        *args,
+        noise_init_epoch: int = 10,
+        noise_instance_epoch: int = 30,
+        instance_hidden_dim: int = 128,
+        noise_init_eps: float = 1e-6,
+        **kwargs,
     ) -> None:
-        # Wrap the base network with noise adaption layer
-        noise_adapted_net = NoiseAdaptionNet(
-            base_net=net,
-            num_classes=num_classes,
-            init_value=init_value
-        )
-        
-        # Initialize parent class with wrapped network
-        super().__init__(
-            net=noise_adapted_net,
-            num_classes=num_classes,
-            optimizer=optimizer,
-            scheduler=scheduler,
-            criterion=criterion,
-            compile=compile,
-            datamodule=datamodule,
-        )
-        
-        # Save additional hyperparameters
+        super().__init__(*args, **kwargs)
         self.save_hyperparameters(
             logger=False,
-            ignore=["net", "optimizer", "scheduler", "criterion", "datamodule"]
+            ignore=["net", "optimizer", "scheduler", "criterion", "datamodule"],
         )
-    
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """
-        Forward pass through network with noise adaption.
-        
-        During training, applies noise adaption layer.
-        During validation/test, can optionally use clean predictions.
-        """
-        return self.net(x)
-    
-    def get_clean_predictions(self, x: torch.Tensor) -> torch.Tensor:
-        """Get predictions from base network without noise adaption."""
-        return self.net.get_clean_output(x)
-    
-    def validation_step(self, batch: Any, batch_idx: int) -> None:
-        """
-        Validation step.
-        
-        Uses clean predictions (without noise adaption) for validation
-        to get true model performance on clean data.
-        """
-        inputs, targets = batch
-        
-        # Get clean predictions for validation
-        logits = self.get_clean_predictions(inputs)
-        loss = self.criterion(logits, targets)
-        preds = torch.argmax(logits, dim=1)
-        
-        # Update and log metrics
-        self.val_loss(loss)
-        self.val_acc(preds, targets)
-        self.val_precision(preds, targets)
-        self.val_recall(preds, targets)
-        self.val_f1(preds, targets)
-        
-        self.log("val/loss", self.val_loss, on_step=False, on_epoch=True, prog_bar=True)
-        self.log("val/acc", self.val_acc, on_step=False, on_epoch=True, prog_bar=True)
-        self.log("val/precision", self.val_precision, on_step=False, on_epoch=True)
-        self.log("val/recall", self.val_recall, on_step=False, on_epoch=True)
-        self.log("val/f1", self.val_f1, on_step=False, on_epoch=True)
-    
-    def test_step(self, batch: Any, batch_idx: int) -> None:
-        """
-        Test step.
-        
-        Uses clean predictions (without noise adaption) for testing.
-        """
-        inputs, targets = batch
-        
-        # Get clean predictions for testing
-        logits = self.get_clean_predictions(inputs)
-        loss = self.criterion(logits, targets)
-        preds = torch.argmax(logits, dim=1)
-        
-        # Update and log metrics
-        self.test_loss(loss)
-        self.test_acc(preds, targets)
-        self.test_precision(preds, targets)
-        self.test_recall(preds, targets)
-        self.test_f1(preds, targets)
-        
-        self.log("test/loss", self.test_loss, on_step=False, on_epoch=True, prog_bar=True)
-        self.log("test/acc", self.test_acc, on_step=False, on_epoch=True, prog_bar=True)
-        self.log("test/precision", self.test_precision, on_step=False, on_epoch=True)
-        self.log("test/recall", self.test_recall, on_step=False, on_epoch=True)
-        self.log("test/f1", self.test_f1, on_step=False, on_epoch=True)
-    
+        self.noise_init_epoch = int(noise_init_epoch)
+        self.noise_instance_epoch = int(noise_instance_epoch)
+        self.instance_hidden_dim = int(instance_hidden_dim)
+        self.noise_init_eps = float(noise_init_eps)
+        self._noise_initialized = False
+        self._instance_noise_initialized = False
+
+    def _get_val_dataloader(self) -> Optional[DataLoader]:
+        trainer = getattr(self, "trainer", None)
+        if trainer is None:
+            return None
+
+        val_loaders = getattr(trainer, "val_dataloaders", None)
+        if val_loaders:
+            if isinstance(val_loaders, list):
+                return val_loaders[0]
+            return val_loaders
+
+        datamodule = getattr(trainer, "datamodule", None)
+        if datamodule is None:
+            return None
+        if hasattr(datamodule, "val_dataloader"):
+            return datamodule.val_dataloader()
+        return None
+
+    def _compute_confusion_matrix(self, val_loader: DataLoader) -> torch.Tensor:
+        num_classes = int(self.num_classes)
+        cm = torch.zeros(num_classes, num_classes, device=self.device, dtype=torch.float32)
+
+        was_training = self.training
+        self.eval()
+        with torch.no_grad():
+            for batch in val_loader:
+                inputs, targets = batch
+                inputs = inputs.to(self.device, non_blocking=True)
+                targets = targets.to(self.device, non_blocking=True).view(-1)
+                logits = self.forward(inputs)
+                preds = torch.argmax(logits, dim=1)
+
+                idx = num_classes * targets + preds
+                cm += torch.bincount(idx, minlength=num_classes * num_classes).view(
+                    num_classes, num_classes
+                )
+
+        if was_training:
+            self.train()
+
+        cm = cm + float(self.noise_init_eps)
+        cm = cm / cm.sum(dim=1, keepdim=True)
+        return cm
+
+    def _initialize_noise_adaption(self) -> None:
+        val_loader = self._get_val_dataloader()
+        if val_loader is None:
+            return
+
+        confusion = self._compute_confusion_matrix(val_loader)
+
+        noise_net = NoiseAdaptionNet(
+            base_net=self.net,
+            num_classes=int(self.num_classes),
+            init_value=0.9,
+        )
+        noise_net.noise_layer.to(self.device)
+        transition_device = noise_net.noise_layer.transition_matrix.device
+        noise_net.noise_layer.transition_matrix.data.copy_(
+            torch.log(confusion.to(transition_device))
+        )
+        self.net = noise_net
+
+        optimizers = getattr(self.trainer, "optimizers", [])
+        if optimizers:
+            optimizer = optimizers[0]
+            existing = {id(p) for group in optimizer.param_groups for p in group.get("params", [])}
+            new_params = [
+                p for p in self.net.noise_layer.parameters() if id(p) not in existing
+            ]
+            if new_params:
+                base_group = optimizer.param_groups[0]
+                param_group = {"params": new_params}
+                if "lr" in base_group:
+                    param_group["lr"] = base_group["lr"]
+                if "weight_decay" in base_group:
+                    param_group["weight_decay"] = base_group["weight_decay"]
+                optimizer.add_param_group(param_group)
+
+        self._noise_initialized = True
+        self.log("noise/initialized", 1.0, on_epoch=True, prog_bar=True)
+
+    def _initialize_instance_noise(self) -> None:
+        if not hasattr(self.net, "noise_layer"):
+            return
+        if not hasattr(self.net, "base_net"):
+            return
+
+        base_net = self.net.base_net
+        base_transition = self.net.noise_layer.transition_matrix.detach()
+
+        instance_net = InstanceNoiseAdaptionNet(
+            base_net=base_net,
+            num_classes=int(self.num_classes),
+            init_value=0.9,
+            hidden_dim=self.instance_hidden_dim,
+        )
+        instance_net.to(self.device)
+        instance_net.base_transition.data.copy_(base_transition.to(self.device))
+        self.net = instance_net
+
+        optimizers = getattr(self.trainer, "optimizers", [])
+        if optimizers:
+            optimizer = optimizers[0]
+            existing = {id(p) for group in optimizer.param_groups for p in group.get("params", [])}
+            new_params = [
+                p for p in self.net.parameters() if id(p) not in existing
+            ]
+            if new_params:
+                base_group = optimizer.param_groups[0]
+                param_group = {"params": new_params}
+                if "lr" in base_group:
+                    param_group["lr"] = base_group["lr"]
+                if "weight_decay" in base_group:
+                    param_group["weight_decay"] = base_group["weight_decay"]
+                optimizer.add_param_group(param_group)
+
+        self._instance_noise_initialized = True
+        self.log("noise/instance_initialized", 1.0, on_epoch=True, prog_bar=True)
+
     def on_train_epoch_end(self) -> None:
-        """Log the learned noise transition matrix at the end of each epoch."""
-        if hasattr(self.net, 'get_transition_matrix'):
-            transition_matrix = self.net.get_transition_matrix()
-            
-            # Log some statistics about the transition matrix
-            diagonal_mean = torch.diagonal(transition_matrix).mean().item()
-            off_diagonal_mean = (
-                transition_matrix.sum() - torch.diagonal(transition_matrix).sum()
-            ).item() / (self.num_classes * (self.num_classes - 1))
-            
-            self.log("noise/diagonal_mean", diagonal_mean, on_epoch=True)
-            self.log("noise/off_diagonal_mean", off_diagonal_mean, on_epoch=True)
+        if (
+            not self._noise_initialized
+            and self.noise_init_epoch > 0
+            and (self.current_epoch + 1) >= self.noise_init_epoch
+        ):
+            self._initialize_noise_adaption()
+        if (
+            self._noise_initialized
+            and not self._instance_noise_initialized
+            and self.noise_instance_epoch > 0
+            and (self.current_epoch + 1) >= self.noise_instance_epoch
+        ):
+            self._initialize_instance_noise()
+
+    def _eval_logits(self, inputs: torch.Tensor) -> torch.Tensor:
+        if self._noise_initialized and hasattr(self.net, "get_clean_output"):
+            return self.net.get_clean_output(inputs)
+        return self.forward(inputs)
+
+    def validation_step(self, batch: Any, batch_idx: int) -> None:
+        inputs, targets = batch
+        logits = self._eval_logits(inputs)
+        loss = self.criterion(logits, targets)
+        preds = torch.argmax(logits, dim=1)
+
+        self.val_loss(loss)
+        self.val_metrics(preds, targets)
+
+        if self.log_per_class:
+            self.val_per_class(preds, targets)
+
+        self.log("val/loss", self.val_loss, on_step=False, on_epoch=True, prog_bar=True)
+        # Show the primary metric on prog bar
+        self.log_dict(
+            {k: v for k, v in self.val_metrics.items() if k != "val/f1_macro"},
+            on_step=False,
+            on_epoch=True,
+            prog_bar=False,
+        )
+        self.log("val/f1_macro", self.val_metrics["val/f1_macro"], on_step=False, on_epoch=True, prog_bar=True)
+
+
+    def test_step(self, batch: Any, batch_idx: int) -> None:
+        inputs, targets = batch
+        logits = self._eval_logits(inputs)
+        loss = self.criterion(logits, targets)
+        preds = torch.argmax(logits, dim=1)
+
+        self.test_loss(loss)
+        self.test_metrics(preds, targets)
+
+        if self.log_per_class:
+            self.test_per_class(preds, targets)
+
+        self.log("test/loss", self.test_loss, on_step=False, on_epoch=True, prog_bar=True)
+        self.log_dict(
+            {k: v for k, v in self.test_metrics.items() if k != "test/f1_macro"},
+            on_step=False,
+            on_epoch=True,
+            prog_bar=False,
+        )
+        self.log("test/f1_macro", self.test_metrics["test/f1_macro"], on_step=False, on_epoch=True, prog_bar=True)
+
+    def on_test_epoch_end(self) -> None:
+        if self.log_per_class:
+            pc = self.test_per_class.compute()
+            for i in range(self.num_classes):
+                self.log(f"test/precision_c{i}", pc["test/per_class/precision"][i], sync_dist=True)
+                self.log(f"test/recall_c{i}", pc["test/per_class/recall"][i], sync_dist=True)
+                self.log(f"test/f1_c{i}", pc["test/per_class/f1"][i], sync_dist=True)

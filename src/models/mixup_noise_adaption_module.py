@@ -13,8 +13,8 @@ class MixupNoiseAdaptionModule(MixupModule):
     def __init__(
         self,
         *args,
-        noise_init_epoch: int = 5,
-        noise_instance_epoch: int = 10,
+        noise_init_epoch: int = 10,
+        noise_instance_epoch: int = 30,
         instance_hidden_dim: int = 128,
         noise_init_eps: float = 1e-6,
         **kwargs,

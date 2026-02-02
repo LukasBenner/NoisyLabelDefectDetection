@@ -5,11 +5,11 @@ from typing import Optional
 
 
 class CELoss(torch.nn.Module):
-    def __init__(self, num_classes, weight=None) -> None:
+    def __init__(self, num_classes, weight=None, label_smoothing=0.0) -> None:
         super(CELoss, self).__init__()
         self.num_classes = num_classes
         self.weight = weight
-        self.cross_entropy = torch.nn.CrossEntropyLoss(weight=self.weight)
+        self.cross_entropy = torch.nn.CrossEntropyLoss(weight=self.weight, label_smoothing=label_smoothing)
         
     def forward(self, pred, labels):
         loss = self.cross_entropy(pred, labels)

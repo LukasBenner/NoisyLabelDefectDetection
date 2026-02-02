@@ -11,9 +11,11 @@ from lightning import Callback, Trainer
 from lightning.pytorch.loggers import CSVLogger
 from omegaconf import DictConfig, OmegaConf
 from scipy import stats
+from lightning.pytorch.callbacks import ModelCheckpoint
 import torch
 
 from utils.instantiators import instantiate_callbacks
+from utils.utils import calculate_summary_statistics, to_float
 
 # Setup root
 rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
@@ -22,46 +24,6 @@ from src.utils.pylogger import RankedLogger
 from lightning import seed_everything
 
 log = RankedLogger(__name__, rank_zero_only=True)
-
-
-def calculate_summary_statistics(
-    all_metrics: List[Dict[str, Any]],
-) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """Calculate summary statistics across multiple runs."""
-    all_metrics_df = pd.DataFrame(all_metrics)
-    summary_statistics = []
-    metrics_to_analyze = [m for m in all_metrics_df.columns if m not in ["run_idx"]]
-
-    for metric in metrics_to_analyze:
-        values = all_metrics_df[metric].dropna()
-        n = len(values)
-        mean = values.mean()
-        median = values.median()
-        std = values.std(ddof=1)
-        se = std / np.sqrt(n) if n > 0 else 0.0
-
-        if n > 1:
-            t = stats.t.ppf(0.975, df=n - 1)
-            margin = t * se
-            ci_lower = mean - margin
-            ci_upper = mean + margin
-        else:
-            ci_lower = ci_upper = mean
-
-        summary_statistics.append(
-            {
-                "metric": metric,
-                "mean": mean,
-                "median": median,
-                "std": std,
-                "ci_lower": ci_lower,
-                "ci_upper": ci_upper,
-                "min": values.min(),
-                "max": values.max(),
-            }
-        )
-
-    return all_metrics_df, pd.DataFrame(summary_statistics)
 
 
 def train_single_run(cfg: DictConfig, run_idx: int, base_save_dir: Path) -> Dict[str, Any]:
@@ -84,10 +46,7 @@ def train_single_run(cfg: DictConfig, run_idx: int, base_save_dir: Path) -> Dict
 
     # Instantiate model
     log.info(f"Instantiating model for run {run_idx}")
-    model = hydra.utils.instantiate(cfg.model, datamodule=datamodule)
-
-    # Setup callbacks with checkpoint directory override
-    from lightning.pytorch.callbacks import ModelCheckpoint
+    model = hydra.utils.instantiate(cfg.model, datamodule=datamodule)    
 
     callbacks: List[Callback] = instantiate_callbacks(cfg.get("callbacks"))
 
@@ -107,17 +66,6 @@ def train_single_run(cfg: DictConfig, run_idx: int, base_save_dir: Path) -> Dict
     # Train the model
     log.info(f"Starting training for run {run_idx}")
     trainer.fit(model=model, datamodule=datamodule)
-
-    # Extract validation-best metrics right after fit.
-    # NOTE: Lightning's `trainer.callback_metrics` will be updated/overwritten by the test loop,
-    # so reading val metrics after `trainer.test()` often yields missing values.
-    def to_float(value):
-        """Convert tensor or numeric value to float."""
-        if value is None:
-            return None
-        if hasattr(value, "item"):
-            return float(value.item())
-        return float(value)
 
     val_f1_macro_best = trainer.callback_metrics.get("val/f1_macro_best")
 
