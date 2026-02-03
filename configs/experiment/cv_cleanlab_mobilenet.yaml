@@ -1,0 +1,48 @@
+# @package _global_
+
+defaults:
+  - /model: base
+  - override /data: holdout
+  - override /trainer: default
+  - _self_
+
+experiment_name: "CV_Cleanlab"
+run_name_postfix: "mobilenet_large_3fold"
+
+# Cross-validation parameters
+n_folds: 3
+seed: 42
+
+model:
+  net:
+    _target_: src.models.components.mobile_net.MobileNet
+    pretrained: true
+    variant: large
+  optimizer:
+    _target_: torch.optim.SGD
+    _partial_: true
+    lr: 0.01
+    momentum: 0.9
+    weight_decay: 1e-5
+  scheduler:
+    _target_: torch.optim.lr_scheduler.CosineAnnealingLR
+    T_max: ${trainer.max_epochs}
+  criterion:
+    _target_: src.models.components.loss.CELoss
+
+data:
+  batch_size: 32
+  num_workers: 4
+  image1k_norm: true
+  transforms: medium
+  train_path: ${paths.data_dir}/surface/train
+  val_path: ${paths.data_dir}/surface/val
+  test_path: ${paths.data_dir}/surface/test
+
+trainer:
+  max_epochs: 50
+  accelerator: gpu
+  devices: 1
+  precision: 16-mixed
+  
+callbacks: null  # Simplified for CV training

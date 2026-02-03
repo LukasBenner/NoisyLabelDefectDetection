@@ -214,7 +214,6 @@ class CoTeachingModule(LightningModule):
         preds = torch.argmax(avg_logits, dim=1)
 
         self.val_loss(loss)
-        self.val_loss(loss)
         self.val_metrics(preds, targets)
 
         if self.log_per_class:

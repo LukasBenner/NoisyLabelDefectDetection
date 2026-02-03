@@ -6,8 +6,8 @@ from torchvision.datasets import ImageFolder
 from torchvision.transforms import v2
 import torch
 
-from data.components.transform_subset import TransformSubset
-from data.components.transforms import BaselineTransforms, MediumTransforms, StrongTransforms
+from src.data.components.transform_subset import TransformSubset
+from src.data.components.transforms import BaselineTransforms, MediumTransforms, StrongTransforms
 
 
 class HoldoutDataModule(LightningDataModule):
@@ -16,7 +16,7 @@ class HoldoutDataModule(LightningDataModule):
         train_path: str,
         val_path: str,
         test_path: str,
-        transforms: str = "improved",
+        transforms: str = "medium",
         image1k_norm: bool = True,
         batch_size: int = 96,
         num_workers: int = 4,

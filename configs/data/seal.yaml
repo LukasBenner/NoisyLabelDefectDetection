@@ -1,8 +1,8 @@
 _target_: src.data.seal_datamodule.SEALDataModule
 
-train_path: ${paths.root_dir}/data/surface/train
-val_path: ${paths.root_dir}/data/surface/val
-test_path: ${paths.root_dir}/data/surface/test
+train_path: /srv/defectDetectionDataset/surface_clustered_cleaned/train
+val_path: /srv/defectDetectionDataset/surface_clustered_cleaned/val
+test_path: /srv/defectDetectionDataset/surface_clustered_cleaned/test
 batch_size: 32
 num_workers: 4
 pin_memory: True
