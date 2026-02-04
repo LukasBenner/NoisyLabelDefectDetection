@@ -8,7 +8,7 @@ defaults:
 
 research_name: BinaryDetection
 experiment_name: full_cleaned
-run_name_postfix: ce
+run_name_postfix: sce
 
 n_runs: 5
 
@@ -28,7 +28,9 @@ model:
     _target_: torch.optim.lr_scheduler.CosineAnnealingLR
     T_max: ${trainer.max_epochs}
   criterion:
-    _target_: src.models.components.loss.CELoss
+    _target_: src.models.components.loss.SCELoss
+    alpha: 1
+    beta: 0.1
 
 data:
   batch_size: 32
