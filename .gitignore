@@ -1,8 +1,9 @@
-notebooks/data_cleaning/artifacts/cluster_samples
+**/cluster_samples
 
 #ignore resources and outputs for synthetic data generation
-synthetic/output
-synthetic/resources
+synthetic/blender/output
+synthetic/blender/resources
+**/synthetic_renders
 
 # ignore newly added data
 data/new_data
