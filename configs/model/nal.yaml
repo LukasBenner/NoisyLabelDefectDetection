@@ -1,6 +1,6 @@
 _target_: src.models.noise_adaption_module.NoiseAdaptionModule
 
-num_classes: 10
+num_classes: 9
 
 net:
   _target_: src.models.components.mobile_net.MobileNet
@@ -27,4 +27,5 @@ noise_init_epoch: 5
 noise_instance_epoch: 10
 instance_hidden_dim: 128
 noise_init_eps: 1.0e-6
+noise_matrix_path: /home/lukasb/Documents/NoisyLabelDefectDetection/notebooks/data_cleaning/artifacts/noise_estimation/noise_matrix.pt
 compile: false

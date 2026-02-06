@@ -17,6 +17,7 @@ class NoiseAdaptionModule(BaseRobustModule):
         noise_instance_epoch: int = 30,
         instance_hidden_dim: int = 128,
         noise_init_eps: float = 1e-6,
+        noise_matrix_path: Optional[str] = None,
         **kwargs,
     ) -> None:
         super().__init__(*args, **kwargs)
@@ -28,6 +29,7 @@ class NoiseAdaptionModule(BaseRobustModule):
         self.noise_instance_epoch = int(noise_instance_epoch)
         self.instance_hidden_dim = int(instance_hidden_dim)
         self.noise_init_eps = float(noise_init_eps)
+        self.noise_matrix_path = noise_matrix_path
         self._noise_initialized = False
         self._instance_noise_initialized = False
 
@@ -75,12 +77,67 @@ class NoiseAdaptionModule(BaseRobustModule):
         cm = cm / cm.sum(dim=1, keepdim=True)
         return cm
 
+    def _sanitize_transition_matrix(self, T: torch.Tensor) -> torch.Tensor:
+        """Return a safe row-stochastic transition matrix.
+
+        Ensures finite values, non-negative entries, and rows summing to 1.
+        This is important because the noise layer uses a softmax parameterization;
+        initializing with -inf/NaN (e.g. from log(0) or empty rows) will make training
+        diverge to NaN.
+        """
+        num_classes = int(self.num_classes)
+        eps = float(self.noise_init_eps)
+
+        if T.ndim != 2 or T.shape[0] != num_classes or T.shape[1] != num_classes:
+            raise ValueError(
+                f"Expected transition matrix of shape ({num_classes}, {num_classes}), got {tuple(T.shape)}"
+            )
+
+        T = T.detach().to(device=self.device, dtype=torch.float32)
+
+        # Replace NaN/Inf early.
+        T = torch.where(torch.isfinite(T), T, torch.zeros_like(T))
+
+        # Enforce non-negativity.
+        T = torch.clamp(T, min=0.0)
+
+        # Add epsilon smoothing and normalize rows.
+        T = T + eps
+        row_sums = T.sum(dim=1, keepdim=True)
+        # If any row sum is zero (can happen if the input was all zeros), fall back to uniform.
+        bad_rows = row_sums.squeeze(1) <= 0
+        if torch.any(bad_rows):
+            T[bad_rows] = 1.0
+            row_sums = T.sum(dim=1, keepdim=True)
+
+        T = T / row_sums
+
+        # Final safety clamp + renormalize.
+        T = torch.clamp(T, min=eps)
+        T = T / T.sum(dim=1, keepdim=True)
+        return T
+
     def _initialize_noise_adaption(self) -> None:
         val_loader = self._get_val_dataloader()
         if val_loader is None:
             return
 
         confusion = self._compute_confusion_matrix(val_loader)
+        if self.noise_matrix_path is not None:
+            try:
+                noise_data = torch.load(self.noise_matrix_path, map_location="cpu")
+                if isinstance(noise_data, dict) and "T" in noise_data:
+                    confusion = noise_data["T"]
+                else:
+                    confusion = noise_data
+            except Exception as e:
+                print(f"Failed to load noise matrix from {self.noise_matrix_path}: {e}")
+
+        try:
+            confusion = self._sanitize_transition_matrix(confusion)
+        except Exception as e:
+            print(f"Invalid noise matrix; falling back to estimated confusion: {e}")
+            confusion = self._sanitize_transition_matrix(self._compute_confusion_matrix(val_loader))
 
         noise_net = NoiseAdaptionNet(
             base_net=self.net,
@@ -89,8 +146,11 @@ class NoiseAdaptionModule(BaseRobustModule):
         )
         noise_net.noise_layer.to(self.device)
         transition_device = noise_net.noise_layer.transition_matrix.device
+        # NoiseAdaptionLayer uses softmax(transition_matrix) internally.
+        # Initializing with log(T) makes softmax(log(T)) == T when rows sum to 1.
+        # Clamp away from 0 to avoid -inf which can cause NaNs.
         noise_net.noise_layer.transition_matrix.data.copy_(
-            torch.log(confusion.to(transition_device))
+            torch.log(confusion.to(transition_device).clamp_min(float(self.noise_init_eps)))
         )
         self.net = noise_net
 

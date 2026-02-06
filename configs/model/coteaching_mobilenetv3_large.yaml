@@ -1,6 +1,6 @@
 _target_: src.models.coteaching_module.CoTeachingModule
 
-num_classes: 10
+num_classes: 9
 lr: 0.1
 sgd_momentum: 0.9
 weight_decay: 1e-5

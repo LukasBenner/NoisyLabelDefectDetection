@@ -36,3 +36,6 @@ dependencies:
     - timm
     - einops
     - streamlit
+    - onnx
+    - onnxruntime
+    - onnxscript

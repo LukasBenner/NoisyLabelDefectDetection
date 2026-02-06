@@ -1,13 +1,83 @@
-from typing import Optional
+from typing import Optional, Sequence, List, Tuple
 
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, Dataset
 from lightning import LightningDataModule
 from torchvision.datasets import ImageFolder
 from torchvision.transforms import v2
 import torch
 
 from src.data.components.transform_subset import TransformSubset
-from src.data.components.transforms import BaselineTransforms, MediumTransforms, StrongTransforms
+from src.data.components.transforms import (
+    BaselineTransforms,
+    MediumTransforms,
+    StrongTransforms,
+)
+
+
+class CombinedImageFolder(Dataset):
+    """Concat ImageFolder datasets while preserving ImageFolder attributes.
+
+    Supports union of class sets across datasets by remapping targets to a
+    unified class index space.
+    """
+
+    def __init__(self, datasets: Sequence[ImageFolder]) -> None:
+        if len(datasets) == 0:
+            raise ValueError("At least one dataset is required.")
+        self.datasets: List[ImageFolder] = list(datasets)
+
+        # Build a unified class list (keep order from first dataset, then append new).
+        class_names: List[str] = list(self.datasets[0].classes)
+        for ds in self.datasets[1:]:
+            for name in ds.classes:
+                if name not in class_names:
+                    class_names.append(name)
+
+        self.classes = class_names
+        self.class_to_idx = {name: idx for idx, name in enumerate(self.classes)}
+
+        # Precompute per-dataset target remapping to unified indices.
+        self._target_remap: List[List[int]] = []
+        for ds in self.datasets:
+            remap = [self.class_to_idx[name] for name in ds.classes]
+            self._target_remap.append(remap)
+
+        # Concatenate targets and samples for downstream code (with remapped labels).
+        self.targets: List[int] = []
+        self.samples: List[Tuple[str, int]] = []
+        for ds_idx, ds in enumerate(self.datasets):
+            remap = self._target_remap[ds_idx]
+            if hasattr(ds, "samples"):
+                for path, target in ds.samples:
+                    self.samples.append((path, remap[target]))
+            if hasattr(ds, "targets"):
+                self.targets.extend([remap[t] for t in ds.targets])
+
+        # torchvision also exposes imgs as alias of samples
+        self.imgs = self.samples
+
+        lengths = [len(ds) for ds in self.datasets]
+        self.cumulative_sizes = torch.cumsum(torch.tensor(lengths), dim=0).tolist()
+
+    def __len__(self) -> int:
+        return self.cumulative_sizes[-1]
+
+    def __getitem__(self, index: int):
+        if index < 0:
+            index = len(self) + index
+        if index < 0 or index >= len(self):
+            raise IndexError("Index out of range")
+
+        dataset_idx = 0
+        while index >= self.cumulative_sizes[dataset_idx]:
+            dataset_idx += 1
+        if dataset_idx == 0:
+            sample_idx = index
+        else:
+            sample_idx = index - self.cumulative_sizes[dataset_idx - 1]
+        img, target = self.datasets[dataset_idx][sample_idx]
+        target = self._target_remap[dataset_idx][target]
+        return img, target
 
 
 class HoldoutDataModule(LightningDataModule):
@@ -16,6 +86,7 @@ class HoldoutDataModule(LightningDataModule):
         train_path: str,
         val_path: str,
         test_path: str,
+        syn_path: Optional[str] = None,
         transforms: str = "medium",
         image1k_norm: bool = True,
         batch_size: int = 96,
@@ -24,47 +95,58 @@ class HoldoutDataModule(LightningDataModule):
         seed: int = 42,
     ) -> None:
         super().__init__()
-        
+
         self.save_hyperparameters(logger=False)
-        
+
         mean_image1k = [0.485, 0.456, 0.406]
         std_image1k = [0.229, 0.224, 0.225]
-        
+
         mean_custom = [0.3299, 0.3896, 0.4599]
         std_custom = [0.2219, 0.2155, 0.2540]
-        
+
         mean = mean_image1k if image1k_norm else mean_custom
         std = std_image1k if image1k_norm else std_custom
 
         if transforms == "baseline":
             self.train_transforms = BaselineTransforms.train_transforms(mean, std)
             self.test_transforms = BaselineTransforms.eval_transforms(mean, std)
-        
+
         elif transforms == "medium":
             self.train_transforms = MediumTransforms.train_transforms(mean, std)
             self.test_transforms = MediumTransforms.eval_transforms(mean, std)
-            
+
         elif transforms == "strong":
             self.train_transforms = StrongTransforms.train_transforms(mean, std)
             self.test_transforms = StrongTransforms.eval_transforms(mean, std)
-        
+
         else:
             raise ValueError(f"Transforms '{transforms}' not recognized.")
-        
+
     @property
     def num_classes(self) -> int:
         assert self.train_ds is not None, "Dataset not prepared. Call setup() first."
         return len(self.train_ds.classes)
-    
+
     @property
     def class_weights(self) -> torch.Tensor:
-        assert hasattr(self, "_class_weights"), "Class weights not computed. Call setup('fit') first."
+        assert hasattr(
+            self, "_class_weights"
+        ), "Class weights not computed. Call setup('fit') first."
         return self._class_weights
-        
+
+    def _add_synthetic_data(self, dataset: ImageFolder) -> ImageFolder:
+        if self.hparams.syn_path is None:
+            raise ValueError("Synthetic data path not provided.")
+
+        syn_ds = ImageFolder(self.hparams.syn_path)
+        combined_ds = CombinedImageFolder([dataset, syn_ds])
+        return combined_ds
 
     def setup(self, stage: Optional[str] = None):
         if stage == "fit":
             self.train_ds = ImageFolder(self.hparams.train_path)
+            if self.hparams.syn_path is not None:
+                self.train_ds = self._add_synthetic_data(self.train_ds)
             idxs_train = list(range(len(self.train_ds)))
             self.train_dataset = TransformSubset(
                 self.train_ds,
@@ -72,14 +154,14 @@ class HoldoutDataModule(LightningDataModule):
                 transform=self.train_transforms,
                 return_index=False,
             )
-            
+
             targets = torch.tensor(self.train_ds.targets, dtype=torch.long)
             num_classes = len(self.train_ds.classes)
             counts = torch.bincount(targets, minlength=num_classes).float()
             counts = torch.clamp(counts, min=1.0)
             N = counts.sum()
             self._class_weights = N / (num_classes * counts)
-            
+
         if stage == "fit" or stage == "validate":
             self.val_ds = ImageFolder(self.hparams.val_path)
             idxs_val = list(range(len(self.val_ds)))
@@ -89,7 +171,7 @@ class HoldoutDataModule(LightningDataModule):
                 transform=self.test_transforms,
                 return_index=False,
             )
-            
+
         if stage == "test" or stage == "predict":
             self.test_ds = ImageFolder(self.hparams.test_path)
             idxs_test = list(range(len(self.test_ds)))
@@ -99,7 +181,7 @@ class HoldoutDataModule(LightningDataModule):
                 transform=self.test_transforms,
                 return_index=False,
             )
-        
+
     def train_dataloader(self) -> DataLoader:
         return DataLoader(
             self.train_dataset,
@@ -130,7 +212,7 @@ class HoldoutDataModule(LightningDataModule):
             shuffle=False,
             persistent_workers=True if self.hparams.num_workers > 0 else False,
         )
-        
+
     def predict_dataloader(self) -> DataLoader:
         return DataLoader(
             self.test_dataset,

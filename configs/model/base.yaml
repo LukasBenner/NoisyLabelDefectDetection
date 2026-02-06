@@ -1,6 +1,6 @@
 _target_: src.models.base_robust_module.BaseRobustModule
 
-num_classes: 10
+num_classes: 9
 
 # Base network
 net:

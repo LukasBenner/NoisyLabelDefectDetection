@@ -27,8 +27,8 @@ model:
     T_max: ${trainer.max_epochs}
   criterion:
     _target_: src.models.components.loss.CELoss
-  noise_init_epoch: 50
-  noise_instance_epoch: 80
+  noise_init_epoch: 10
+  noise_instance_epoch: 30
   instance_hidden_dim: 256
   noise_init_eps: 1.0e-4
 

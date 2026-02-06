@@ -71,7 +71,7 @@ class StrongTransforms:
                 v2.RandomHorizontalFlip(p=0.5),
                 v2.RandomVerticalFlip(p=0.5),
                 v2.RandomRotation(degrees=(-10,10)),
-                v2.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.1, hue=0.05),
+                v2.ColorJitter(brightness=0.3, contrast=0.2, saturation=0.1, hue=0.1),
                 v2.ToImage(),
                 v2.ToDtype(torch.float32, scale=True),
                 v2.Normalize(mean=mean, std=std),

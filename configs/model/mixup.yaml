@@ -1,6 +1,6 @@
 _target_: src.models.mixup_module.MixupModule
 
-num_classes: 10
+num_classes: 9
 
 net:
   _target_: src.models.components.mobile_net.MobileNet

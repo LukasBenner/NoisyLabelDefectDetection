@@ -1,6 +1,6 @@
 _target_: src.models.seal_module.SEALIterationModule
 
-num_classes: 10
+num_classes: 9
 
 epochs_per_iteration: 10  # Number of epochs per iteration (T in algorithm)
 

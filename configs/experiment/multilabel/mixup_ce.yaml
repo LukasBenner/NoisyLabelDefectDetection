@@ -7,7 +7,7 @@ defaults:
   - _self_
 
 experiment_name: "Mixup"
-run_name_postfix: "ce_20"
+run_name_postfix: "ce_10"
 
 n_runs: 5
 
@@ -27,7 +27,7 @@ model:
     T_max: ${trainer.max_epochs}
   criterion:
     _target_: src.models.components.loss.CELoss
-  mixup_alpha: 0.2
+  mixup_alpha: 0.1
 
 data:
   batch_size: 32
