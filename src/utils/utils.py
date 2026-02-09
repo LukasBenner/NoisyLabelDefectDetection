@@ -1,3 +1,4 @@
+import os
 from typing import Any, Dict, List, Optional
 
 import numpy as np
@@ -65,3 +66,27 @@ def to_float(value):
         if hasattr(value, "item"):
             return float(value.item())
         return float(value)
+
+def create_confusion_matrix(preds, targets, class_names, logging_directory):
+    """Create and save a confusion matrix."""
+    from sklearn.metrics import confusion_matrix
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+
+    cm = confusion_matrix(targets, preds)
+    plt.figure(figsize=(10, 8))
+    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", xticklabels=class_names, yticklabels=class_names)
+    plt.xlabel("Predicted")
+    plt.ylabel("True")
+    plt.title("Confusion Matrix")
+    plt.savefig(os.path.join(logging_directory, "confusion_matrix.png"))
+    plt.close()
+
+    cm_normalized = cm.astype("float") / cm.sum(axis=1)[:, np.newaxis]
+    plt.figure(figsize=(10, 8))
+    sns.heatmap(cm_normalized, annot=True, fmt=".2f", cmap="Blues", xticklabels=class_names, yticklabels=class_names)
+    plt.xlabel("Predicted")
+    plt.ylabel("True")
+    plt.title("Normalized Confusion Matrix")
+    plt.savefig(os.path.join(logging_directory, "confusion_matrix_normalized.png"))
+    plt.close()

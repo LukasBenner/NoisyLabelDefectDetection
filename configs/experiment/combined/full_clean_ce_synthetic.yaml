@@ -2,13 +2,13 @@
 
 defaults:
   - /model: base
-  - override /data: holdout
+  - override /data: combined_holdout
   - override /callbacks: with_early_stopping
   - _self_
 
 research_name: SimpleDetection
-experiment_name: noisy_cleaned
-run_name_postfix: nce_rce
+experiment_name: full_cleaned_synthetic
+run_name_postfix: ce
 
 n_runs: 5
 
@@ -28,17 +28,13 @@ model:
     _target_: torch.optim.lr_scheduler.CosineAnnealingLR
     T_max: ${trainer.max_epochs}
   criterion:
-    _target_: src.models.components.loss.NCEandRCE
-    alpha: 10
-    beta: 0.1
+    _target_: src.models.components.loss.CELoss
 
 data:
   batch_size: 32
   image1k_norm: true
-  transforms: medium
-  train_path: /srv/defectDetectionDataset/simpleClassification/noisy_clean_split_new/train
-  val_path: /srv/defectDetectionDataset/simpleClassification/noisy_clean_split_new/val
-  test_path: /srv/defectDetectionDataset/simpleClassification/noisy_clean_split_new/test
+  transforms: strong
+  syn_path: /srv/defectDetectionDataset/sourceSets/synthetic
 
 callbacks:
   early_stopping:

@@ -1,7 +1,7 @@
 import os
 from datetime import date
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Optional
 
 import hydra
 import numpy as np
@@ -15,7 +15,7 @@ from lightning.pytorch.callbacks import ModelCheckpoint
 import torch
 
 from utils.instantiators import instantiate_callbacks
-from utils.utils import calculate_summary_statistics, to_float
+from utils.utils import calculate_summary_statistics, create_confusion_matrix, to_float
 
 # Setup root
 rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
@@ -24,6 +24,63 @@ from src.utils.pylogger import RankedLogger
 from lightning import seed_everything
 
 log = RankedLogger(__name__, rank_zero_only=True)
+
+
+def _get_class_names(datamodule) -> Optional[List[str]]:
+    for attr in ("test_ds", "val_ds", "train_ds"):
+        ds = getattr(datamodule, attr, None)
+        if ds is not None and hasattr(ds, "classes"):
+            return list(ds.classes)
+    return None
+
+
+def _collect_preds_targets(model: torch.nn.Module, dataloader: Any) -> tuple[torch.Tensor, torch.Tensor]:
+    device = getattr(model, "device", None)
+    if device is None:
+        try:
+            device = next(model.parameters()).device
+        except StopIteration:
+            device = torch.device("cpu")
+
+    preds_list: List[torch.Tensor] = []
+    targets_list: List[torch.Tensor] = []
+
+    model.eval()
+    with torch.no_grad():
+        for batch in dataloader:
+            if isinstance(batch, (list, tuple)):
+                inputs, targets = batch[0], batch[1]
+            else:
+                raise ValueError("Unsupported batch type for confusion matrix generation.")
+
+            inputs = inputs.to(device)
+            targets = targets.to(device)
+
+            if hasattr(model, "_eval_logits"):
+                logits = model._eval_logits(inputs)
+                preds = torch.argmax(logits, dim=1)
+                preds_list.append(preds.detach().cpu())
+                targets_list.append(targets.detach().cpu())
+                continue
+
+            if hasattr(model, "model_step"):
+                _, preds, targets_out = model.model_step((inputs, targets))
+                preds_list.append(preds.detach().cpu())
+                targets_list.append(targets_out.detach().cpu())
+                continue
+
+            if hasattr(model, "model1") and hasattr(model, "model2"):
+                logits1 = model.model1(inputs)
+                logits2 = model.model2(inputs)
+                logits = 0.5 * (logits1 + logits2)
+            else:
+                logits = model(inputs)
+
+            preds = torch.argmax(logits, dim=1)
+            preds_list.append(preds.detach().cpu())
+            targets_list.append(targets.detach().cpu())
+
+    return torch.cat(preds_list), torch.cat(targets_list)
 
 
 def train_single_run(cfg: DictConfig, run_idx: int, base_save_dir: Path) -> Dict[str, Any]:
@@ -97,6 +154,22 @@ def train_single_run(cfg: DictConfig, run_idx: int, base_save_dir: Path) -> Dict
     else:
         log.warning("No best checkpoint found, testing with final model")
         test_trainer.test(model=model, datamodule=datamodule)
+
+
+    # Confusion matrix on test split
+    log.info("Generating confusion matrix")
+    datamodule.setup(stage="test")
+    class_names = _get_class_names(datamodule)
+    if class_names is None:
+        log.warning("No class names found; skipping confusion matrix")
+    else:
+        preds, targets = _collect_preds_targets(model, datamodule.test_dataloader())
+        create_confusion_matrix(
+            preds=preds.numpy(),
+            targets=targets.numpy(),
+            class_names=class_names,
+            logging_directory=str(test_dir),
+        )
 
     # Extract test metrics
     cm = test_trainer.callback_metrics

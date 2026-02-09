@@ -35,9 +35,6 @@ data:
   image1k_norm: true
   transforms: medium
   noise_rate: 0.2
-  train_path: /srv/defectDetectionDataset/multiclassClassification/full_clean_clustered_new/train
-  val_path: /srv/defectDetectionDataset/multiclassClassification/full_clean_clustered_new/val
-  test_path: /srv/defectDetectionDataset/multiclassClassification/full_clean_clustered_new/test
 
 callbacks:
   early_stopping:

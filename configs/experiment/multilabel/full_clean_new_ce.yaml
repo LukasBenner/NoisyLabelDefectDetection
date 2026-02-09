@@ -7,8 +7,8 @@ defaults:
   - _self_
 
 research_name: SurfaceDefectDetection
-experiment_name: full_cleaned
-run_name_postfix: new_ce
+experiment_name: full_cleaned_new
+run_name_postfix: ce
 
 n_runs: 5
 
@@ -34,9 +34,6 @@ data:
   batch_size: 32
   image1k_norm: true
   transforms: medium
-  train_path: /srv/defectDetectionDataset/multiclassClassification/full_clean_clustered_new/train
-  val_path: /srv/defectDetectionDataset/multiclassClassification/full_clean_clustered_new/val
-  test_path: /srv/defectDetectionDataset/multiclassClassification/full_clean_clustered_new/test
 
 callbacks:
   early_stopping:

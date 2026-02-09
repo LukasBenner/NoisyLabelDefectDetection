@@ -30,9 +30,10 @@ data:
   batch_size: 32
   image1k_norm: true
   transforms: baseline
-  train_path: /srv/defectDetectionDataset/multiclassClassification/baseline_clustered/train
-  val_path: /srv/defectDetectionDataset/multiclassClassification/baseline_clustered/val
-  test_path: /srv/defectDetectionDataset/multiclassClassification/baseline_clustered/test
+  train_path: /srv/defectDetectionDataset/surfaceClassification/baseline_clustered/train
+  val_path: /srv/defectDetectionDataset/surfaceClassification/baseline_clustered/val
+  test_path: /srv/defectDetectionDataset/surfaceClassification/baseline_clustered/test
+  classes: [Bent, Blackstained, Cracked, GapDemo, MissingEnd, NoDeficiencies, Rust, ScratchedSurface, Silicate, UnknownStains, Unknown, Waterstains]
 
 callbacks:
   early_stopping:

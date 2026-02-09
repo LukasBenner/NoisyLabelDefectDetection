@@ -1,9 +1,8 @@
-from typing import Optional, Sequence, List, Tuple
+from typing import Dict, Optional, Sequence
 
-from torch.utils.data import DataLoader, Dataset
+from torch.utils.data import DataLoader
 from lightning import LightningDataModule
 from torchvision.datasets import ImageFolder
-from torchvision.transforms import v2
 import torch
 
 from data.components.combined_image_folder import CombinedImageFolder
@@ -13,6 +12,7 @@ from src.data.components.transforms import (
     MediumTransforms,
     StrongTransforms,
 )
+from src.data.components.utils import filter_classes, merge_classes
 
 class CombinedHoldoutDataModule(LightningDataModule):
     def __init__(
@@ -21,6 +21,8 @@ class CombinedHoldoutDataModule(LightningDataModule):
         val_path: str,
         test_path: str,
         syn_path: Optional[str] = None,
+        classes: Optional[Sequence[str]] = None,
+        merge_classes: Optional[Dict[str, Sequence[str]]] = None,
         transforms: str = "medium",
         image1k_norm: bool = True,
         batch_size: int = 96,
@@ -73,12 +75,16 @@ class CombinedHoldoutDataModule(LightningDataModule):
             raise ValueError("Synthetic data path not provided.")
 
         syn_ds = ImageFolder(self.hparams.syn_path)
+        syn_ds = filter_classes(syn_ds, self.hparams.classes, allow_missing=True)
+        syn_ds = merge_classes(syn_ds, self.hparams.merge_classes, allow_missing=True)
         combined_ds = CombinedImageFolder([dataset, syn_ds])
         return combined_ds
 
     def setup(self, stage: Optional[str] = None):
         if stage == "fit":
             self.train_ds = ImageFolder(self.hparams.train_path)
+            self.train_ds = filter_classes(self.train_ds, self.hparams.classes)
+            self.train_ds = merge_classes(self.train_ds, self.hparams.merge_classes)
             if self.hparams.syn_path is not None:
                 self.train_ds = self._add_synthetic_data(self.train_ds)
             idxs_train = list(range(len(self.train_ds)))
@@ -98,6 +104,8 @@ class CombinedHoldoutDataModule(LightningDataModule):
 
         if stage == "fit" or stage == "validate":
             self.val_ds = ImageFolder(self.hparams.val_path)
+            self.val_ds = filter_classes(self.val_ds, self.hparams.classes)
+            self.val_ds = merge_classes(self.val_ds, self.hparams.merge_classes)
             idxs_val = list(range(len(self.val_ds)))
             self.val_dataset = TransformSubset(
                 self.val_ds,
@@ -108,6 +116,8 @@ class CombinedHoldoutDataModule(LightningDataModule):
 
         if stage == "test" or stage == "predict":
             self.test_ds = ImageFolder(self.hparams.test_path)
+            self.test_ds = filter_classes(self.test_ds, self.hparams.classes)
+            self.test_ds = merge_classes(self.test_ds, self.hparams.merge_classes)
             idxs_test = list(range(len(self.test_ds)))
             self.test_dataset = TransformSubset(
                 self.test_ds,

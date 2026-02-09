@@ -14,6 +14,7 @@ from src.data.components.transforms import (
 )
 from src.data.cifar100 import make_symmetric_noisy_targets
 from data.components.combined_image_folder import CombinedImageFolder
+from src.data.components.utils import filter_classes
 
 
 class NoisyTargetsDataset(Dataset):
@@ -107,6 +108,7 @@ class HoldoutNoisyDataModule(LightningDataModule):
             raise ValueError("Synthetic data path not provided.")
 
         syn_ds = ImageFolder(self.hparams.syn_path)
+        syn_ds = filter_classes(syn_ds, self.hparams.classes)
         combined_ds = CombinedImageFolder([dataset, syn_ds])
         return combined_ds
 
@@ -129,6 +131,7 @@ class HoldoutNoisyDataModule(LightningDataModule):
     def setup(self, stage: Optional[str] = None):
         if stage == "fit":
             self.train_ds = ImageFolder(self.hparams.train_path)
+            self.train_ds = filter_classes(self.train_ds, self.hparams.classes)
             if self.hparams.syn_path is not None:
                 self.train_ds = self._add_synthetic_data(self.train_ds)
             self.train_ds = self._apply_label_noise(self.train_ds)
@@ -150,6 +153,7 @@ class HoldoutNoisyDataModule(LightningDataModule):
 
         if stage == "fit" or stage == "validate":
             self.val_ds = ImageFolder(self.hparams.val_path)
+            self.val_ds = filter_classes(self.val_ds, self.hparams.classes)
             idxs_val = list(range(len(self.val_ds)))
             self.val_dataset = TransformSubset(
                 self.val_ds,
@@ -160,6 +164,7 @@ class HoldoutNoisyDataModule(LightningDataModule):
 
         if stage == "test" or stage == "predict":
             self.test_ds = ImageFolder(self.hparams.test_path)
+            self.test_ds = filter_classes(self.test_ds, self.hparams.classes)
             idxs_test = list(range(len(self.test_ds)))
             self.test_dataset = TransformSubset(
                 self.test_ds,

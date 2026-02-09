@@ -1,8 +1,9 @@
 _target_: src.data.holdout_noisy_datamodule.HoldoutNoisyDataModule
 
-train_path: /srv/defectDetectionDataset/multiclassClassification/noisy_clean_split_new/train
-val_path: /srv/defectDetectionDataset/multiclassClassification/noisy_clean_split_new/val
-test_path: /srv/defectDetectionDataset/multiclassClassification/noisy_clean_split_new/test
+train_path: /srv/defectDetectionDataset/surfaceClassification/full_clean_clustered_new/train
+val_path: /srv/defectDetectionDataset/surfaceClassification/full_clean_clustered_new/val
+test_path: /srv/defectDetectionDataset/surfaceClassification/full_clean_clustered_new/test
+classes: [black_stain, corrosion, crack, deformation, missing_part, ok, other, silicate_stain, water_stain]
 batch_size: 32
 num_workers: 8
 pin_memory: True

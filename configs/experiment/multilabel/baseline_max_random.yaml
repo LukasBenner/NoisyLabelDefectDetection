@@ -28,7 +28,7 @@ model:
 
 data:
   batch_size: 32
-  data_path: /srv/defectDetectionDataset/multiclassClassification/baseline
+  data_path: /srv/defectDetectionDataset/surfaceClassification/baseline
 
 callbacks:
   early_stopping:

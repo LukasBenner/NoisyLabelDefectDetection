@@ -2,12 +2,12 @@
 
 defaults:
   - /model: base
-  - override /data: holdout
+  - override /data: combined_holdout
   - override /callbacks: with_early_stopping
   - _self_
 
 research_name: SimpleDetection
-experiment_name: full_cleaned
+experiment_name: noisy_cleaned
 run_name_postfix: ce
 
 n_runs: 5
@@ -34,9 +34,9 @@ data:
   batch_size: 32
   image1k_norm: true
   transforms: medium
-  train_path: /srv/defectDetectionDataset/simpleClassification/full_clean_clustered_new/train
-  val_path: /srv/defectDetectionDataset/simpleClassification/full_clean_clustered_new/val
-  test_path: /srv/defectDetectionDataset/simpleClassification/full_clean_clustered_new/test
+  train_path: /srv/defectDetectionDataset/surfaceClassification/noisy_clean_split_new/train
+  val_path: /srv/defectDetectionDataset/surfaceClassification/noisy_clean_split_new/val
+  test_path: /srv/defectDetectionDataset/surfaceClassification/noisy_clean_split_new/test
 
 callbacks:
   early_stopping:
