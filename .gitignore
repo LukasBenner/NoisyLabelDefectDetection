@@ -1,9 +1,8 @@
 **/cluster_samples
 
 #ignore resources and outputs for synthetic data generation
-synthetic/blender/output
+synthetic/blender/outputs
 synthetic/blender/resources
-**/synthetic_renders
 
 # ignore newly added data
 data/new_data

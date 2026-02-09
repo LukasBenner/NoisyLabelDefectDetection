@@ -41,9 +41,9 @@ def export_onnx(model, onnx_path: str):
     print("Exported:", onnx_path)
 
 if __name__ == "__main__":
-    CKPT = "/home/lukasb/Documents/NoisyLabelDefectDetection/logs/train/BinaryDetection/full_cleaned/2026-02-04_10-57-35_new_sce/run_2/checkpoints/epoch_088-val_f1_0.8390.ckpt"
-    ONNX = "binary_model.onnx"
-    NUM_CLASSES = 2  # <-- set this
+    CKPT = "/home/lukasb/Documents/NoisyLabelDefectDetection/logs/train/SimpleDetection/full_cleaned/2026-02-09_09-09-26_ce/run_1/checkpoints/epoch_051-val_f1_0.8560.ckpt"
+    ONNX = "simple_model.onnx"
+    NUM_CLASSES = 3  # <-- set this
 
     model = build_model(NUM_CLASSES)
     load_checkpoint(model, CKPT)

@@ -3,34 +3,56 @@ import argparse
 import numpy as np
 import bpy
 import mathutils
-from blenderproc.python.types.MaterialUtility import Material
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
     "scene", help="Path to the scene.obj file, should be examples/resources/scene.obj"
+)
+parser.add_argument(
+    "--hdri",
+    default="/home/lukasb/Documents/NoisyLabelDefectDetection/synthetic/blender/resources/brown_photostudio_02_4k.hdr",
+    help="Path to the HDRI file to use for the world environment texture.",
 )
 args = parser.parse_args()
 print("[debug] scene path:", args.scene)
 
 bproc.init()
 
+def set_environment_texture(hdri_path):
+    world = bpy.context.scene.world
+    if world is None:
+        world = bpy.data.worlds.new("World")
+        bpy.context.scene.world = world
+
+    world.use_nodes = True
+    nodes = world.node_tree.nodes
+    links = world.node_tree.links
+
+    output = next((n for n in nodes if n.type == "OUTPUT_WORLD"), None)
+    if output is None:
+        output = nodes.new("ShaderNodeOutputWorld")
+
+    background = next((n for n in nodes if n.type == "BACKGROUND"), None)
+    if background is None:
+        background = nodes.new("ShaderNodeBackground")
+
+    env_tex = next((n for n in nodes if n.type == "TEX_ENVIRONMENT"), None)
+    if env_tex is None:
+        env_tex = nodes.new("ShaderNodeTexEnvironment")
+
+    env_tex.image = bpy.data.images.load(hdri_path, check_existing=True)
+
+    for link in list(background.inputs["Color"].links):
+        links.remove(link)
+    for link in list(output.inputs["Surface"].links):
+        links.remove(link)
+
+    links.new(env_tex.outputs["Color"], background.inputs["Color"])
+    links.new(background.outputs["Background"], output.inputs["Surface"])
+
+set_environment_texture(args.hdri)
+
 objs = bproc.loader.load_blend(args.scene)
-
-
-def get_rust_sockets(material, input_names):
-    group_nodes = material.get_nodes_with_type("ShaderNodeGroup")
-    for node in group_nodes:
-        if all(name in node.inputs for name in input_names):
-            return {name: node.inputs[name] for name in input_names}
-    raise ValueError(
-        "Could not find one ShaderNodeGroup with inputs: "
-        + ", ".join(f"'{name}'" for name in input_names)
-    )
-
-
-def set_socket_keyframe(socket, value, frame):
-    socket.default_value = float(value)
-    socket.keyframe_insert(data_path="default_value", frame=frame)
 
 
 def set_visibility_keyframe(obj, is_visible, frame):
@@ -49,84 +71,30 @@ def set_light_keyframe(light_obj, color, energy, frame):
     blender_light.keyframe_insert(data_path="energy", frame=frame)
 
 
-def ensure_mapping_uses_object_coords(material: Material):
-    if material is None or material.nodes is None:
-        raise ValueError(
-            f"Material '{material.get_name()}' not found or has no node tree."
-        )
-
-    group_nodes = material.get_nodes_with_type("ShaderNodeGroup")
-    group_node = group_nodes[0]
-    nodes = group_node.node_tree.nodes
-    links = group_node.node_tree.links
-    tex_coord = next((n for n in nodes if n.type == "TEX_COORD"), None)
-    mapping = next((n for n in nodes if n.type == "MAPPING"), None)
-    if tex_coord is None or mapping is None:
-        raise ValueError(
-            f"Material '{material.get_name()}' needs Texture Coordinate and Mapping nodes."
-        )
-    if mapping.inputs.get("Vector") is None or tex_coord.outputs.get("Object") is None:
-        raise ValueError(
-            f"Material '{material.get_name()}' mapping/texture coordinate sockets missing."
-        )
-    for link in list(mapping.inputs["Vector"].links):
-        links.remove(link)
-    links.new(tex_coord.outputs["Object"], mapping.inputs["Vector"])
-
-
 materials = bproc.material.collect_all()
 rng = np.random.default_rng()
-table_material_names = ["Denim Fabric", "Oak Veneer", "Rough Linen"]
-rusty_material = next(
-    (m for m in materials if m is not None and m.get_name() == "Rusty Metal"),
+clean_material = next(
+    (m for m in materials if m is not None and m.get_name() == "clean"),
     None,
 )
-if rusty_material is None:
-    raise ValueError("Material 'Rusty Metal' not found in the scene.")
+if clean_material is None:
+    raise ValueError("Material 'clean' not found in the scene.")
 
-ensure_mapping_uses_object_coords(rusty_material)
-
-for obj in bproc.object.get_all_mesh_objects():
-    if obj.get_name() != "Table":
+target_object_names = {"Schere", "Hammer"}
+mesh_objects = bproc.object.get_all_mesh_objects()
+target_objects = []
+for obj in mesh_objects:
+    if obj.get_name() in target_object_names:
+        obj.replace_materials(clean_material)
+        target_objects.append(obj)
+    else:
         obj.delete()
 
-table_objects = [obj for obj in bproc.object.get_all_mesh_objects() if obj.get_name() == "Table"]
-if not table_objects:
-    raise ValueError("Object 'Table' not found in the scene.")
-blender_table = bpy.data.objects[table_objects[0].get_name()]
-table_slot_materials = [
-    mat for mat in blender_table.data.materials
-    if mat is not None and mat.name in table_material_names
-]
-if not table_slot_materials:
+if len(target_objects) != len(target_object_names):
+    missing = target_object_names.difference({obj.get_name() for obj in target_objects})
     raise ValueError(
-        "Table material slots must include one of: "
-        + ", ".join(table_material_names)
+        "Objects not found in the scene: " + ", ".join(sorted(missing))
     )
-
-table_variant_objects = []
-for mat in table_slot_materials:
-    table_variant = blender_table.copy()
-    table_variant.data = blender_table.data.copy()
-    table_variant.animation_data_clear()
-    bpy.context.collection.objects.link(table_variant)
-    for slot_index in range(len(table_variant.material_slots)):
-        table_variant.material_slots[slot_index].material = mat
-    table_variant_objects.append(table_variant)
-
-blender_table.hide_render = True
-blender_table.hide_viewport = True
-
-primitive_types = ["SPHERE", "CUBE", "CYLINDER", "CONE", "MONKEY"]
-target_radius = 0.1
-primitive_objects = []
-for primitive_type in primitive_types:
-    primitive = bproc.object.create_primitive(primitive_type)
-    primitive.replace_materials(rusty_material)
-    primitive.set_scale([target_radius, target_radius, target_radius])
-    primitive.set_shading_mode("SMOOTH")
-    primitive.set_location([0, 0, target_radius])
-    primitive_objects.append(primitive)
 
 
 light = bproc.types.Light()
@@ -134,10 +102,10 @@ light.set_type("POINT")
 light.set_energy(100)
 
 num_images = 20
-cam_radius_min = 0.20
-cam_radius_max = 0.40
-cam_height_min = 0.15
-cam_height_max = 0.35
+cam_radius_min = 0.08
+cam_radius_max = 0.16
+cam_height_min = 0.30
+cam_height_max = 0.50
 light_height_offset_min = 0.15
 light_height_offset_max = 0.35
 light_radius_offset_min = 0.05
@@ -148,39 +116,19 @@ light_height_jitter = 0.2
 light_energy_min = 100
 light_energy_max = 300
 light_color_jitter = 0.2
-rust_input_names = [
-    "Scale",
-    "Rust Amount",
-    "Rust Bump Strength 1",
-    "Rust Bump Strength 2",
-    "Rust Scale",
-    "Rust Edge Detail",
-    "Rust Noise Scale",
-    "Metal Roughness",
-    "Rust Detail",
-]
-rust_sockets = get_rust_sockets(rusty_material, rust_input_names)
-selected_primitives = rng.choice(primitive_objects, size=num_images, replace=True)
+selected_objects = rng.choice(target_objects, size=num_images, replace=True)
 
-poi = bproc.object.compute_poi(primitive_objects)
+poi = bproc.object.compute_poi(target_objects)
 
 cam_radius_base = rng.uniform(cam_radius_min, cam_radius_max)
 cam_height_base = rng.uniform(cam_height_min, cam_height_max)
 light_phase_offset = rng.uniform(np.pi / 6, np.pi / 2)
 
-bproc.camera.set_resolution(640, 480)
+bproc.camera.set_resolution(1024, 1024)
 
 for i in range(num_images):
-    selected_table = rng.choice(table_variant_objects)
-    for table_variant in table_variant_objects:
-        set_visibility_keyframe(
-            table_variant,
-            table_variant == selected_table,
-            i,
-        )
-
-    selected = selected_primitives[i]
-    for obj in primitive_objects:
+    selected = selected_objects[i]
+    for obj in target_objects:
         set_visibility_keyframe(obj, obj == selected, i)
 
     trajectory_angle = i / num_images * np.pi
@@ -224,25 +172,6 @@ for i in range(num_images):
     light_energy = rng.uniform(light_energy_min, light_energy_max)
     set_light_keyframe(light, light_color, light_energy, i)
 
-    scale = rng.uniform(0.1, 1.5)
-    rust_amount = rng.uniform(1.0, 1.2)
-    rust_bump_strength_1 = rng.uniform(0.0, 1.0)
-    rust_bump_strength_2 = rng.uniform(0.0, 1.0)
-    rust_scale = rng.uniform(5.0, 100.0)
-    rust_detail = rng.uniform(0.5, 10.0)
-    rust_edge_detail = rng.uniform(0.5, 1.0)
-    rust_noise_scale = rng.uniform(1.0, 10.0)
-    metal_roughness = rng.uniform(0.2, 0.6)
-
-    set_socket_keyframe(rust_sockets["Scale"], scale, i)
-    set_socket_keyframe(rust_sockets["Rust Amount"], rust_amount, i)
-    set_socket_keyframe(rust_sockets["Rust Bump Strength 1"], rust_bump_strength_1, i)
-    set_socket_keyframe(rust_sockets["Rust Bump Strength 2"], rust_bump_strength_2, i)
-    set_socket_keyframe(rust_sockets["Rust Scale"], rust_scale, i)
-    set_socket_keyframe(rust_sockets["Rust Detail"], rust_detail, i)
-    set_socket_keyframe(rust_sockets["Rust Edge Detail"], rust_edge_detail, i)
-    set_socket_keyframe(rust_sockets["Rust Noise Scale"], rust_noise_scale, i)
-    set_socket_keyframe(rust_sockets["Metal Roughness"], metal_roughness, i)
 
 data = bproc.renderer.render()
 bproc.writer.write_hdf5("output/", data)

@@ -1,20 +1,53 @@
-from typing import Optional
+from typing import Optional, Sequence, List
 
-from torch.utils.data import DataLoader
+import numpy as np
+from torch.utils.data import DataLoader, Dataset
 from lightning import LightningDataModule
 from torchvision.datasets import ImageFolder
-from torchvision.transforms import v2
 import torch
 
-from data.components.combined_image_folder import CombinedImageFolder
 from src.data.components.transform_subset import TransformSubset
 from src.data.components.transforms import (
     BaselineTransforms,
     MediumTransforms,
     StrongTransforms,
 )
+from src.data.cifar100 import make_symmetric_noisy_targets
+from data.components.combined_image_folder import CombinedImageFolder
 
-class HoldoutDataModule(LightningDataModule):
+
+class NoisyTargetsDataset(Dataset):
+    """Dataset wrapper that overrides labels with noisy targets."""
+
+    def __init__(self, base: Dataset, noisy_targets: Sequence[int]) -> None:
+        if len(base) != len(noisy_targets):
+            raise ValueError("Noisy targets length must match dataset length.")
+        self.base = base
+        self.noisy_targets = list(noisy_targets)
+
+        if hasattr(base, "classes"):
+            self.classes = base.classes
+        if hasattr(base, "class_to_idx"):
+            self.class_to_idx = base.class_to_idx
+
+        self.targets = self.noisy_targets
+
+        if hasattr(base, "samples"):
+            self.samples = [
+                (path, self.noisy_targets[i])
+                for i, (path, _) in enumerate(base.samples)
+            ]
+            self.imgs = self.samples
+
+    def __len__(self) -> int:
+        return len(self.base)
+
+    def __getitem__(self, index: int):
+        img, _ = self.base[index]
+        return img, self.noisy_targets[index]
+
+
+class HoldoutNoisyDataModule(LightningDataModule):
     def __init__(
         self,
         train_path: str,
@@ -23,6 +56,7 @@ class HoldoutDataModule(LightningDataModule):
         syn_path: Optional[str] = None,
         transforms: str = "medium",
         image1k_norm: bool = True,
+        noise_rate: float = 0.0,
         batch_size: int = 96,
         num_workers: int = 4,
         pin_memory: bool = True,
@@ -76,11 +110,29 @@ class HoldoutDataModule(LightningDataModule):
         combined_ds = CombinedImageFolder([dataset, syn_ds])
         return combined_ds
 
+    def _apply_label_noise(self, dataset: Dataset) -> Dataset:
+        noise_rate = float(self.hparams.noise_rate)
+        if noise_rate <= 0.0:
+            return dataset
+        if not hasattr(dataset, "targets") or not hasattr(dataset, "classes"):
+            raise ValueError("Dataset must expose targets and classes for noise.")
+
+        rng = np.random.default_rng(int(self.hparams.seed))
+        noisy_targets = make_symmetric_noisy_targets(
+            targets=list(dataset.targets),
+            noise_rate=noise_rate,
+            n_classes=len(dataset.classes),
+            rng=rng,
+        )
+        return NoisyTargetsDataset(dataset, noisy_targets)
+
     def setup(self, stage: Optional[str] = None):
         if stage == "fit":
             self.train_ds = ImageFolder(self.hparams.train_path)
             if self.hparams.syn_path is not None:
                 self.train_ds = self._add_synthetic_data(self.train_ds)
+            self.train_ds = self._apply_label_noise(self.train_ds)
+
             idxs_train = list(range(len(self.train_ds)))
             self.train_dataset = TransformSubset(
                 self.train_ds,

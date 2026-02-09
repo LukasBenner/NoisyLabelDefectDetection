@@ -1,6 +1,6 @@
-from typing import Optional
+from typing import Optional, Sequence, List, Tuple
 
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, Dataset
 from lightning import LightningDataModule
 from torchvision.datasets import ImageFolder
 from torchvision.transforms import v2
@@ -14,7 +14,7 @@ from src.data.components.transforms import (
     StrongTransforms,
 )
 
-class HoldoutDataModule(LightningDataModule):
+class CombinedHoldoutDataModule(LightningDataModule):
     def __init__(
         self,
         train_path: str,
