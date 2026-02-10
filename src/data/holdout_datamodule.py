@@ -5,7 +5,7 @@ from lightning import LightningDataModule
 from torchvision.datasets import ImageFolder
 import torch
 
-from data.components.combined_image_folder import CombinedImageFolder
+from src.data.components.combined_image_folder import CombinedImageFolder
 from src.data.components.transform_subset import TransformSubset
 from src.data.components.transforms import (
     BaselineTransforms,
@@ -68,6 +68,17 @@ class HoldoutDataModule(LightningDataModule):
             self, "_class_weights"
         ), "Class weights not computed. Call setup('fit') first."
         return self._class_weights
+    
+    @property
+    def class_names(self) -> Sequence[str]:
+        if hasattr(self, "train_ds") and self.train_ds is not None:
+            return self.train_ds.classes
+        elif hasattr(self, "val_ds") and self.val_ds is not None:
+            return self.val_ds.classes
+        elif hasattr(self, "test_ds") and self.test_ds is not None:
+            return self.test_ds.classes
+        else:
+            raise ValueError("Datasets not prepared. Call setup() first.")
 
     def _add_synthetic_data(self, dataset: ImageFolder) -> ImageFolder:
         if self.hparams.syn_path is None:

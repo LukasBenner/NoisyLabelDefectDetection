@@ -6,8 +6,8 @@ defaults:
   - override /callbacks: with_early_stopping
   - _self_
 
-research_name: SimpleDetection
-experiment_name: full_cleaned_synthetic
+research_name: CombinedDetection
+experiment_name: synthetic
 run_name_postfix: ce
 
 n_runs: 5
@@ -33,7 +33,7 @@ model:
 data:
   batch_size: 32
   image1k_norm: true
-  transforms: strong
+  transforms: medium
   syn_path: /srv/defectDetectionDataset/sourceSets/synthetic
 
 callbacks:

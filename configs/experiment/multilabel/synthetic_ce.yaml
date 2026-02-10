@@ -33,7 +33,7 @@ model:
 data:
   batch_size: 32
   image1k_norm: true
-  transforms: medium
+  transforms: strong
   syn_path: /srv/defectDetectionDataset/sourceSets/synthetic
 
 callbacks:

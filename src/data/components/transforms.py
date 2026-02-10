@@ -37,7 +37,7 @@ class MediumTransforms:
         transforms = v2.Compose(
             [
                 v2.Resize(480, antialias=True),
-                v2.RandomResizedCrop(480, scale=(0.7,1)),
+                v2.RandomResizedCrop(480, scale=(0.8,1)),
                 v2.RandomHorizontalFlip(p=0.5),
                 v2.RandomVerticalFlip(p=0.5),
                 v2.RandomRotation(degrees=(-10,10)),
@@ -67,11 +67,11 @@ class StrongTransforms:
         transforms = v2.Compose(
             [
                 v2.Resize(480, antialias=True),
-                v2.RandomResizedCrop(480, scale=(0.5,1)),
+                v2.RandomResizedCrop(480, scale=(0.8,1)),
                 v2.RandomHorizontalFlip(p=0.5),
                 v2.RandomVerticalFlip(p=0.5),
-                v2.RandomRotation(degrees=(-10,10)),
-                v2.ColorJitter(brightness=0.3, contrast=0.2, saturation=0.1, hue=0.1),
+                v2.RandomRotation(degrees=(-45,45)),
+                v2.ColorJitter(brightness=0.1, contrast=0.1, saturation=0.1, hue=0.1),
                 v2.ToImage(),
                 v2.ToDtype(torch.float32, scale=True),
                 v2.Normalize(mean=mean, std=std),

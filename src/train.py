@@ -1,4 +1,5 @@
 import os
+import re
 from datetime import date
 from pathlib import Path
 from typing import Dict, List, Any, Optional
@@ -27,14 +28,21 @@ log = RankedLogger(__name__, rank_zero_only=True)
 
 
 def _get_class_names(datamodule) -> Optional[List[str]]:
-    for attr in ("test_ds", "val_ds", "train_ds"):
-        ds = getattr(datamodule, attr, None)
-        if ds is not None and hasattr(ds, "classes"):
-            return list(ds.classes)
+    if datamodule is not None and hasattr(datamodule, "class_names"):
+        return list(datamodule.class_names)
     return None
 
 
-def _collect_preds_targets(model: torch.nn.Module, dataloader: Any) -> tuple[torch.Tensor, torch.Tensor]:
+def _sanitize_class_name(name: str) -> str:
+    name = name.strip()
+    if not name:
+        return "unknown"
+    return re.sub(r"[^A-Za-z0-9_]+", "_", name)
+
+
+def _collect_preds_targets(
+    model: torch.nn.Module, dataloader: Any
+) -> tuple[torch.Tensor, torch.Tensor]:
     device = getattr(model, "device", None)
     if device is None:
         try:
@@ -51,7 +59,9 @@ def _collect_preds_targets(model: torch.nn.Module, dataloader: Any) -> tuple[tor
             if isinstance(batch, (list, tuple)):
                 inputs, targets = batch[0], batch[1]
             else:
-                raise ValueError("Unsupported batch type for confusion matrix generation.")
+                raise ValueError(
+                    "Unsupported batch type for confusion matrix generation."
+                )
 
             inputs = inputs.to(device)
             targets = targets.to(device)
@@ -83,7 +93,9 @@ def _collect_preds_targets(model: torch.nn.Module, dataloader: Any) -> tuple[tor
     return torch.cat(preds_list), torch.cat(targets_list)
 
 
-def train_single_run(cfg: DictConfig, run_idx: int, base_save_dir: Path) -> Dict[str, Any]:
+def train_single_run(
+    cfg: DictConfig, run_idx: int, base_save_dir: Path
+) -> Dict[str, Any]:
     """Train a single run with a specific seed."""
 
     # Set seed for this run
@@ -103,7 +115,7 @@ def train_single_run(cfg: DictConfig, run_idx: int, base_save_dir: Path) -> Dict
 
     # Instantiate model
     log.info(f"Instantiating model for run {run_idx}")
-    model = hydra.utils.instantiate(cfg.model, datamodule=datamodule)    
+    model = hydra.utils.instantiate(cfg.model, datamodule=datamodule)
 
     callbacks: List[Callback] = instantiate_callbacks(cfg.get("callbacks"))
 
@@ -118,7 +130,9 @@ def train_single_run(cfg: DictConfig, run_idx: int, base_save_dir: Path) -> Dict
 
     # Instantiate trainer
     log.info(f"Instantiating trainer for run {run_idx}")
-    trainer: Trainer = hydra.utils.instantiate(cfg.trainer, callbacks=callbacks, logger=logger)
+    trainer: Trainer = hydra.utils.instantiate(
+        cfg.trainer, callbacks=callbacks, logger=logger
+    )
 
     # Train the model
     log.info(f"Starting training for run {run_idx}")
@@ -150,11 +164,19 @@ def train_single_run(cfg: DictConfig, run_idx: int, base_save_dir: Path) -> Dict
 
     if best_model_path:
         log.info(f"Loading best checkpoint: {best_model_path}")
-        test_trainer.test(model=model, datamodule=datamodule, ckpt_path=best_model_path)
+        test_trainer.test(
+            model=model,
+            datamodule=datamodule,
+            ckpt_path=best_model_path,
+            weights_only=False,
+        )
     else:
         log.warning("No best checkpoint found, testing with final model")
-        test_trainer.test(model=model, datamodule=datamodule)
-
+        test_trainer.test(
+            model=model,
+            datamodule=datamodule,
+            weights_only=False,
+        )
 
     # Confusion matrix on test split
     log.info("Generating confusion matrix")
@@ -176,19 +198,16 @@ def train_single_run(cfg: DictConfig, run_idx: int, base_save_dir: Path) -> Dict
 
     test_metrics: Dict[str, Any] = {
         "run_idx": run_idx,
-
         # Primary reporting (imbalance + equal class importance)
         "test/f1_macro": to_float(cm.get("test/f1_macro")),
         "test/precision_macro": to_float(cm.get("test/precision_macro")),
         "test/recall_macro": to_float(cm.get("test/recall_macro")),
-
         # Context / secondary metrics
         "test/acc": to_float(cm.get("test/acc")),
         "test/f1_weighted": to_float(cm.get("test/f1_weighted")),
         "test/precision_weighted": to_float(cm.get("test/precision_weighted")),
         "test/recall_weighted": to_float(cm.get("test/recall_weighted")),
         "test/loss": to_float(cm.get("test/loss")),
-
         # Best validation metric(s)
         "val/f1_macro_best": to_float(val_f1_macro_best),
     }
@@ -201,12 +220,24 @@ def train_single_run(cfg: DictConfig, run_idx: int, base_save_dir: Path) -> Dict
     except Exception:
         n_classes = None
 
+    if n_classes is None and class_names:
+        n_classes = len(class_names)
+
+    class_names_for_metrics = None
+    if class_names and n_classes is not None and len(class_names) >= n_classes:
+        class_names_for_metrics = class_names
+
     if n_classes is not None and n_classes > 0:
         for i in range(n_classes):
             for metric_name in ("precision", "recall", "f1"):
                 key = f"test/{metric_name}_c{i}"
                 if key in cm:
-                    test_metrics[key] = to_float(cm.get(key))
+                    if class_names_for_metrics:
+                        safe_name = _sanitize_class_name(class_names_for_metrics[i])
+                        out_key = f"test/{metric_name}_{safe_name}"
+                    else:
+                        out_key = key
+                    test_metrics[out_key] = to_float(cm.get(key))
 
     log.info(
         f"Run {run_idx}/{cfg.n_runs} completed | "
@@ -234,7 +265,9 @@ def main(cfg: DictConfig) -> None:
     research_name = cfg.get("research_name", "default")
     experiment_name = cfg.get("experiment_name", "default")
     run_name = cfg.get("run_name", date.today().strftime("%Y-%m-%d"))
-    base_save_dir = Path(log_path) / "train" / research_name / experiment_name / run_name
+    base_save_dir = (
+        Path(log_path) / "train" / research_name / experiment_name / run_name
+    )
 
     log.info(f"Saving results to: {base_save_dir}")
 
@@ -253,7 +286,9 @@ def main(cfg: DictConfig) -> None:
     # Run multiple training runs
     all_metrics: List[Dict[str, Any]] = []
     for run_idx in range(1, n_runs + 1):
-        run_metrics = train_single_run(cfg=cfg, run_idx=run_idx, base_save_dir=base_save_dir)
+        run_metrics = train_single_run(
+            cfg=cfg, run_idx=run_idx, base_save_dir=base_save_dir
+        )
         all_metrics.append(run_metrics)
 
     # Calculate and save summary statistics

@@ -6,7 +6,7 @@ defaults:
   - override /callbacks: with_early_stopping
   - _self_
 
-research_name: SimpleDetection
+research_name: CombinedDetection
 experiment_name: noisy_cleaned
 run_name_postfix: nce_rce
 
