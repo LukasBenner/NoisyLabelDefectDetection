@@ -5,8 +5,8 @@ from lightning import LightningDataModule
 from torchvision.datasets import ImageFolder
 import torch
 
-from data.components.transform_subset import TransformSubset
-from data.components.transforms import BaselineTransforms
+from src.data.components.transform_subset import TransformSubset
+from src.data.components.transforms import BaselineTransforms
 
 
 class BaselineDataModule(LightningDataModule):

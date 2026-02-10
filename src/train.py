@@ -212,8 +212,6 @@ def train_single_run(
         "val/f1_macro_best": to_float(val_f1_macro_best),
     }
 
-    # Optionally capture per-class test metrics if your model logs them (e.g., test/f1_c0..c9)
-    # This keeps the script compatible whether per-class logging is enabled or not.
     n_classes = None
     try:
         n_classes = int(getattr(datamodule, "num_classes"))
@@ -230,14 +228,17 @@ def train_single_run(
     if n_classes is not None and n_classes > 0:
         for i in range(n_classes):
             for metric_name in ("precision", "recall", "f1"):
-                key = f"test/{metric_name}_c{i}"
-                if key in cm:
-                    if class_names_for_metrics:
-                        safe_name = _sanitize_class_name(class_names_for_metrics[i])
-                        out_key = f"test/{metric_name}_{safe_name}"
-                    else:
-                        out_key = key
-                    test_metrics[out_key] = to_float(cm.get(key))
+                key_idx = f"test/{metric_name}_c{i}"
+                if class_names_for_metrics:
+                    safe_name = _sanitize_class_name(class_names_for_metrics[i])
+                    key_named = f"test/{metric_name}_{safe_name}"
+                    if key_named in cm:
+                        test_metrics[key_named] = to_float(cm.get(key_named))
+                    elif key_idx in cm:
+                        test_metrics[key_named] = to_float(cm.get(key_idx))
+                else:
+                    if key_idx in cm:
+                        test_metrics[key_idx] = to_float(cm.get(key_idx))
 
     log.info(
         f"Run {run_idx}/{cfg.n_runs} completed | "

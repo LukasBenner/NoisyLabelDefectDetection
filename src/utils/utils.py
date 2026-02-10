@@ -67,26 +67,74 @@ def to_float(value):
             return float(value.item())
         return float(value)
 
-def create_confusion_matrix(preds, targets, class_names, logging_directory):
-    """Create and save a confusion matrix."""
+def create_confusion_matrix(
+    preds,
+    targets,
+    class_names,
+    logging_directory,
+    max_classes_for_plot: int = 200,
+    annotate_threshold: int = 50,
+):
+    """Create and save confusion matrix assets.
+
+    For many classes, rendering a fully annotated heatmap is slow and hard to read.
+    This helper skips or de-annotates plots when class count is large.
+    """
     from sklearn.metrics import confusion_matrix
     import matplotlib.pyplot as plt
     import seaborn as sns
 
-    cm = confusion_matrix(targets, preds)
-    plt.figure(figsize=(10, 8))
-    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", xticklabels=class_names, yticklabels=class_names)
+    os.makedirs(logging_directory, exist_ok=True)
+    num_classes = len(class_names)
+    cm = confusion_matrix(targets, preds, labels=list(range(num_classes)))
+
+    if num_classes > max_classes_for_plot:
+        log.warning(
+            "Skipping confusion matrix plots (%d classes > %d). Saving raw arrays instead.",
+            num_classes,
+            max_classes_for_plot,
+        )
+        np.save(os.path.join(logging_directory, "confusion_matrix.npy"), cm)
+        cm_normalized = cm.astype("float") / np.maximum(cm.sum(axis=1, keepdims=True), 1.0)
+        np.save(
+            os.path.join(logging_directory, "confusion_matrix_normalized.npy"),
+            cm_normalized,
+        )
+        return
+
+    annotate = num_classes <= annotate_threshold
+    fmt = "d" if annotate else ""
+    fig_size = max(8, min(2 * num_classes, 40))
+
+    plt.figure(figsize=(fig_size, fig_size * 0.8))
+    sns.heatmap(
+        cm,
+        annot=annotate,
+        fmt=fmt,
+        cmap="Blues",
+        xticklabels=class_names,
+        yticklabels=class_names,
+    )
     plt.xlabel("Predicted")
     plt.ylabel("True")
     plt.title("Confusion Matrix")
+    plt.tight_layout()
     plt.savefig(os.path.join(logging_directory, "confusion_matrix.png"))
     plt.close()
 
-    cm_normalized = cm.astype("float") / cm.sum(axis=1)[:, np.newaxis]
-    plt.figure(figsize=(10, 8))
-    sns.heatmap(cm_normalized, annot=True, fmt=".2f", cmap="Blues", xticklabels=class_names, yticklabels=class_names)
+    cm_normalized = cm.astype("float") / np.maximum(cm.sum(axis=1, keepdims=True), 1.0)
+    plt.figure(figsize=(fig_size, fig_size * 0.8))
+    sns.heatmap(
+        cm_normalized,
+        annot=annotate,
+        fmt=".2f" if annotate else "",
+        cmap="Blues",
+        xticklabels=class_names,
+        yticklabels=class_names,
+    )
     plt.xlabel("Predicted")
     plt.ylabel("True")
     plt.title("Normalized Confusion Matrix")
+    plt.tight_layout()
     plt.savefig(os.path.join(logging_directory, "confusion_matrix_normalized.png"))
     plt.close()

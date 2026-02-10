@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, List
+import re
 
 from lightning import LightningModule
 import torch
@@ -157,6 +158,28 @@ class CoTeachingModule(LightningModule):
         loss2 = F.cross_entropy(logits2[idx1], targets[idx1])
         loss = 0.5 * (loss1 + loss2)
         return loss, loss1, loss2
+
+    def _get_class_names(self) -> Optional[List[str]]:
+        if self.datamodule is None or not hasattr(self.datamodule, "class_names"):
+            return None
+        class_names = list(self.datamodule.class_names)
+        if len(class_names) < self.num_classes:
+            return None
+        return class_names
+
+    @staticmethod
+    def _sanitize_class_name(name: str) -> str:
+        name = name.strip()
+        if not name:
+            return "unknown"
+        return re.sub(r"[^A-Za-z0-9_]+", "_", name)
+
+    def _class_metric_key(self, prefix: str, metric: str, idx: int) -> str:
+        class_names = self._get_class_names()
+        if class_names is None:
+            return f"{prefix}{metric}_c{idx}"
+        safe_name = self._sanitize_class_name(class_names[idx])
+        return f"{prefix}{metric}_{safe_name}"
     
     def on_train_start(self) -> None:
         self.val_f1_macro_best.reset()
@@ -240,9 +263,21 @@ class CoTeachingModule(LightningModule):
         if self.log_per_class:
             pc = self.val_per_class.compute()  # dict: val/per_class/{precision,recall,f1} -> tensor [C]
             for i in range(self.num_classes):
-                self.log(f"val/precision_c{i}", pc["val/per_class/precision"][i], sync_dist=True)
-                self.log(f"val/recall_c{i}", pc["val/per_class/recall"][i], sync_dist=True)
-                self.log(f"val/f1_c{i}", pc["val/per_class/f1"][i], sync_dist=True)
+                self.log(
+                    self._class_metric_key("val/", "precision", i),
+                    pc["val/per_class/precision"][i],
+                    sync_dist=True,
+                )
+                self.log(
+                    self._class_metric_key("val/", "recall", i),
+                    pc["val/per_class/recall"][i],
+                    sync_dist=True,
+                )
+                self.log(
+                    self._class_metric_key("val/", "f1", i),
+                    pc["val/per_class/f1"][i],
+                    sync_dist=True,
+                )
 
     def test_step(self, batch: Any, batch_idx: int) -> None:
         inputs, targets = batch
@@ -271,9 +306,21 @@ class CoTeachingModule(LightningModule):
         if self.log_per_class:
             pc = self.test_per_class.compute()
             for i in range(self.num_classes):
-                self.log(f"test/precision_c{i}", pc["test/per_class/precision"][i], sync_dist=True)
-                self.log(f"test/recall_c{i}", pc["test/per_class/recall"][i], sync_dist=True)
-                self.log(f"test/f1_c{i}", pc["test/per_class/f1"][i], sync_dist=True)
+                self.log(
+                    self._class_metric_key("test/", "precision", i),
+                    pc["test/per_class/precision"][i],
+                    sync_dist=True,
+                )
+                self.log(
+                    self._class_metric_key("test/", "recall", i),
+                    pc["test/per_class/recall"][i],
+                    sync_dist=True,
+                )
+                self.log(
+                    self._class_metric_key("test/", "f1", i),
+                    pc["test/per_class/f1"][i],
+                    sync_dist=True,
+                )
 
     def configure_optimizers(self) -> Any:
         opt1 = torch.optim.SGD(

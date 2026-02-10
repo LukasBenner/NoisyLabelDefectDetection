@@ -13,7 +13,7 @@ from src.data.components.transforms import (
     StrongTransforms,
 )
 from src.data.cifar100 import make_symmetric_noisy_targets
-from data.components.combined_image_folder import CombinedImageFolder
+from src.data.components.combined_image_folder import CombinedImageFolder
 from src.data.components.utils import filter_classes
 
 
