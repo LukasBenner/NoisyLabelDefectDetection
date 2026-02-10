@@ -1,4 +1,10 @@
+schedule_0.sh
+schedule_1.sh
+
 **/cluster_samples
+
+# Ignore model checkpoints and ONNX exports
+*.onnx
 
 #ignore resources and outputs for synthetic data generation
 synthetic/blender/outputs
