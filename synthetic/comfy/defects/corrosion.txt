@@ -1,6 +1,6 @@
 {
-    0.5::pitting corrosion on stainless steel, fine pinprick pits and {micro|tiny} dark pinholes, slight brown “tea-stain” halos around some pits, subtle surface roughness only in affected area, no thick flakes,
-    distribution: {localized cluster|very few single spots}, {0.55::near hinge/pivot area|0.25::near inner ring edge|0.20::near jaw/working end}|
+    0.5::pitting corrosion on stainless steel, microscopic small, fine pinprick pits, slight brown “tea-stain” halos around some pits, subtle surface roughness only in affected area, no thick flakes,
+    distribution: {localized cluster|very few corrosion spots|single corrosion spot}, {0.55::near hinge/pivot area|0.25::near inner ring edge|0.20::near jaw/working end}|
     0.5::general corrosion with many small oxidation spots, reddish-brown freckles and irregular stains, some spots merge into larger patches, light dulling of brushed finish, no flaking layer, no thick crust,
     distribution: {0.55::scattered spots across instrument|0.30::spots concentrated near edges/contours|0.15::spots concentrated near hinge}
 },
