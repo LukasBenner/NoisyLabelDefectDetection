@@ -1,0 +1,7 @@
+{
+  0.60::hairline crack on stainless steel surface, extremely thin sharp crack line, slightly darker than surrounding metal, follows the surface curvature, may branch once, no material loss, not a scratch (no groove, no directional abrasion), crisp edges, surface remains mostly smooth,
+  distribution: {0.45::single hairline crack across a flat area|0.35::hairline crack starting at an edge/transition and extending inward|0.20::two short hairline cracks in different areas}, covers {0.70::<5%|0.25::5-12%|0.05::12-20%} of visible surface|
+  
+  0.40::medium crack, clearly visible fracture line with slight branching, irregular path, small micro-fracture network nearby, subtle shadowing along the crack, edges look sharp, still minimal material loss, not corrosion, not rust,
+  distribution: {0.50::one dominant crack with small branches|0.30::crack emanating from a corner/hole/hinge feature|0.20::two cracks intersecting}, covers {0.60::5-15%|0.30::15-25%|0.10::25-35%} of surface|
+}

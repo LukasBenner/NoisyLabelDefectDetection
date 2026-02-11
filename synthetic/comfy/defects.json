@@ -1,0 +1,10 @@
+[
+  { "name": "black_stain", "block_file": "./defects/black_stain.txt" },
+  { "name": "corrosion", "block_file": "./defects/corrosion.txt" },
+  { "name": "crack", "block_file": "./defects/crack.txt" },
+  { "name": "deformation", "block_file": "./defects/deformation.txt" },
+  { "name": "missing_part", "block_file": "./defects/missing_part.txt" },
+  { "name": "other", "block_file": "./defects/other.txt" },
+  { "name": "water_stain", "block_file": "./defects/water_stain.txt" },
+  { "name": "silicate_stain", "block_file": "./defects/silicate_stain.txt" }
+]
