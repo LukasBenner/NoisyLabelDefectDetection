@@ -7,7 +7,7 @@ schedule_1.sh
 *.onnx
 
 #ignore resources and outputs for synthetic data generation
-synthetic/blender/outputs
+synthetic/**/output
 synthetic/blender/resources
 
 # ignore newly added data
