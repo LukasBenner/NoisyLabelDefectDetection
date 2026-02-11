@@ -31,10 +31,10 @@ ELEVATION_DEG_RANGE = (5, 75)
 AZIMUTH_DEG_RANGE = (0, 360)
 
 # Camera framing (closer = bigger object)
-TARGET_FILL = 0.98                  # 0..1 (higher => closer framing)
-CAM_DISTANCE_SCALE = 0.30           # smaller => camera closer than geometric "fit"
-CAM_DIST_MULT_RANGE = (0.90, 1.25)  # a bit wider than before
-MIN_CAM_DIST = 0.02                 # safety minimum
+TARGET_FILL = 1.08                  # 0..1+ (higher => closer framing)
+CAM_DISTANCE_SCALE = 0.28          # smaller => camera closer than geometric "fit"
+CAM_DIST_MULT_RANGE = (0.90, 1.10)  # allow a bit more range to find valid views
+MIN_CAM_DIST = 0.10            # safety minimum
 CAM_CLIP_START = 0.001
 
 # Aim jitter base ranges (scaled by profile)
@@ -45,12 +45,14 @@ TARGET_SHIFT_Z  = (-0.03, 0.03)
 ROI_PREFIX = "ROI"                  # ROI empties: "ROI", "ROI.001", ...
 ROI_CASE_INSENSITIVE = True
 ROI_AIM_BLEND_TO_ORIGIN = 0.12      # 0..1 (0 = aim exactly at ROI, 1 = aim at ORIGIN)
+MIN_ROI_DISTANCE_MULT = 0.45        # min ROI distance as fraction of bounds size
+MAX_CAMERA_TRIES = 60               # resample camera until ROI is visible
 
 # Optional: case-insensitive matching for base/variant names
 FOREGROUND_NAME_CASE_INSENSITIVE = True
 
 # Lighting base settings
-LIGHT_ENERGY_RANGE = (100, 3000)    # base for POINT/AREA/SPOT
+LIGHT_ENERGY_RANGE = (500, 3000)    # base for POINT/AREA/SPOT
 SUN_ENERGY_RANGE = (1.0, 12.0)      # base for SUN
 KELVIN_RANGE = (2800, 9500)
 LIGHT_POS_JITTER = 2.2
@@ -62,7 +64,6 @@ FILL_POS_JITTER = 3.0
 # Background compositor randomization
 BG_BRIGHTNESS_RANGE = (-0.08, 0.15)
 BG_CONTRAST_RANGE   = (-0.08, 0.20)
-BG_PHOTO_JITTER_PROB = 0.75
 
 # Render settings
 RENDER_ENGINE = "CYCLES"
@@ -77,9 +78,9 @@ RANDOM_SEED = 42
 # -----------------------------
 # Most frames should be "realistic". Some are more vivid. A small fraction is "extreme".
 LOOK_PROFILES = [
-    ("realistic", 0.70),
-    ("vivid",     0.20),
-    ("extreme",   0.10),
+    ("realistic", 0.82),
+    ("vivid",     0.16),
+    ("extreme",   0.02),
 ]
 
 PROFILE = {
@@ -89,8 +90,8 @@ PROFILE = {
         "roll_deg": (-6.0, 6.0),
         "shift_xy": (-0.010, 0.010),
         "aim_jitter_mult": 0.20,
-        "dof_prob": 0.55,
-        "fstop": (4.0, 16.0),
+        "dof_prob": 0.40,
+        "fstop": (6.0, 22.0),
 
         # Lighting & ambience
         "key_mult": (0.8, 1.3),
@@ -112,54 +113,54 @@ PROFILE = {
         "distortion": (0.0, 0.01),
     },
     "vivid": {
-        "lens_mm": (24.0, 105.0),
-        "roll_deg": (-12.0, 12.0),
-        "shift_xy": (-0.018, 0.018),
-        "aim_jitter_mult": 0.30,
-        "dof_prob": 0.80,
-        "fstop": (1.8, 6.0),
+        "lens_mm": (28.0, 105.0),
+        "roll_deg": (-10.0, 10.0),
+        "shift_xy": (-0.014, 0.014),
+        "aim_jitter_mult": 0.25,
+        "dof_prob": 0.40,
+        "fstop": (6.0, 22.0),
 
-        "key_mult": (1.0, 2.2),
+        "key_mult": (0.9, 1.8),
         "fill_prob": 0.70,
-        "fill_ratio": (0.15, 0.55),
-        "ambient_strength": (0.05, 0.40),
+        "fill_ratio": (0.25, 0.60),
+        "ambient_strength": (0.05, 0.30),
 
-        "bg_jitter_prob": 0.90,
-        "exposure": (-0.05, 0.70),
-        "contrast": (1.05, 1.32),
-        "saturation": (1.08, 1.38),
-        "gamma": (0.90, 1.02),
-        "vignette_strength": (0.05, 0.25),
-        "glare_prob": 0.35,
-        "glare_mix": (0.10, 0.35),
-        "lensdist_prob": 0.30,
-        "dispersion": (0.01, 0.05),
-        "distortion": (0.0, 0.02),
+        "bg_jitter_prob": 0.85,
+        "exposure": (-0.05, 0.45),
+        "contrast": (1.02, 1.20),
+        "saturation": (1.02, 1.22),
+        "gamma": (0.94, 1.02),
+        "vignette_strength": (0.03, 0.18),
+        "glare_prob": 0.20,
+        "glare_mix": (0.06, 0.22),
+        "lensdist_prob": 0.18,
+        "dispersion": (0.0, 0.03),
+        "distortion": (0.0, 0.015),
     },
     "extreme": {
-        "lens_mm": (18.0, 135.0),
-        "roll_deg": (-18.0, 18.0),
-        "shift_xy": (-0.030, 0.030),
-        "aim_jitter_mult": 0.40,
-        "dof_prob": 0.90,
-        "fstop": (1.2, 4.0),
+        "lens_mm": (22.0, 120.0),
+        "roll_deg": (-14.0, 14.0),
+        "shift_xy": (-0.020, 0.020),
+        "aim_jitter_mult": 0.30,
+        "dof_prob": 0.40,
+        "fstop": (6.0, 22.0),
 
-        "key_mult": (0.6, 3.5),
+        "key_mult": (0.7, 2.4),
         "fill_prob": 0.55,
-        "fill_ratio": (0.05, 0.45),
-        "ambient_strength": (0.0, 0.55),
+        "fill_ratio": (0.15, 0.50),
+        "ambient_strength": (0.0, 0.40),
 
-        "bg_jitter_prob": 0.95,
-        "exposure": (-0.60, 1.10),
-        "contrast": (0.85, 1.55),
-        "saturation": (0.75, 1.55),
-        "gamma": (0.85, 1.20),
-        "vignette_strength": (0.00, 0.40),
-        "glare_prob": 0.40,
-        "glare_mix": (0.15, 0.40),
-        "lensdist_prob": 0.60,
-        "dispersion": (0.02, 0.12),
-        "distortion": (-0.02, 0.05),
+        "bg_jitter_prob": 0.90,
+        "exposure": (-0.40, 0.85),
+        "contrast": (0.90, 1.35),
+        "saturation": (0.85, 1.35),
+        "gamma": (0.90, 1.12),
+        "vignette_strength": (0.00, 0.30),
+        "glare_prob": 0.30,
+        "glare_mix": (0.10, 0.30),
+        "lensdist_prob": 0.35,
+        "dispersion": (0.01, 0.08),
+        "distortion": (-0.01, 0.03),
     },
 }
 # -----------------------------
@@ -519,6 +520,7 @@ def apply_camera_profile(cam, profile_name: str, roi_obj, aim_base: Vector):
     return aim_target, roll_rad
 
 
+
 def ensure_world_nodes(scene):
     if scene.world is None:
         scene.world = bpy.data.worlds.new("World")
@@ -872,7 +874,12 @@ def main():
     out_class_dir = os.path.join(out_root_abs, "missing_part")
     ensure_dir(out_class_dir)
 
-    for i in range(N_IMAGES):
+    rendered = 0
+    total_attempts = 0
+    max_total_attempts = max(N_IMAGES * 10, N_IMAGES + 10)
+
+    while rendered < N_IMAGES and total_attempts < max_total_attempts:
+        total_attempts += 1
         profile_name = pick_profile()
         p = PROFILE[profile_name]
 
@@ -929,11 +936,27 @@ def main():
 
         # Camera pose: orbit around bounds center, but look at ROI
         rr = radius_range_for_bounds(size, cam)
-        cam_loc, (_az, _el, _r) = random_camera_pose(center, rr)
-        cam.location = cam_loc
+        roi_loc = roi_obj.matrix_world.translation if roi_obj is not None else aim_base
+        min_roi_dist = max(MIN_CAM_DIST, size.length * MIN_ROI_DISTANCE_MULT)
+        min_roi_dist = min(min_roi_dist, rr[1] * 0.95)
 
-        aim_target, roll_rad = apply_camera_profile(cam, profile_name, roi_obj, aim_base)
-        look_at_with_roll(cam, aim_target, roll_rad)
+        cam_loc = None
+        found_view = False
+        for _ in range(MAX_CAMERA_TRIES):
+            cam_loc, (_az, _el, _r) = random_camera_pose(center, rr)
+            cam.location = cam_loc
+
+            aim_target, roll_rad = apply_camera_profile(cam, profile_name, roi_obj, aim_base)
+            look_at_with_roll(cam, aim_target, roll_rad)
+
+            if (cam.location - roi_loc).length < min_roi_dist:
+                continue
+            found_view = True
+            break
+
+        if not found_view:
+            print("WARNING: No valid camera view found; skipping this sample.")
+            continue
 
         # World ambient (helps realism variety)
         randomize_world_ambient(scene, profile_name)
@@ -962,13 +985,14 @@ def main():
 
         # Output filename includes profile for debugging (optional)
         ts_ms = int(time.time() * 1000)
-        filename = f"missing_part_blender_{profile_name}_{ts_ms}_{i:06d}.png"
+        filename = f"missing_part_blender_{profile_name}_{ts_ms}_{rendered:06d}.png"
 
         scene.render.filepath = os.path.join(out_class_dir, filename)
         bpy.ops.render.render(write_still=True)
+        rendered += 1
 
     show_all_foreground(universe_objs)
-    print(f"Done. Rendered {N_IMAGES} images to: {out_root_abs}")
+    print(f"Done. Rendered {rendered} images to: {out_root_abs}")
 
 
 if __name__ == "__main__":
