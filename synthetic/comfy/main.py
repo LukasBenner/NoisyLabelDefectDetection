@@ -29,6 +29,7 @@ import argparse
 import json
 import random
 import re
+import sys
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -176,6 +177,39 @@ def load_defects(defects_json: str, defect_name: str, defect_block_file: str) ->
     return [{"name": defect_name, "block": block}]
 
 
+@dataclass
+class ProgressBar:
+    total: int
+    width: int = 30
+    stream: Any = sys.stdout
+    _done: int = 0
+    _last_len: int = 0
+    _start_time: float = time.time()
+
+    def update(self, message: str = "") -> None:
+        self._done += 1
+        total = max(self.total, 1)
+        filled = int(self.width * self._done / total)
+        bar = "#" * filled + "-" * (self.width - filled)
+        elapsed = max(time.time() - self._start_time, 1e-6)
+        avg = elapsed / self._done
+        remaining = max(self.total - self._done, 0)
+        eta = remaining * avg
+        line = f"[{bar}] {self._done}/{self.total}"
+        line += f" | elapsed {elapsed:6.1f}s avg {avg:5.2f}s ETA {eta:6.1f}s"
+        if message:
+            line += f" {message}"
+        padded = line + " " * max(0, self._last_len - len(line))
+        self.stream.write("\r" + padded)
+        self.stream.flush()
+        self._last_len = len(line)
+
+    def finish(self) -> None:
+        if self._last_len:
+            self.stream.write("\n")
+            self.stream.flush()
+
+
 # -------------------------
 # Main
 # -------------------------
@@ -226,7 +260,7 @@ def main() -> None:
     client.healthcheck()
 
     total = len(defects) * args.count
-    done = 0
+    progress = ProgressBar(total=total)
 
     for d in defects:
         for i in range(args.count):
@@ -249,9 +283,9 @@ def main() -> None:
             prompt_id = client.queue_prompt(wf_run, client_id="defect_batch")
             client.wait_done(prompt_id, max_wait_s=args.max_wait)
 
-            done += 1
-            print(f"[{done}/{total}] defect={d['name']} seed={seed} prompt_id={prompt_id}")
+            progress.update(message=f"defect={d['name']} seed={seed} prompt_id={prompt_id}")
 
+    progress.finish()
     print("All done.")
 
 

@@ -3,5 +3,5 @@
   distribution: tip/end only, {0.60::one tip corner chipped|0.30::small diagonal snap across the tip|0.10::tiny notch missing at the tip}, missing area {0.70::1-3%|0.25::3-6%|0.05::6-10%} of visible instrument|
   
   0.50::snapped tip (moderate), a noticeable portion of the tip is snapped off, leaving an uneven jagged end with clear fracture texture and stronger shadowing, geometry of the tip looks incomplete (asymmetric), still localized to the tip, rest of instrument intact and functional-looking, break is not outside the frame,
-  distribution: tip/end only, {0.55::one tip snapped short|0.30::one blade/jaw tip shorter than the other|0.15::irregular bite missing from the tip edge}, missing area {0.55::3-7%|0.30::7-12%|0.15::12-18%} of visible instrument|
+  distribution: tip/end only, {0.55::one tip snapped short|0.30::one blade/jaw tip shorter than the other|0.15::irregular bite missing from the tip edge}, missing area {0.55::3-7%|0.30::7-12%|0.15::12-18%} of visible instrument
 },
