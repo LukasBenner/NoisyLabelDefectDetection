@@ -1,4 +1,4 @@
-from typing import Optional, Sequence
+from typing import Any, Optional, Sequence
 
 from torch.utils.data import DataLoader
 from lightning import LightningDataModule
@@ -21,6 +21,7 @@ class HoldoutDataModule(LightningDataModule):
         val_path: str,
         test_path: str,
         syn_path: Optional[str] = None,
+        synthetic_classes: Optional[Sequence[str]] = None,
         classes: Optional[Sequence[str]] = None,
         transforms: str = "medium",
         image1k_norm: bool = True,
@@ -32,6 +33,7 @@ class HoldoutDataModule(LightningDataModule):
         super().__init__()
 
         self.save_hyperparameters(logger=False)
+        self.hparams: Any
 
         mean_image1k = [0.485, 0.456, 0.406]
         std_image1k = [0.229, 0.224, 0.225]
@@ -80,12 +82,24 @@ class HoldoutDataModule(LightningDataModule):
         else:
             raise ValueError("Datasets not prepared. Call setup() first.")
 
-    def _add_synthetic_data(self, dataset: ImageFolder) -> ImageFolder:
+    def _add_synthetic_data(self, dataset: ImageFolder) -> CombinedImageFolder:
         if self.hparams.syn_path is None:
             raise ValueError("Synthetic data path not provided.")
 
         syn_ds = ImageFolder(self.hparams.syn_path)
-        syn_ds = filter_classes(syn_ds, self.hparams.classes, allow_missing=True)
+
+        if self.hparams.synthetic_classes is not None:
+            if self.hparams.classes is not None:
+                extra = [c for c in self.hparams.synthetic_classes if c not in self.hparams.classes]
+                if extra:
+                    raise ValueError(
+                        "synthetic_classes must be a subset of classes. "
+                        f"Unexpected classes: {extra}"
+                    )
+            syn_ds = filter_classes(syn_ds, self.hparams.synthetic_classes, allow_missing=False)
+        else:
+            syn_ds = filter_classes(syn_ds, self.hparams.classes, allow_missing=True)
+
         combined_ds = CombinedImageFolder([dataset, syn_ds])
         return combined_ds
 
@@ -109,6 +123,15 @@ class HoldoutDataModule(LightningDataModule):
             counts = torch.clamp(counts, min=1.0)
             N = counts.sum()
             self._class_weights = N / (num_classes * counts)
+
+            # sample weight per sample
+            sample_weights = self._class_weights[targets]
+
+            self.sampler = torch.utils.data.WeightedRandomSampler(
+                weights=sample_weights,
+                num_samples=len(sample_weights),
+                replacement=True
+            )
 
         if stage == "fit" or stage == "validate":
             self.val_ds = ImageFolder(self.hparams.val_path)
@@ -138,9 +161,10 @@ class HoldoutDataModule(LightningDataModule):
             batch_size=self.hparams.batch_size,
             num_workers=self.hparams.num_workers,
             pin_memory=self.hparams.pin_memory,
-            shuffle=True,
+            shuffle=False,
             drop_last=False,
             persistent_workers=True if self.hparams.num_workers > 0 else False,
+            sampler=self.sampler,
         )
 
     def val_dataloader(self) -> DataLoader:

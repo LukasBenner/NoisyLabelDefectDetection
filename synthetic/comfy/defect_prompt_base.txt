@@ -1,19 +1,16 @@
-macro close-up inspection photo of a stainless steel surgical {0.45::scissors|0.45::forceps|0.25::hemostat clamp|0.20::needle holder|0.15::retractor|0.10::tweezers},
-single object only, top view, object lying flat, object directly below camera, camera very close,
-{0.60::tight crop filling most of frame|0.30::medium close-up with margin|0.10::wider crop with more background visible},
+macro close-up inspection photo of a stainless steel {0.20::scissors|0.20::forceps|0.20::tongs|0.20::hammer|0.10::cube|0.10::sphere},
+single object only, top view, object directly below camera, camera very close, tight crop filling most of frame,
 
 material: stainless steel, realistic brushed/matt steel
-surface texture: fine linear brushed grain, subtle directional micro-scratches, light scuffing from handling,
 
 {{DEFECT_BLOCK}}
 
 lighting: {0.55::diffused softbox lighting very soft|0.25::overhead LED panel, soft|0.20::mixed ambient + LED},
-speculars: {1-2$$, $$soft controlled highlights|clean highlight rolloff|subtle reflections|faint rectangular LED reflection band},
-white balance: {0.3::neutral daylight|0.25::cool bluish tint mild|0.35::slightly warm indoor,|0.1::strong bluish tint},
+lighting color and white balance: {0.50::neutral daylight|0.50::white light},
+speculars: {1-2$$, $$soft controlled highlights|clean highlight rolloff|subtle reflections},
 sharp focus, realistic camera look, mild sensor noise, slight compression artifacts,
 
-background: tabletop/desk surface,
-{0.35::light gray matte tabletop|0.30::off-white matte tabletop|0.20::white melamine tabletop|0.15::light wood desk surface|0.10::dark laminate desk surface|0.10::matte plastic tabletop},
-background geometry: {0.60::even flat-field illumination|0.30::very gentle gradient|0.10::soft shadow band at one edge},
-background is perfectly clean and dry, absolutely no stains, no wet patches, no puddles, no water on the tabletop,
+background: plain white backdrop,
+instrument is floating over the backdrop,
+background is perfectly clean, flat color, no texture, no pattern, no shadows, no objects,
 no vignette, no spotlight, no fisheye, no dark corners

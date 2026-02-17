@@ -1,26 +1,28 @@
 #!/usr/bin/env python3
 """
 ComfyUI batch generator using:
-  - a full prompt template file (prompt_base.txt)
-  - a defect block file (defects/*.txt)
+    - a full prompt template file (prompt_base.txt)
+    - a defect block file (defects/*.txt)
 and injecting the defect via {{DEFECT_BLOCK}}.
 
 Nodes assumed (default IDs match your example):
-  16 = DPRandomGenerator (inputs.text, inputs.seed)
-  17 = Image Saver Simple (inputs.path, inputs.filename)
-  10 = RandomNoise (inputs.noise_seed)
+    16 = DPRandomGenerator (inputs.text, inputs.seed)
+    17 = Image Saver Simple (inputs.path, inputs.filename)
+    10 = RandomNoise (inputs.noise_seed)
+    28 = LoadImage (inputs.image) [optional background]
 
 Install:
-  pip install requests
+    pip install requests
 
 Usage:
-  python comfy_defect_batch2.py \
-    --template ./workflow_flux2.json \
-    --prompt_template_file ./prompt_base.txt \
-    --defect_name heat_tint \
-    --defect_block_file ./defects/heat_tint.txt \
-    --out_base /home/lukasb/Pictures/Comfy \
-    --count 200
+    python comfy_defect_batch2.py \
+        --template ./flux_workflow.json \
+        --prompt_template_file ./defect_prompt_base.txt \
+        --defect_name heat_tint \
+        --defect_block_file ./defects/heat_tint.txt \
+        --background_dir /srv/comfy/backgrounds \
+        --out_base /home/lukasb/Pictures/Comfy \
+        --count 200
 """
 
 from __future__ import annotations
@@ -33,7 +35,7 @@ import sys
 import time
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Sequence
 
 import requests
 
@@ -105,16 +107,30 @@ def build_prompt_from_files(prompt_template: str, defect_block: str) -> str:
     return prompt_template.replace("{{DEFECT_BLOCK}}", defect)
 
 
+def list_backgrounds(background_dir: Path) -> List[Path]:
+    exts = {".png", ".jpg", ".jpeg", ".webp"}
+    if not background_dir.exists():
+        raise FileNotFoundError(f"Background directory not found: {background_dir}")
+    if not background_dir.is_dir():
+        raise NotADirectoryError(f"Background path is not a directory: {background_dir}")
+    paths = [p for p in background_dir.iterdir() if p.is_file() and p.suffix.lower() in exts]
+    if not paths:
+        raise ValueError(f"No background images found in {background_dir} (expected {sorted(exts)})")
+    return sorted(paths)
+
+
 def patch_workflow(
     wf: Dict[str, Any],
     *,
     full_prompt: str,
     defect_name: str,
     out_base: Path,
+    background_image: Optional[str] = None,
     prompt_node_id: str = "16",
     saver_node_id: str = "17",
     noise_node_id: str = "10",
     prompt_seed_node_id: str = "16",
+    background_node_id: str = "28",
     set_noise_seed: Optional[int] = None,
     set_prompt_seed: Optional[int] = None,
 ) -> Dict[str, Any]:
@@ -148,6 +164,14 @@ def patch_workflow(
             wf2[prompt_seed_node_id]["inputs"]["seed"] = int(set_prompt_seed)
         except KeyError as e:
             raise KeyError(f"Missing prompt seed node {prompt_seed_node_id} inputs.seed. Error: {e}") from e
+
+    if background_image is not None:
+        try:
+            wf2[background_node_id]["inputs"]["image"] = background_image
+        except KeyError as e:
+            raise KeyError(
+                f"Missing background node {background_node_id} inputs.image. Error: {e}"
+            ) from e
 
     return wf2
 
@@ -230,11 +254,24 @@ def build_argparser() -> argparse.ArgumentParser:
     p.add_argument("--defect_name", default="", help="Single defect name (if not using defects_json)")
     p.add_argument("--defect_block_file", default="", help="Single defect block file (if not using defects_json)")
 
+    # Backgrounds
+    p.add_argument(
+        "--background_dir",
+        default="/home/lukasb/Documents/NoisyLabelDefectDetection/synthetic/comfy/resources/backgrounds",
+        help="Optional directory of background images to load via LoadImage node",
+    )
+    p.add_argument(
+        "--background_use_full_path",
+        action="store_true",
+        help="If set, pass full paths to LoadImage instead of just file names",
+    )
+
     # Node IDs (defaults match your workflow)
     p.add_argument("--prompt_node_id", default="16")
     p.add_argument("--saver_node_id", default="17")
     p.add_argument("--noise_node_id", default="10")
     p.add_argument("--prompt_seed_node_id", default="16")
+    p.add_argument("--background_node_id", default="28")
 
     # Seeding
     p.add_argument("--seed_base", type=int, default=None, help="If set: uses seed_base+i for each generated image")
@@ -254,6 +291,10 @@ def main() -> None:
 
     defects = load_defects(args.defects_json, args.defect_name, args.defect_block_file)
 
+    backgrounds: Sequence[Path] = []
+    if args.background_dir:
+        backgrounds = list_backgrounds(Path(args.background_dir).expanduser().resolve())
+
     rng = random.Random(args.rng_seed)
 
     client = ComfyClient(server=args.server, timeout_s=args.timeout)
@@ -267,15 +308,22 @@ def main() -> None:
             seed = (args.seed_base + i) if args.seed_base is not None else rng.randrange(0, 2**31 - 1)
             full_prompt = build_prompt_from_files(prompt_template, d["block"])
 
+            background_image: Optional[str] = None
+            if backgrounds:
+                chosen = rng.choice(backgrounds)
+                background_image = str(chosen) if args.background_use_full_path else chosen.name
+
             wf_run = patch_workflow(
                 wf_template,
                 full_prompt=full_prompt,
                 defect_name=d["name"],
                 out_base=out_base,
+                background_image=background_image,
                 prompt_node_id=args.prompt_node_id,
                 saver_node_id=args.saver_node_id,
                 noise_node_id=args.noise_node_id,
                 prompt_seed_node_id=args.prompt_seed_node_id,
+                background_node_id=args.background_node_id,
                 set_noise_seed=seed,
                 set_prompt_seed=seed,
             )

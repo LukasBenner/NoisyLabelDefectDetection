@@ -8,7 +8,7 @@ schedule_1.sh
 
 #ignore resources and outputs for synthetic data generation
 synthetic/**/output
-synthetic/blender/resources
+synthetic/**/resources
 
 # ignore newly added data
 data/new_data

@@ -9,7 +9,7 @@ import time
 # USER SETTINGS
 # -----------------------------
 OUTPUT_ROOT = "//../output"
-N_IMAGES = 10
+N_IMAGES = 400
 
 # Foreground objects/material (must exist)
 FOREGROUND_OBJECTS = ["Schere", "Hammer", "Haken", "Grip", "Zange"]

@@ -1,10 +1,2 @@
-{
-    0.7::{0.45::light gray deposit small patches|0.55::translucent smudged residue that dulls the metal} on the objects surface,
-    localized and patchy, irregular shapes, smudged wipe streaks, not uniform, not evenly distributed,
-    not crusty, not powdery, not chalky, not flaking,
-    edges: soft feathered boundaries, uneven opacity, subtle tide marks at droplet rims,
-    {0.55::matte dulling where residue is present|0.30::semi-matte haze reducing specular reflections|0.15::slight roughened look in stained zones},
-    light gray / off-white mineral tone, no rainbow heat tint colors, no orange/brown corrosion|
-    0.3::heat tint discoloration on the metal surface, iridescent temper colors (blue, purple, straw-gold, black), thin oxide layer, smooth polished surface, no texture change, no pitting,
-    distribution: global, large patches, (covers whole instrument:1.2)
-},
+heat tint discoloration on the metal surface, iridescent temper colors (blue, purple, straw-gold, black), thin oxide layer, smooth polished surface, no texture change, no pitting,
+distribution: global, large patches, covers whole object

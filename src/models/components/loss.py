@@ -287,7 +287,7 @@ class FocalLoss(torch.nn.Module):
         https://github.com/clcarwin/focal_loss_pytorch/blob/master/focalloss.py
     '''
 
-    def __init__(self, gamma=0, alpha=None, size_average=True):
+    def __init__(self, gamma=0, alpha=None, size_average=True, num_classes=None, weight=None):
         super(FocalLoss, self).__init__()
         self.gamma = gamma
         self.alpha = alpha

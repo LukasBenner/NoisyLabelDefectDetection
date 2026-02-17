@@ -1,7 +1,7 @@
 global black staining on stainless steel as a uniform dark gray to near-black surface film,
 uniformity: {
-    0.7::evenly distributed across the entire instrument, homogeneous, consistent tone everywhere, not localized, not spotty, not blotchy|
-    0.3::unevenly distributed across the entire instrument, darker and lighter spots, inconsistent tone},
+    0.5::evenly distributed across the entire object, homogeneous, consistent tone everywhere, not localized, not spotty, not blotchy|
+    0.5::unevenly distributed across the entire object, darker and lighter spots, inconsistent tone},
 intensity: {0.20::slightly darkened overall|0.35::moderately darkened overall|0.45::strongly darkened overall},
-finish change: {0.60::matte dulled reflectivity across the whole instrument|0.40::semi-matte darkened finish across the whole instrument},
+finish change: {0.60::matte dulled reflectivity across the whole object|0.40::semi-matte darkened finish across the whole object},
 color: neutral dark gray/black tone (not rainbow heat tint colors), stainless steel remains smooth metallic,

@@ -7,8 +7,8 @@ defaults:
   - _self_
 
 research_name: SurfaceDefectDetection
-experiment_name: full_cleaned_new
-run_name_postfix: ce_medium
+experiment_name: synthetic
+run_name_postfix: sce
 
 n_runs: 5
 
@@ -21,20 +21,23 @@ model:
   optimizer:
     _target_: torch.optim.SGD
     _partial_: true
-    lr: 0.005
+    lr: 0.002
     momentum: 0.9
-    weight_decay: 1e-5
+    weight_decay: 1e-4
   scheduler:
     _target_: torch.optim.lr_scheduler.CosineAnnealingLR
     T_max: ${trainer.max_epochs}
   criterion:
-    _target_: src.models.components.loss.CELoss
+    _target_: src.models.components.loss.SCELoss
+    alpha: 1.0
+    beta: 0.1
 
 data:
   batch_size: 32
   image1k_norm: true
   transforms: medium
+  syn_path: /srv/defectDetectionDataset/sourceSets/synthetic
 
 callbacks:
   early_stopping:
-    patience: 50
+    patience: 20

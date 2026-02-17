@@ -205,6 +205,7 @@ class BaseRobustModule(LightningModule):
                     pc["val/per_class/f1"][i],
                     sync_dist=True,
                 )
+            self.val_per_class.reset()
 
     # ---------------- TEST ----------------
     def test_step(self, batch: Any, batch_idx: int) -> None:
@@ -244,6 +245,7 @@ class BaseRobustModule(LightningModule):
                     pc["test/per_class/f1"][i],
                     sync_dist=True,
                 )
+            self.test_per_class.reset()
 
     # ---------------- OPTIM ----------------
     def configure_optimizers(self) -> Dict[str, Any]:

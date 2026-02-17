@@ -1,13 +1,10 @@
 {
-    0.35::(tiny) spots of adhesive / glue residue on metal surface, semi-transparent sticky smear and glossy patches, uneven edge, slight stringing “glue threads” in places, faint trapped dust/lint in the adhesive, residue is ON the metal only (surface-bound), no floating overlay, no rust, no water rings,
+    0.40::very tiny spots of adhesive / glue residue on metal surface, semi-transparent sticky smear and glossy patches, uneven edge, slight stringing “glue threads” in places, faint trapped dust/lint in the adhesive, residue is ON the metal only (surface-bound), no floating overlay, no rust, no water rings,
     distribution: localized, {0.45::near hinge/pivot seam|0.30::on handle/shaft area|0.25::near edge/contour}, covers {0.55::2-6%|0.30::6-12%|0.15::12-20%} of visible surface|
     
-    0.25::tape / label adhesive residue, rectangular or band-shaped residue with sharp-ish boundaries, slightly glossy sticky film, faint fingerprint smudges in the adhesive, possible torn-edge look, subtle yellowish tint but mostly clear/neutral, residue lies flat and follows surface curvature, no corrosion, no water stains,
+    0.20::tape / label adhesive residue, rectangular or band-shaped residue with sharp-ish boundaries, slightly glossy sticky film, faint fingerprint smudges in the adhesive, possible torn-edge look, subtle yellowish tint but mostly clear/neutral, residue lies flat and follows surface curvature, no corrosion, no water stains,
     distribution: {0.55::along handle/shaft where tape was removed|0.30::around ring area|0.15::near markings/engraving}, covers {0.60::3-8%|0.30::8-15%|0.10::15-25%} of surface|
     
-    0.20::(tiny) hair / fiber contamination, one or more thin hair strands or fine fibers lying on the instrument surface, slight curvature, realistic contact and tiny shadow, may cross edges and follow geometry, no embedded residue, no corrosion, no water rings,
-    distribution: {0.60::single strand across the surface|0.30::two to three strands|0.10::small lint tuft + a strand}, covers {0.70::<1%|0.25::1-3%|0.05::3-6%} of surface|
-    
-    0.20::dried blood residue (non-gory), small dried smear or blot with dark red-brown / brown tones, matte-to-satin finish, slight edge darkening, may include a few tiny specks nearby, stain is ON the metal surface only, not on background, no dripping, no rust,
-    distribution: localized, {0.50::near tip/working end|0.30::near hinge/pivot area|0.20::on handle/shaft}, covers {0.60::1-4%|0.30::4-8%|0.10::8-15%} of surface
+    0.40:: {0.5::red|0.2::green|0.2::blue|0.1::black} felt-tip pen strokes, may cross edges and follow geometry, no embedded residue, no corrosion, no water rings,
+    distribution: {0.60::single stroke across the surface|0.30::two to three strokes|0.10::mane strokes}, covers {0.70::<1%|0.25::1-3%|0.05::3-6%} of surface
 },

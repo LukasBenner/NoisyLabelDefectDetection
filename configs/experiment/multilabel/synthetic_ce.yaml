@@ -21,9 +21,9 @@ model:
   optimizer:
     _target_: torch.optim.SGD
     _partial_: true
-    lr: 0.005
+    lr: 0.01
     momentum: 0.9
-    weight_decay: 1e-5
+    weight_decay: 1e-4
   scheduler:
     _target_: torch.optim.lr_scheduler.CosineAnnealingLR
     T_max: ${trainer.max_epochs}
@@ -33,7 +33,7 @@ model:
 data:
   batch_size: 32
   image1k_norm: true
-  transforms: strong
+  transforms: medium
   syn_path: /srv/defectDetectionDataset/sourceSets/synthetic
 
 callbacks:
