@@ -47,19 +47,7 @@ def build_moco_v2_transforms(img_size: int = 480, image1k_norm: bool = True):
             v2.RandomResizedCrop(img_size, scale=(0.5, 1.0)),  # avoid tiny crops
             v2.RandomHorizontalFlip(),
             v2.RandomVerticalFlip(),
-            v2.RandomRotation(degrees=(-10, 10)),
-            v2.RandomApply(
-                [
-                    v2.ColorJitter(
-                        0.8 * color_jitter_fac,
-                        0.8 * color_jitter_fac,
-                        0.8 * color_jitter_fac,
-                        0.2 * color_jitter_fac,
-                    )
-                ],
-                p=0.8,
-            ),
-            v2.RandomGrayscale(p=0.2),
+            v2.RandomRotation(degrees=(-45, 45)),
             v2.RandomApply([v2.GaussianBlur((5,9), (0.1, 2.0))], p=0.5),
             v2.ToImage(),
             v2.ToDtype(torch.float32, scale=True),

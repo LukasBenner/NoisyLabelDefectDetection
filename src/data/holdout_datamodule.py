@@ -26,6 +26,7 @@ class HoldoutDataModule(LightningDataModule):
         transforms: str = "medium",
         image1k_norm: bool = True,
         batch_size: int = 96,
+        weight_alpha: float = 0.5,
         num_workers: int = 4,
         pin_memory: bool = True,
         seed: int = 42,
@@ -122,7 +123,8 @@ class HoldoutDataModule(LightningDataModule):
             counts = torch.bincount(targets, minlength=num_classes).float()
             counts = torch.clamp(counts, min=1.0)
             N = counts.sum()
-            self._class_weights = N / (num_classes * counts)
+            base = N / (num_classes * counts)
+            self._class_weights = base.pow(self.hparams.weight_alpha)
 
             # sample weight per sample
             sample_weights = self._class_weights[targets]

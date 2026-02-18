@@ -37,20 +37,10 @@ class BaseRobustModule(LightningModule):
         self._scheduler = scheduler
         self.log_per_class = log_per_class
 
-        # --- class weights: store as buffer (device-safe) ---
-        cw = None
-        if self.datamodule is not None and hasattr(self.datamodule, "class_weights"):
-            cw = self.datamodule.class_weights.detach().to(dtype=torch.float32).cpu()
-        if cw is None:
-            cw = torch.ones(num_classes, dtype=torch.float32)
-
-        self.register_buffer("class_weights", cw, persistent=True)
-
         # --- criterion ---
         if criterion is None:
             raise ValueError("criterion has to be set")
-        # Instantiate criterion with weights on the right device automatically via buffer
-        self.criterion = criterion(num_classes=num_classes, weight=self.class_weights)
+        self.criterion = criterion(num_classes=num_classes)
 
         # --- losses ---
         self.train_loss = MeanMetric()

@@ -5,23 +5,22 @@ from typing import Optional
 
 
 class CELoss(torch.nn.Module):
-    def __init__(self, num_classes, weight=None, label_smoothing=0.0) -> None:
+    def __init__(self, num_classes, label_smoothing=0.0) -> None:
         super(CELoss, self).__init__()
         self.num_classes = num_classes
-        self.weight = weight
-        self.cross_entropy = torch.nn.CrossEntropyLoss(weight=self.weight, label_smoothing=label_smoothing)
+        self.cross_entropy = torch.nn.CrossEntropyLoss(label_smoothing=label_smoothing)
         
     def forward(self, pred, labels):
         loss = self.cross_entropy(pred, labels)
         return loss
 
 class SCELoss(torch.nn.Module):
-    def __init__(self, alpha, beta, num_classes, weight=None):
+    def __init__(self, alpha, beta, num_classes):
         super(SCELoss, self).__init__()
         self.alpha = alpha
         self.beta = beta
         self.num_classes = num_classes
-        self.cross_entropy = torch.nn.CrossEntropyLoss(weight=weight)
+        self.cross_entropy = torch.nn.CrossEntropyLoss()
 
     def forward(self, pred, labels):
         # CCE
@@ -40,7 +39,7 @@ class SCELoss(torch.nn.Module):
 
 
 class ReverseCrossEntropy(torch.nn.Module):
-    def __init__(self, num_classes, scale=1.0, weight=None):
+    def __init__(self, num_classes, scale=1.0):
         super(ReverseCrossEntropy, self).__init__()
         self.num_classes = num_classes
         self.scale = scale
@@ -55,7 +54,7 @@ class ReverseCrossEntropy(torch.nn.Module):
 
 
 class NormalizedReverseCrossEntropy(torch.nn.Module):
-    def __init__(self, num_classes, scale=1.0, weight=None):
+    def __init__(self, num_classes, scale=1.0):
         super(NormalizedReverseCrossEntropy, self).__init__()
         self.num_classes = num_classes
         self.scale = scale
@@ -71,7 +70,7 @@ class NormalizedReverseCrossEntropy(torch.nn.Module):
 
 
 class NormalizedCrossEntropy(torch.nn.Module):
-    def __init__(self, num_classes, scale=1.0, weight=None):
+    def __init__(self, num_classes, scale=1.0):
         super(NormalizedCrossEntropy, self).__init__()
         self.num_classes = num_classes
         self.scale = scale
@@ -84,7 +83,7 @@ class NormalizedCrossEntropy(torch.nn.Module):
 
 
 class GeneralizedCrossEntropy(torch.nn.Module):
-    def __init__(self, num_classes, q=0.7, weight=None):
+    def __init__(self, num_classes, q=0.7):
         super(GeneralizedCrossEntropy, self).__init__()
         self.num_classes = num_classes
         self.q = q
@@ -98,7 +97,7 @@ class GeneralizedCrossEntropy(torch.nn.Module):
 
 
 class NormalizedGeneralizedCrossEntropy(torch.nn.Module):
-    def __init__(self, num_classes, scale=1.0, q=0.7, weight=None):
+    def __init__(self, num_classes, scale=1.0, q=0.7):
         super(NormalizedGeneralizedCrossEntropy, self).__init__()
         self.num_classes = num_classes
         self.q = q
@@ -115,7 +114,7 @@ class NormalizedGeneralizedCrossEntropy(torch.nn.Module):
 
 
 class MeanAbsoluteError(torch.nn.Module):
-    def __init__(self, num_classes, scale=1.0, weight=None):
+    def __init__(self, num_classes, scale=1.0):
         super(MeanAbsoluteError, self).__init__()
         self.num_classes = num_classes
         self.scale = scale
@@ -135,7 +134,7 @@ class MeanAbsoluteError(torch.nn.Module):
 
 
 class NormalizedMeanAbsoluteError(torch.nn.Module):
-    def __init__(self, num_classes, scale=1.0, weight=None):
+    def __init__(self, num_classes, scale=1.0):
         super(NormalizedMeanAbsoluteError, self).__init__()
         self.num_classes = num_classes
         self.scale = scale
@@ -150,98 +149,98 @@ class NormalizedMeanAbsoluteError(torch.nn.Module):
 
 
 class NCEandRCE(torch.nn.Module):
-    def __init__(self, alpha, beta, num_classes, weight=None):
+    def __init__(self, alpha, beta, num_classes):
         super(NCEandRCE, self).__init__()
         self.num_classes = num_classes
-        self.nce = NormalizedCrossEntropy(scale=alpha, num_classes=num_classes, weight=weight)
-        self.rce = ReverseCrossEntropy(scale=beta, num_classes=num_classes, weight=weight)
+        self.nce = NormalizedCrossEntropy(scale=alpha, num_classes=num_classes)
+        self.rce = ReverseCrossEntropy(scale=beta, num_classes=num_classes)
 
     def forward(self, pred, labels):
         return self.nce(pred, labels) + self.rce(pred, labels)
 
 
 class NCEandMAE(torch.nn.Module):
-    def __init__(self, alpha, beta, num_classes, weight=None):
+    def __init__(self, alpha, beta, num_classes):
         super(NCEandMAE, self).__init__()
         self.num_classes = num_classes
-        self.nce = NormalizedCrossEntropy(scale=alpha, num_classes=num_classes, weight=weight)
-        self.mae = MeanAbsoluteError(scale=beta, num_classes=num_classes, weight=weight)
+        self.nce = NormalizedCrossEntropy(scale=alpha, num_classes=num_classes)
+        self.mae = MeanAbsoluteError(scale=beta, num_classes=num_classes)
 
     def forward(self, pred, labels):
         return self.nce(pred, labels) + self.mae(pred, labels)
 
 
 class GCEandMAE(torch.nn.Module):
-    def __init__(self, alpha, beta, num_classes, q=0.7, weight=None):
+    def __init__(self, alpha, beta, num_classes, q=0.7):
         super(GCEandMAE, self).__init__()
         self.num_classes = num_classes
-        self.gce = GeneralizedCrossEntropy(num_classes=num_classes, q=q, weight=weight)
-        self.mae = MeanAbsoluteError(scale=beta, num_classes=num_classes, weight=weight)
+        self.gce = GeneralizedCrossEntropy(num_classes=num_classes, q=q)
+        self.mae = MeanAbsoluteError(scale=beta, num_classes=num_classes)
     def forward(self, pred, labels):
         return self.gce(pred, labels) + self.mae(pred, labels)
 
 
 class GCEandRCE(torch.nn.Module):
-    def __init__(self, alpha, beta, num_classes, q=0.7, weight=None):
+    def __init__(self, alpha, beta, num_classes, q=0.7):
         super(GCEandRCE, self).__init__()
         self.num_classes = num_classes
-        self.gce = GeneralizedCrossEntropy(num_classes=num_classes, q=q, weight=weight)
-        self.rce = ReverseCrossEntropy(scale=beta, num_classes=num_classes, weight=weight)
+        self.gce = GeneralizedCrossEntropy(num_classes=num_classes, q=q)
+        self.rce = ReverseCrossEntropy(scale=beta, num_classes=num_classes)
 
     def forward(self, pred, labels):
         return self.gce(pred, labels) + self.rce(pred, labels)
 
 
 class GCEandNCE(torch.nn.Module):
-    def __init__(self, alpha, beta, num_classes, q=0.7, weight=None):
+    def __init__(self, alpha, beta, num_classes, q=0.7):
         super(GCEandNCE, self).__init__()
         self.num_classes = num_classes
-        self.gce = GeneralizedCrossEntropy(num_classes=num_classes, q=q, weight=weight)
-        self.nce = NormalizedCrossEntropy(num_classes=num_classes, weight=weight)
+        self.gce = GeneralizedCrossEntropy(num_classes=num_classes, q=q)
+        self.nce = NormalizedCrossEntropy(num_classes=num_classes)
 
     def forward(self, pred, labels):
         return self.gce(pred, labels) + self.nce(pred, labels)
 
 
 class NGCEandNCE(torch.nn.Module):
-    def __init__(self, alpha, beta, num_classes, q=0.7, weight=None):
+    def __init__(self, alpha, beta, num_classes, q=0.7):
         super(NGCEandNCE, self).__init__()
         self.num_classes = num_classes
-        self.ngce = NormalizedGeneralizedCrossEntropy(scale=alpha, q=q, num_classes=num_classes, weight=weight)
-        self.nce = NormalizedCrossEntropy(scale=beta, num_classes=num_classes, weight=weight)
+        self.ngce = NormalizedGeneralizedCrossEntropy(scale=alpha, q=q, num_classes=num_classes)
+        self.nce = NormalizedCrossEntropy(scale=beta, num_classes=num_classes)
 
     def forward(self, pred, labels):
         return self.ngce(pred, labels) + self.nce(pred, labels)
 
 
 class NGCEandMAE(torch.nn.Module):
-    def __init__(self, alpha, beta, num_classes, q=0.7, weight=None):
+    def __init__(self, alpha, beta, num_classes, q=0.7):
         super(NGCEandMAE, self).__init__()
         self.num_classes = num_classes
-        self.ngce = NormalizedGeneralizedCrossEntropy(scale=alpha, q=q, num_classes=num_classes, weight=weight)
-        self.mae = MeanAbsoluteError(scale=beta, num_classes=num_classes, weight=weight)
+        self.ngce = NormalizedGeneralizedCrossEntropy(scale=alpha, q=q, num_classes=num_classes)
+        self.mae = MeanAbsoluteError(scale=beta, num_classes=num_classes)
 
     def forward(self, pred, labels):
         return self.ngce(pred, labels) + self.mae(pred, labels)
 
 
 class NGCEandRCE(torch.nn.Module):
-    def __init__(self, alpha, beta, num_classes, q=0.7, weight=None):
+    def __init__(self, alpha, beta, num_classes, q=0.7):
         super(NGCEandRCE, self).__init__()
         self.num_classes = num_classes
-        self.ngce = NormalizedGeneralizedCrossEntropy(scale=alpha, q=q, num_classes=num_classes, weight=weight)
-        self.rce = ReverseCrossEntropy(scale=beta, num_classes=num_classes, weight=weight)
+        self.ngce = NormalizedGeneralizedCrossEntropy(scale=alpha, q=q, num_classes=num_classes)
+        self.rce = ReverseCrossEntropy(scale=beta, num_classes=num_classes)
 
     def forward(self, pred, labels):
         return self.ngce(pred, labels) + self.rce(pred, labels)
 
 
 class MAEandRCE(torch.nn.Module):
-    def __init__(self, alpha, beta, num_classes, weight=None):
+    def __init__(self, alpha, beta, num_classes):
         super(MAEandRCE, self).__init__()
         self.num_classes = num_classes
-        self.mae = MeanAbsoluteError(scale=alpha, num_classes=num_classes, weight=weight)
-        self.rce = ReverseCrossEntropy(scale=beta, num_classes=num_classes, weight=weight)
+        self.mae = MeanAbsoluteError(scale=alpha, num_classes=num_classes)
+        self.rce = ReverseCrossEntropy(scale=beta, num_classes=num_classes)
 
     def forward(self, pred, labels):
         return self.mae(pred, labels) + self.rce(pred, labels)
@@ -287,7 +286,7 @@ class FocalLoss(torch.nn.Module):
         https://github.com/clcarwin/focal_loss_pytorch/blob/master/focalloss.py
     '''
 
-    def __init__(self, gamma=0, alpha=None, size_average=True, num_classes=None, weight=None):
+    def __init__(self, gamma=0, alpha=None, size_average=True, num_classes=None):
         super(FocalLoss, self).__init__()
         self.gamma = gamma
         self.alpha = alpha
@@ -323,7 +322,7 @@ class FocalLoss(torch.nn.Module):
 
 
 class NormalizedFocalLoss(torch.nn.Module):
-    def __init__(self, scale=1.0, gamma=0.0, num_classes=10, alpha=None, size_average=True, weight=None):
+    def __init__(self, scale=1.0, gamma=0.0, num_classes=10, alpha=None, size_average=True):
         super(NormalizedFocalLoss, self).__init__()
         self.gamma = gamma
         self.size_average = size_average
@@ -347,32 +346,32 @@ class NormalizedFocalLoss(torch.nn.Module):
 
 
 class NFLandNCE(torch.nn.Module):
-    def __init__(self, alpha, beta, num_classes, gamma=0.5, weight=None):
+    def __init__(self, alpha, beta, num_classes, gamma=0.5):
         super(NFLandNCE, self).__init__()
         self.num_classes = num_classes
-        self.nfl = NormalizedFocalLoss(scale=alpha, gamma=gamma, num_classes=num_classes, weight=weight)
-        self.nce = NormalizedCrossEntropy(scale=beta, num_classes=num_classes, weight=weight)
+        self.nfl = NormalizedFocalLoss(scale=alpha, gamma=gamma, num_classes=num_classes)
+        self.nce = NormalizedCrossEntropy(scale=beta, num_classes=num_classes)
     def forward(self, pred, labels):
         return self.nfl(pred, labels) + self.nce(pred, labels)
 
 
 class NFLandMAE(torch.nn.Module):
-    def __init__(self, alpha, beta, num_classes, gamma=0.5, weight=None):
+    def __init__(self, alpha, beta, num_classes, gamma=0.5):
         super(NFLandMAE, self).__init__()
         self.num_classes = num_classes
-        self.nfl = NormalizedFocalLoss(scale=alpha, gamma=gamma, num_classes=num_classes, weight=weight)
-        self.mae = MeanAbsoluteError(scale=beta, num_classes=num_classes, weight=weight)
+        self.nfl = NormalizedFocalLoss(scale=alpha, gamma=gamma, num_classes=num_classes)
+        self.mae = MeanAbsoluteError(scale=beta, num_classes=num_classes)
 
     def forward(self, pred, labels):
         return self.nfl(pred, labels) + self.mae(pred, labels)
 
 
 class NFLandRCE(torch.nn.Module):
-    def __init__(self, alpha, beta, num_classes, gamma=0.5, weight=None):
+    def __init__(self, alpha, beta, num_classes, gamma=0.5):
         super(NFLandRCE, self).__init__()
         self.num_classes = num_classes
-        self.nfl = NormalizedFocalLoss(scale=alpha, gamma=gamma, num_classes=num_classes, weight=weight)
-        self.rce = ReverseCrossEntropy(scale=beta, num_classes=num_classes, weight=weight)
+        self.nfl = NormalizedFocalLoss(scale=alpha, gamma=gamma, num_classes=num_classes)
+        self.rce = ReverseCrossEntropy(scale=beta, num_classes=num_classes)
 
     def forward(self, pred, labels):
         return self.nfl(pred, labels) + self.rce(pred, labels)

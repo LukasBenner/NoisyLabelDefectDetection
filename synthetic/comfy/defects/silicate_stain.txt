@@ -1,2 +1,7 @@
-heat tint discoloration on the metal surface, iridescent temper colors (blue, purple, straw-gold, black), thin oxide layer, smooth polished surface, no texture change, no pitting,
-distribution: global, large patches, covers whole object
+{
+  0.2::heat tint discoloration on the metal surface, iridescent temper colors (blue, purple, straw-gold, black), thin oxide layer, smooth polished surface, no texture change, no pitting,
+  distribution: global, large patches, covers whole object|
+  0.8::patchy thin residue layer, irregular, small patches, low contrast neutral-gray, slight dulling of brushed steel sheen,
+  NOT circular rings, NOT coffee-ring outlines, NOT isolated dots, NOT chalky white crust, NOT mineral scale, no corrosion pits, no rust,
+  distribution: covers parts of the object
+}
