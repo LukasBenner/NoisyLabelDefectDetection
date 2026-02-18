@@ -39,8 +39,6 @@ def build_moco_v2_transforms(img_size: int = 480, image1k_norm: bool = True):
 
     normalize = v2.Normalize(mean=mean, std=std)
 
-    color_jitter_fac = 0.5
-
     augmentation = v2.Compose(
         [
             v2.Resize(img_size, antialias=True),

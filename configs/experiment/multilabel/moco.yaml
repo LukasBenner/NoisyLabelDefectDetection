@@ -1,0 +1,69 @@
+# @package _global_
+
+defaults:
+  - override /data: holdout
+  - override /callbacks: no_early_stopping
+  - _self_
+
+experiment_name: "Moco"
+run_name_postfix: "syn_ssl"
+
+n_runs: 3
+
+trainer:
+  max_epochs: 300
+
+model:
+  _target_: src.models.mocov2_module.MocoClassifier
+  num_classes: 9
+  pretrained: false
+  backbone_norm: bn
+  backbone_gn_groups: 32
+  lr_backbone: 0.005
+  lr_head: 0.01
+  momentum: 0.9
+  weight_decay: 1e-4
+  freeze_backbone: false
+  optimizer:
+    _target_: torch.optim.SGD
+    _partial_: true
+    momentum: 0.9
+    weight_decay: 1e-4
+  scheduler:
+    _target_: torch.optim.lr_scheduler.CosineAnnealingLR
+    _partial_: true
+    T_max: ${trainer.max_epochs}
+  criterion:
+    _target_: src.models.components.loss.CELoss
+    _partial_: true
+
+ssl_model:
+  _target_: src.models.mocov2_module.MoCoV2
+  pretrained: false
+  backbone_norm: bn
+  backbone_gn_groups: 32
+  proj_dim: 128
+  proj_hidden_dim: 2048
+  proj_num_layers: 2
+  queue_size: 4096
+  momentum: 0.996
+  momentum_final: 0.9999
+  temperature: 0.2
+  lr: 0.05
+  sgd_momentum: 0.9
+  weight_decay: 1e-4
+  eta_min: 0
+  max_epochs: 100
+
+
+ssl_data:
+  _target_: src.data.unlabeled_datamodule.UnlabeledDataModule
+  root_path: /srv/defectDetectionDataset/sourceSets/synthetic
+  img_size: 480
+  batch_size: 64
+  num_workers: 8
+  image1k_norm: false
+
+data:
+  batch_size: 32
+  image1k_norm: false

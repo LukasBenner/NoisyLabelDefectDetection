@@ -1,20 +1,27 @@
 """Hyperparameter sweep using Optuna with PyTorch Lightning."""
 
-from datetime import date
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import hydra
+import pandas as pd
 import rootutils
 from lightning import Callback, Trainer, seed_everything
 from lightning.pytorch.callbacks import ModelCheckpoint
 from lightning.pytorch.loggers import CSVLogger
+from hydra.core.hydra_config import HydraConfig
 from omegaconf import DictConfig, OmegaConf
 import optuna
 
 from utils.instantiators import instantiate_callbacks
 from utils.pylogger import RankedLogger
-from utils.utils import get_metric_value
+from utils.utils import (
+    collect_preds_targets,
+    create_confusion_matrix,
+    get_class_names,
+    get_metric_value,
+    to_float,
+)
 
 rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 
@@ -95,7 +102,7 @@ def update_config_with_suggestions(
 def main(cfg: DictConfig) -> Optional[float]:
     """Main sweep function using PyTorch Lightning and Optuna."""
     n_trials = cfg.get("n_trials", 10)
-    optimized_metric = cfg.get("optimized_metric", "val/acc_best")
+    optimized_metric = cfg.get("optimized_metric", "val/f1_macro_best")
     direction = cfg.get("direction", "maximize")
     seed = cfg.get("seed", 42)
     
@@ -103,18 +110,16 @@ def main(cfg: DictConfig) -> Optional[float]:
     seed_everything(seed, workers=True)
 
     # Setup logging paths
-    log_path = cfg.get("log_path", "logs")
-    research_name = cfg.get("research_name", "default")
+    base_log_path = Path(HydraConfig.get().runtime.output_dir)
     experiment_name = cfg.get("experiment_name", "default")
-    run_name = cfg.get("run_name", date.today().strftime("%Y-%m-%d"))
-    base_log_path = Path(log_path) / "sweep" / research_name / experiment_name / run_name
 
     log.info(f"Saving sweep results to: {base_log_path}")
 
     # Setup datamodule once to get num_classes
     log.info("Setting up initial datamodule to get dataset info")
     temp_datamodule = hydra.utils.instantiate(cfg.data, seed=seed)
-    temp_datamodule.setup()
+    temp_datamodule.prepare_data()
+    temp_datamodule.setup(stage="fit")
 
     # Get search space from config
     if "search_space" not in cfg:
@@ -174,7 +179,8 @@ def main(cfg: DictConfig) -> Optional[float]:
             # Instantiate datamodule with trial-specific seed
             log.info(f"Instantiating datamodule for trial {trial.number}")
             datamodule = hydra.utils.instantiate(run_cfg.data, seed=trial_seed)
-            datamodule.setup()
+            datamodule.prepare_data()
+            datamodule.setup(stage="fit")
 
             # Instantiate model
             log.info(f"Instantiating model for trial {trial.number}")
@@ -223,6 +229,11 @@ def main(cfg: DictConfig) -> Optional[float]:
 
             # Get metric value for optimization
             metric_value = get_metric_value(trainer.callback_metrics, optimized_metric)
+            if metric_value is None and hasattr(model, "val_f1_macro_best"):
+                try:
+                    metric_value = model.val_f1_macro_best.compute()
+                except Exception:
+                    metric_value = None
 
             if metric_value is None:
                 log.warning(
@@ -283,66 +294,147 @@ def main(cfg: DictConfig) -> Optional[float]:
             f.write(f"{key}: {value}\n")
     log.info(f"Saved best hyperparameters to: {best_hparams_file}")
 
-    # Perform final evaluation on test set with best model
-    log.info("Running final test evaluation with best model")
-    best_trial_dir = base_log_path / f"trial_{study.best_trial.number}"
-    
+    # Perform a full training run with the best hyperparameters
+    log.info("Running final training + test with best hyperparameters")
+
     # Rebuild best config
     best_suggestions = suggest_hyperparameters(
         optuna.trial.FixedTrial(study.best_params), search_space
     )
     best_cfg = update_config_with_suggestions(cfg, best_suggestions)
-    
-    # Setup datamodule with best config
+    best_run_dir = base_log_path / "best_run"
+    best_run_dir.mkdir(parents=True, exist_ok=True)
+
+    summary_dir = best_run_dir / "summary"
+    summary_dir.mkdir(parents=True, exist_ok=True)
+    hparams_file = summary_dir / "hyperparameters.yaml"
+    with open(hparams_file, "w") as f:
+        f.write(OmegaConf.to_yaml(best_cfg, resolve=True))
+        f.write(f"best_trial: {study.best_trial.number}\n")
+    log.info(f"Saved best-run hyperparameters to: {hparams_file}")
+
     best_datamodule = hydra.utils.instantiate(best_cfg.data, seed=seed)
-    best_datamodule.setup()
-    
-    # Setup model with best config
-    best_model = hydra.utils.instantiate(
-        best_cfg.model,
-        datamodule=best_datamodule
+    best_datamodule.prepare_data()
+    best_datamodule.setup(stage="fit")
+
+    best_model = hydra.utils.instantiate(best_cfg.model, datamodule=best_datamodule)
+
+    callbacks: List[Callback] = instantiate_callbacks(best_cfg.get("callbacks"))
+    for cb in callbacks:
+        if isinstance(cb, ModelCheckpoint) and cb.dirpath is None:
+            cb.dirpath = str(best_run_dir / "checkpoints")
+            log.info(f"Set checkpoint directory to: {cb.dirpath}")
+
+    logger = CSVLogger(save_dir=str(best_run_dir), name="", version="")
+    trainer: Trainer = hydra.utils.instantiate(
+        best_cfg.trainer, callbacks=callbacks, logger=logger
     )
-    
-    # Find best checkpoint
-    checkpoint_dir = best_trial_dir / "checkpoints"
-    best_checkpoint = None
-    if checkpoint_dir.exists():
-        checkpoints = list(checkpoint_dir.glob("*.ckpt"))
-        if checkpoints:
-            # Use the first checkpoint found (ModelCheckpoint saves best by default)
-            best_checkpoint = str(checkpoints[0])
-            log.info(f"Using checkpoint: {best_checkpoint}")
-    
-    # Setup minimal trainer for testing
-    test_logger = CSVLogger(
-        save_dir=str(base_log_path),
-        name="final_test",
-        version="",
-    )
-    
-    test_trainer = Trainer(
-        accelerator=best_cfg.trainer.get("accelerator", "gpu"),
+
+    log.info("Starting final training with best hyperparameters")
+    trainer.fit(model=best_model, datamodule=best_datamodule)
+
+    val_f1_macro_best = trainer.callback_metrics.get("val/f1_macro_best")
+    if val_f1_macro_best is None and hasattr(best_model, "val_f1_macro_best"):
+        try:
+            val_f1_macro_best = best_model.val_f1_macro_best.compute()
+        except Exception:
+            val_f1_macro_best = None
+
+    best_model_path = trainer.checkpoint_callback.best_model_path
+
+    test_dir = best_run_dir / "final_test"
+    test_dir.mkdir(parents=True, exist_ok=True)
+    test_logger = CSVLogger(save_dir=str(test_dir), name="", version="")
+    test_trainer: Trainer = hydra.utils.instantiate(
+        best_cfg.trainer,
+        callbacks=[],
+        logger=test_logger,
         devices=1,
         strategy="auto",
-        logger=test_logger,
     )
-    
-    # Test the model
-    if best_checkpoint:
+
+    if best_model_path:
+        log.info(f"Loading best checkpoint: {best_model_path}")
         test_trainer.test(
             model=best_model,
             datamodule=best_datamodule,
-            ckpt_path=best_checkpoint
+            ckpt_path=best_model_path,
+            weights_only=False,
         )
     else:
-        log.warning("No checkpoint found, skipping final test evaluation")
-    
-    # Log final test results
-    if test_trainer.callback_metrics:
-        log.info(f"Final test results with best hyperparameters:")
-        for key, value in test_trainer.callback_metrics.items():
-            if key.startswith("test/"):
-                log.info(f"  {key}: {float(value):.4f}")
+        log.warning("No best checkpoint found, testing with final model")
+        test_trainer.test(
+            model=best_model,
+            datamodule=best_datamodule,
+            weights_only=False,
+        )
+
+    log.info("Generating confusion matrix")
+    best_datamodule.setup(stage="test")
+    class_names = get_class_names(best_datamodule)
+    if class_names is None:
+        log.warning("No class names found; skipping confusion matrix")
+    else:
+        preds, targets = collect_preds_targets(
+            best_model, best_datamodule.test_dataloader()
+        )
+        create_confusion_matrix(
+            preds=preds.numpy(),
+            targets=targets.numpy(),
+            class_names=class_names,
+            logging_directory=str(test_dir),
+        )
+
+    cm = test_trainer.callback_metrics
+    test_metrics: Dict[str, Any] = {
+        "test/f1_macro": to_float(cm.get("test/f1_macro")),
+        "test/precision_macro": to_float(cm.get("test/precision_macro")),
+        "test/recall_macro": to_float(cm.get("test/recall_macro")),
+        "test/acc": to_float(cm.get("test/acc")),
+        "test/f1_weighted": to_float(cm.get("test/f1_weighted")),
+        "test/precision_weighted": to_float(cm.get("test/precision_weighted")),
+        "test/recall_weighted": to_float(cm.get("test/recall_weighted")),
+        "test/loss": to_float(cm.get("test/loss")),
+        "val/f1_macro_best": to_float(val_f1_macro_best),
+    }
+
+    n_classes = None
+    try:
+        n_classes = int(getattr(best_datamodule, "num_classes"))
+    except Exception:
+        n_classes = None
+
+    if n_classes is None and class_names:
+        n_classes = len(class_names)
+
+    class_names_for_metrics = None
+    if class_names and n_classes is not None and len(class_names) >= n_classes:
+        class_names_for_metrics = class_names
+
+    if n_classes is not None and n_classes > 0:
+        for i in range(n_classes):
+            for metric_name in ("precision", "recall", "f1"):
+                key_idx = f"test/{metric_name}_c{i}"
+                if class_names_for_metrics:
+                    class_name = class_names_for_metrics[i]
+                    key_named = f"test/{metric_name}_{class_name}"
+                    if key_named in cm:
+                        test_metrics[key_named] = to_float(cm.get(key_named))
+                    elif key_idx in cm:
+                        test_metrics[key_named] = to_float(cm.get(key_idx))
+                else:
+                    if key_idx in cm:
+                        test_metrics[key_idx] = to_float(cm.get(key_idx))
+
+    metrics_df = pd.DataFrame([test_metrics])
+    metrics_file = summary_dir / "metrics.csv"
+    metrics_df.to_csv(metrics_file, index=False)
+    log.info(f"Saved best-run metrics to: {metrics_file}")
+
+    log.info("Final test results with best hyperparameters:")
+    for key, value in test_metrics.items():
+        if key.startswith("test/"):
+            log.info(f"  {key}: {(value or 0.0):.4f}")
 
     return study.best_value
 

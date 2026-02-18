@@ -6,7 +6,7 @@ net:
   _target_: src.models.components.mobile_net.MobileNet
   num_classes: ${model.num_classes}
   pretrained: true
-  variant: large
+  variant: small
 
 optimizer:
   _target_: torch.optim.AdamW

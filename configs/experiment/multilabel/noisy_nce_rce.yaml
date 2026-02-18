@@ -6,14 +6,14 @@ defaults:
   - override /callbacks: with_early_stopping
   - _self_
 
-research_name: DefectDiscrimination
-experiment_name: full_clean
-run_name_postfix: ce
+research_name: SurfaceDefectDetection
+experiment_name: noisy
+run_name_postfix: nce_rce
 
 n_runs: 5
 
 model:
-  num_classes: 8
+  num_classes: 9
   net:
     _target_: src.models.components.mobile_net.MobileNet
     pretrained: true
@@ -28,13 +28,17 @@ model:
     _target_: torch.optim.lr_scheduler.CosineAnnealingLR
     T_max: ${trainer.max_epochs}
   criterion:
-    _target_: src.models.components.loss.CELoss
+    _target_: src.models.components.loss.NCEandRCE
+    alpha: 10
+    beta: 0.1
 
 data:
   batch_size: 32
   image1k_norm: true
   transforms: medium
-  classes: [black_stain, corrosion, crack, deformation, missing_part, other, silicate_stain, water_stain]
+  train_path: /srv/defectDetectionDataset/surfaceClassification/noisy_clean_split_new/train
+  val_path: /srv/defectDetectionDataset/surfaceClassification/noisy_clean_split_new/val
+  test_path: /srv/defectDetectionDataset/surfaceClassification/noisy_clean_split_new/test
 
 callbacks:
   early_stopping:

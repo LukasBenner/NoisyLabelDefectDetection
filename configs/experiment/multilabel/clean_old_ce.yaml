@@ -6,14 +6,14 @@ defaults:
   - override /callbacks: with_early_stopping
   - _self_
 
-research_name: DefectDiscrimination
-experiment_name: full_clean
+research_name: SurfaceDefectDetection
+experiment_name: clean_old
 run_name_postfix: ce
 
 n_runs: 5
 
 model:
-  num_classes: 8
+  num_classes: 9
   net:
     _target_: src.models.components.mobile_net.MobileNet
     pretrained: true
@@ -21,9 +21,9 @@ model:
   optimizer:
     _target_: torch.optim.SGD
     _partial_: true
-    lr: 0.005
+    lr: 0.01
     momentum: 0.9
-    weight_decay: 1e-5
+    weight_decay: 1e-4
   scheduler:
     _target_: torch.optim.lr_scheduler.CosineAnnealingLR
     T_max: ${trainer.max_epochs}
@@ -34,7 +34,9 @@ data:
   batch_size: 32
   image1k_norm: true
   transforms: medium
-  classes: [black_stain, corrosion, crack, deformation, missing_part, other, silicate_stain, water_stain]
+  train_path: /srv/defectDetectionDataset/surfaceClassification/full_clean_clustered_cleaned/train
+  val_path: /srv/defectDetectionDataset/surfaceClassification/full_clean_clustered_cleaned/val
+  test_path: /srv/defectDetectionDataset/surfaceClassification/full_clean_clustered_cleaned/test
 
 callbacks:
   early_stopping:

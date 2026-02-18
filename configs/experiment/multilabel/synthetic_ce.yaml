@@ -17,7 +17,7 @@ model:
   net:
     _target_: src.models.components.mobile_net.MobileNet
     pretrained: true
-    variant: large
+    variant: small
   optimizer:
     _target_: torch.optim.SGD
     _partial_: true
@@ -38,4 +38,4 @@ data:
 
 callbacks:
   early_stopping:
-    patience: 50
+    patience: 30

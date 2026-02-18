@@ -18,4 +18,4 @@ data:
 
 callbacks:
   early_stopping:
-    patience: 50
+    patience: 30
