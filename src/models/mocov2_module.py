@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, List, Optional
+from typing import Optional
 import math
 
 import torch
@@ -8,14 +8,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.distributed as dist
 from lightning import LightningModule
-from torchmetrics import MaxMetric, MeanMetric
-from torchmetrics.classification import (
-    MulticlassAccuracy,
-    MulticlassF1Score,
-    MulticlassPrecision,
-    MulticlassRecall,
-)
 
+from models.base_robust_module import BaseRobustModule
 from src.models.components.resnet_backbone import ResNetBackbone
 from src.models.components.mobilenetv3_backbone import MobileNetV3Backbone
 
@@ -89,7 +83,7 @@ class MoCoV2(LightningModule):
 
     def __init__(
         self,
-        backbone_name: str = "resnet50",
+        backbone_name: str = "mobilenetv3_large",
         pretrained: bool = False,
         backbone_norm: str = "bn",
         backbone_gn_groups: int = 32,
@@ -419,23 +413,27 @@ class MoCoV2(LightningModule):
         }
 
 
-class MocoClassifier(LightningModule):
+
+class MocoClassifier(BaseRobustModule):
     def __init__(
         self,
         num_classes: int = 10,
-        backbone_name: str = "resnet50",
+        backbone_name: str = "mobilenetv3_large",
         pretrained: bool = True,
         backbone_norm: str = "bn",
         backbone_gn_groups: int = 32,
+        optimizer: Optional[torch.optim.Optimizer] = None,
+        scheduler: Optional[torch.optim.lr_scheduler._LRScheduler] = None,
         criterion: Optional[torch.nn.Module] = None,
         lr_backbone: float = 0.01,
         lr_head: float = 0.1,
         momentum: float = 0.9,
         weight_decay: float = 1e-4,
         freeze_backbone: bool = False,
+        datamodule: Optional[LightningModule] = None,
+        
     ):
-        super().__init__()
-        self.save_hyperparameters(ignore="criterion")
+        self.save_hyperparameters(ignore=["criterion", "optimizer", "scheduler", "datamodule"])
 
         self.backbone = _build_backbone(
             backbone_name=backbone_name,
@@ -446,51 +444,13 @@ class MocoClassifier(LightningModule):
 
         backbone_out_dim = int(getattr(self.backbone, "out_dim"))
         self.head = nn.Linear(backbone_out_dim, num_classes)
-
-        if criterion is not None:
-            self.criterion = criterion(
-                num_classes=num_classes,
-            )
-        else:
-            raise Exception("criterion has to be set")
-
+        
         if freeze_backbone:
             for p in self.backbone.parameters():
                 p.requires_grad = False
+                
+        super().__init__(self.backbone, num_classes, optimizer, scheduler, criterion, compile=False, datamodule=datamodule)
 
-        # Metrics for train/val/test
-        self.train_acc = MulticlassAccuracy(num_classes=num_classes, average="weighted")
-        self.val_acc = MulticlassAccuracy(num_classes=num_classes, average="weighted")
-        self.test_acc = MulticlassAccuracy(num_classes=num_classes, average="weighted")
-
-        self.train_precision = MulticlassPrecision(
-            num_classes=num_classes, average="weighted"
-        )
-        self.val_precision = MulticlassPrecision(
-            num_classes=num_classes, average="weighted"
-        )
-        self.test_precision = MulticlassPrecision(
-            num_classes=num_classes, average="weighted"
-        )
-
-        self.train_recall = MulticlassRecall(
-            num_classes=num_classes, average="weighted"
-        )
-        self.val_recall = MulticlassRecall(num_classes=num_classes, average="weighted")
-        self.test_recall = MulticlassRecall(num_classes=num_classes, average="weighted")
-
-        self.train_f1 = MulticlassF1Score(num_classes=num_classes, average="weighted")
-        self.val_f1 = MulticlassF1Score(num_classes=num_classes, average="weighted")
-        self.test_f1 = MulticlassF1Score(num_classes=num_classes, average="weighted")
-
-        # Loss tracking
-        self.train_loss = MeanMetric()
-        self.val_loss = MeanMetric()
-        self.test_loss = MeanMetric()
-
-        # Track best validation metrics
-        self.val_acc_best = MaxMetric()
-        self.val_f1_best = MaxMetric()
 
     @staticmethod
     def _dist_is_initialized() -> bool:
@@ -528,182 +488,6 @@ class MocoClassifier(LightningModule):
         feat = self.backbone(x)
         return self.head(feat)
 
-    def _loss(self, logits, y):
-        return self.criterion(logits, y)
-
-    def on_train_start(self) -> None:
-        self.val_loss.reset()
-        self.val_acc_best.reset()
-        self.val_f1_best.reset()
-        self.val_acc_best.reset()
-
-    def model_step(self, batch: Any) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
-        inputs, targets = batch
-        logits = self.forward(inputs)
-        loss = self._loss(logits, targets)
-        preds = torch.argmax(logits, dim=1)
-        return loss, preds, targets
-
-    def training_step(self, batch, batch_idx):
-        loss, preds, targets = self.model_step(batch)
-
-        self.train_loss(loss)
-        self.train_acc(preds, targets)
-        self.train_precision(preds, targets)
-        self.train_recall(preds, targets)
-        self.train_f1(preds, targets)
-
-        self.log(
-            "train/loss",
-            self.train_loss,
-            on_step=False,
-            on_epoch=True,
-            prog_bar=True,
-            sync_dist=self._dist_is_initialized(),
-        )
-        self.log(
-            "train/acc",
-            self.train_acc,
-            on_step=False,
-            on_epoch=True,
-            prog_bar=True,
-            sync_dist=self._dist_is_initialized(),
-        )
-        self.log(
-            "train/precision",
-            self.train_precision,
-            on_step=False,
-            on_epoch=True,
-            sync_dist=self._dist_is_initialized(),
-        )
-        self.log(
-            "train/recall",
-            self.train_recall,
-            on_step=False,
-            on_epoch=True,
-            sync_dist=self._dist_is_initialized(),
-        )
-        self.log(
-            "train/f1",
-            self.train_f1,
-            on_step=False,
-            on_epoch=True,
-            sync_dist=self._dist_is_initialized(),
-        )
-
-        return loss
-
-    def validation_step(self, batch, batch_idx):
-        loss, preds, targets = self.model_step(batch)
-
-        # Update and log metrics
-        self.val_loss(loss)
-        self.val_acc(preds, targets)
-        self.val_precision(preds, targets)
-        self.val_recall(preds, targets)
-        self.val_f1(preds, targets)
-
-        self.log(
-            "val/loss",
-            self.val_loss,
-            on_step=False,
-            on_epoch=True,
-            prog_bar=True,
-            sync_dist=self._dist_is_initialized(),
-        )
-        self.log(
-            "val/acc",
-            self.val_acc,
-            on_step=False,
-            on_epoch=True,
-            prog_bar=True,
-            sync_dist=self._dist_is_initialized(),
-        )
-        self.log(
-            "val/precision",
-            self.val_precision,
-            on_step=False,
-            on_epoch=True,
-            sync_dist=self._dist_is_initialized(),
-        )
-        self.log(
-            "val/recall",
-            self.val_recall,
-            on_step=False,
-            on_epoch=True,
-            sync_dist=self._dist_is_initialized(),
-        )
-        self.log(
-            "val/f1",
-            self.val_f1,
-            on_step=False,
-            on_epoch=True,
-            sync_dist=self._dist_is_initialized(),
-        )
-
-    def on_validation_epoch_end(self) -> None:
-        """Lightning hook called at the end of validation epoch."""
-        acc = self.val_acc.compute()
-        f1 = self.val_f1.compute()
-
-        self.val_acc_best(acc)
-        self.val_f1_best(f1)
-
-        self.log(
-            "val/acc_best",
-            self.val_acc_best.compute(),
-            sync_dist=self._dist_is_initialized(),
-            prog_bar=True,
-        )
-        self.log(
-            "val/f1_best",
-            self.val_f1_best.compute(),
-            sync_dist=self._dist_is_initialized(),
-        )
-
-    def test_step(self, batch, batch_idx):
-        """Test step."""
-        loss, preds, targets = self.model_step(batch)
-
-        # Update and log metrics
-        self.test_loss(loss)
-        self.test_acc(preds, targets)
-        self.test_precision(preds, targets)
-        self.test_recall(preds, targets)
-        self.test_f1(preds, targets)
-
-        self.log(
-            "test/loss",
-            self.test_loss,
-            on_step=False,
-            on_epoch=True,
-            prog_bar=True,
-        )
-        self.log(
-            "test/acc",
-            self.test_acc,
-            on_step=False,
-            on_epoch=True,
-            prog_bar=True,
-        )
-        self.log(
-            "test/precision",
-            self.test_precision,
-            on_step=False,
-            on_epoch=True,
-        )
-        self.log(
-            "test/recall",
-            self.test_recall,
-            on_step=False,
-            on_epoch=True,
-        )
-        self.log(
-            "test/f1",
-            self.test_f1,
-            on_step=False,
-            on_epoch=True,
-        )
 
     def configure_optimizers(self):
         # Separate LRs (common fine-tuning best practice)
@@ -712,13 +496,26 @@ class MocoClassifier(LightningModule):
                 "params": self.backbone.parameters(),
                 "lr": float(self.hparams["lr_backbone"]),
             },
-            {"params": self.head.parameters(), "lr": float(self.hparams["lr_head"])},
+            {
+                "params": self.head.parameters(), 
+                "lr": float(self.hparams["lr_head"])
+            },
         ]
-        optimizer = torch.optim.SGD(
-            params,
-            weight_decay=float(self.hparams["weight_decay"]),
-            momentum=self.hparams["momentum"],
-        )
-        t_max = int(getattr(self.trainer, "max_epochs", 1) or 1)
-        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=t_max)
-        return {"optimizer": optimizer, "lr_scheduler": scheduler}
+        
+        if self._optimizer is None:
+            raise ValueError("Optimizer not provided. Pass it to __init__ or override configure_optimizers()")
+
+        optimizer = self._optimizer(params=params)
+
+        if self._scheduler is not None:
+            scheduler = self._scheduler(optimizer=optimizer)
+            return {
+                "optimizer": optimizer,
+                "lr_scheduler": {
+                    "scheduler": scheduler,
+                    "monitor": "val/f1_macro",   # primary metric for imbalance + equal class importance
+                    "interval": "epoch",
+                    "frequency": 1,
+                },
+            }
+        return {"optimizer": optimizer}

@@ -1,9 +1,11 @@
 import os
+import re
 from typing import Any, Dict, List, Optional
 
 import numpy as np
 import pandas as pd
 from scipy import stats
+import torch
 
 from utils import pylogger
 
@@ -66,6 +68,63 @@ def to_float(value):
         if hasattr(value, "item"):
             return float(value.item())
         return float(value)
+
+
+def get_class_names(datamodule) -> Optional[List[str]]:
+    if datamodule is not None and hasattr(datamodule, "class_names"):
+        return list(datamodule.class_names)
+    return None
+
+
+def collect_preds_targets(model, dataloader):
+    device = getattr(model, "device", None)
+    if device is None:
+        try:
+            device = next(model.parameters()).device
+        except StopIteration:
+            device = torch.device("cpu")
+
+    preds_list = []
+    targets_list = []
+
+    model.eval()
+    with torch.no_grad():
+        for batch in dataloader:
+            if isinstance(batch, (list, tuple)):
+                inputs, targets = batch[0], batch[1]
+            else:
+                raise ValueError(
+                    "Unsupported batch type for confusion matrix generation."
+                )
+
+            inputs = inputs.to(device)
+            targets = targets.to(device)
+
+            if hasattr(model, "_eval_logits"):
+                logits = model._eval_logits(inputs)
+                preds = torch.argmax(logits, dim=1)
+                preds_list.append(preds.detach().cpu())
+                targets_list.append(targets.detach().cpu())
+                continue
+
+            if hasattr(model, "model_step"):
+                _, preds, targets_out = model.model_step((inputs, targets))
+                preds_list.append(preds.detach().cpu())
+                targets_list.append(targets_out.detach().cpu())
+                continue
+
+            if hasattr(model, "model1") and hasattr(model, "model2"):
+                logits1 = model.model1(inputs)
+                logits2 = model.model2(inputs)
+                logits = 0.5 * (logits1 + logits2)
+            else:
+                logits = model(inputs)
+
+            preds = torch.argmax(logits, dim=1)
+            preds_list.append(preds.detach().cpu())
+            targets_list.append(targets.detach().cpu())
+
+    return torch.cat(preds_list), torch.cat(targets_list)
 
 def create_confusion_matrix(
     preds,

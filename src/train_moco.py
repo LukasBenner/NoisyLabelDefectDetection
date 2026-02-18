@@ -1,87 +1,32 @@
 from __future__ import annotations
 
+from datetime import date
 from pathlib import Path
-from typing import Any, Dict, List, Optional
-import os
+from typing import Any, Dict, List
 
 import hydra
-import numpy as np
 import pandas as pd
 import rootutils
 import torch
-import torch.distributed as dist
 from lightning import Callback, Trainer, seed_everything
-from lightning.pytorch.callbacks import ModelCheckpoint, LearningRateMonitor
+from lightning.pytorch.callbacks import LearningRateMonitor, ModelCheckpoint
 from lightning.pytorch.loggers import CSVLogger
-from hydra.core.hydra_config import HydraConfig
 from omegaconf import DictConfig, OmegaConf
-from scipy import stats
 
 from utils.instantiators import instantiate_callbacks
+from utils.utils import (
+    calculate_summary_statistics,
+    collect_preds_targets,
+    create_confusion_matrix,
+    get_class_names,
+    to_float,
+)
 
 rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 
 from src.utils.pylogger import RankedLogger
 
 log = RankedLogger(__name__, rank_zero_only=True)
-
-def to_float(value):
-    """Convert tensor or numeric value to float."""
-    if value is None:
-        return None
-    if hasattr(value, "item"):
-        return float(value.item())
-    return float(value)
-
-
-def calculate_summary_statistics(all_metrics: List[Dict[str, Any]]) -> tuple[pd.DataFrame, pd.DataFrame]:
-    all_metrics_df = pd.DataFrame(all_metrics)
-    summary_statistics = []
-    metrics_to_analyze = [m for m in all_metrics_df.columns if m not in ["run_idx"]]
-
-    for metric in metrics_to_analyze:
-        values = all_metrics_df[metric].dropna()
-        n = len(values)
-        mean = values.mean()
-        std = values.std(ddof=1)
-        se = std / np.sqrt(n) if n > 0 else 0.0
-
-        if n > 1:
-            t = stats.t.ppf(0.975, df=n - 1)
-            margin = t * se
-            ci_lower = mean - margin
-            ci_upper = mean + margin
-        else:
-            ci_lower = ci_upper = mean
-
-        summary_statistics.append(
-            {
-                "metric": metric,
-                "mean": mean,
-                "std": std,
-                "ci_lower": ci_lower,
-                "ci_upper": ci_upper,
-                "min": values.min(),
-                "max": values.max(),
-            }
-        )
-
-    return all_metrics_df, pd.DataFrame(summary_statistics)
-
-
-def _to_float(value: Any) -> Optional[float]:
-    if value is None:
-        return None
-    if hasattr(value, "item"):
-        return float(value.item())
-    return float(value)
-
-
-def _find_checkpoint_callback(callbacks: List[Callback]) -> Optional[ModelCheckpoint]:
-    for cb in callbacks:
-        if isinstance(cb, ModelCheckpoint):
-            return cb
-    return None
 
 
 def train_single_run(cfg: DictConfig, run_idx: int, base_save_dir: Path):
@@ -129,19 +74,19 @@ def train_single_run(cfg: DictConfig, run_idx: int, base_save_dir: Path):
     # Instantiate datamodule
     log.info("Instantiating datamodule")
     datamodule = hydra.utils.instantiate(cfg.data, seed=seed)
-    datamodule.setup()
+    datamodule.prepare_data()
+    datamodule.setup(stage="fit")
 
-    model = hydra.utils.instantiate(
-        cfg.model,
-    )
+    model = hydra.utils.instantiate(cfg.model)
     model.load_from_moco(best_moco_path, strict=False)
 
     callbacks: List[Callback] = instantiate_callbacks(cfg.get("callbacks"))
 
-    # Ensure checkpointing writes into iteration folder
-    ckpt_cb = _find_checkpoint_callback(callbacks)
-    if ckpt_cb is not None and ckpt_cb.dirpath is None:
-        ckpt_cb.dirpath = str(run_save_dir / "checkpoints")
+    # Ensure checkpointing writes into run-specific folder
+    for callback in callbacks:
+        if isinstance(callback, ModelCheckpoint) and callback.dirpath is None:
+            callback.dirpath = str(run_save_dir / "checkpoints")
+            log.info(f"Set checkpoint directory to: {callback.dirpath}")
 
     logger = CSVLogger(save_dir=run_save_dir, name="", version="")
 
@@ -153,59 +98,104 @@ def train_single_run(cfg: DictConfig, run_idx: int, base_save_dir: Path):
 
     trainer.fit(model=model, datamodule=datamodule)
 
-    # If Lightning launched via DDP script/subprocess, this function continues on every rank.
-    # For a single-GPU final test (to avoid duplicated evaluation), first tear down the
-    # distributed process group on all ranks, then only run the test on local rank 0.
-    if dist.is_available() and dist.is_initialized():
+    val_f1_macro_best = trainer.callback_metrics.get("val/f1_macro_best")
+    if val_f1_macro_best is None and hasattr(model, "val_f1_macro_best"):
         try:
-            dist.barrier()
-        finally:
-            dist.destroy_process_group()
+            val_f1_macro_best = model.val_f1_macro_best.compute()
+        except Exception:
+            val_f1_macro_best = None
 
-    local_rank = int(os.environ.get("LOCAL_RANK", "0"))
-    if local_rank != 0:
-        return {"run_idx": run_idx, "test/loss": None, "test/acc": None}
+    log.info(f"Starting testing for run {run_idx}")
+    best_model_path = trainer.checkpoint_callback.best_model_path
 
-    # Track best checkpoint across iterations (by callback score)
-    if ckpt_cb is not None and ckpt_cb.best_model_path:
-        best_ckpt_path = ckpt_cb.best_model_path
-    else:
-        best_ckpt_path = None
-
-    # --- Final test ---
-    log.info("Instantiating final model for testing")
-    final_model = hydra.utils.instantiate(
-        cfg.model,
-    )
-
-    # We need a trainer for test (can reuse last trainer settings)
     test_dir = run_save_dir / "final_test"
     test_dir.mkdir(parents=True, exist_ok=True)
     test_logger = CSVLogger(save_dir=test_dir, name="", version="")
     test_trainer: Trainer = hydra.utils.instantiate(
         cfg.trainer,
-        logger=test_logger,
         callbacks=[],
+        logger=test_logger,
         devices=1,
         strategy="auto",
     )
 
-    log.info("Running test")
-    if best_ckpt_path:
-        test_trainer.test(model=final_model, datamodule=datamodule, ckpt_path=best_ckpt_path, weights_only=False)
+    if best_model_path:
+        log.info(f"Loading best checkpoint: {best_model_path}")
+        test_trainer.test(
+            model=model,
+            datamodule=datamodule,
+            ckpt_path=best_model_path,
+            weights_only=False,
+        )
     else:
-        test_trainer.test(model=final_model, datamodule=datamodule)
-        
-    test_metrics = {
+        log.warning("No best checkpoint found, testing with final model")
+        test_trainer.test(
+            model=model,
+            datamodule=datamodule,
+            weights_only=False,
+        )
+
+    log.info("Generating confusion matrix")
+    datamodule.setup(stage="test")
+    class_names = get_class_names(datamodule)
+    if class_names is None:
+        log.warning("No class names found; skipping confusion matrix")
+    else:
+        preds, targets = collect_preds_targets(model, datamodule.test_dataloader())
+        create_confusion_matrix(
+            preds=preds.numpy(),
+            targets=targets.numpy(),
+            class_names=class_names,
+            logging_directory=str(test_dir),
+        )
+
+    cm = test_trainer.callback_metrics
+
+    test_metrics: Dict[str, Any] = {
         "run_idx": run_idx,
-        "test/loss": to_float(test_trainer.callback_metrics.get("test/loss", 0.0)),
-        "test/acc": to_float(test_trainer.callback_metrics.get("test/acc", 0.0)),
+        "test/f1_macro": to_float(cm.get("test/f1_macro")),
+        "test/precision_macro": to_float(cm.get("test/precision_macro")),
+        "test/recall_macro": to_float(cm.get("test/recall_macro")),
+        "test/acc": to_float(cm.get("test/acc")),
+        "test/f1_weighted": to_float(cm.get("test/f1_weighted")),
+        "test/precision_weighted": to_float(cm.get("test/precision_weighted")),
+        "test/recall_weighted": to_float(cm.get("test/recall_weighted")),
+        "test/loss": to_float(cm.get("test/loss")),
+        "val/f1_macro_best": to_float(val_f1_macro_best),
     }
+
+    n_classes = None
+    try:
+        n_classes = int(getattr(datamodule, "num_classes"))
+    except Exception:
+        n_classes = None
+
+    if n_classes is None and class_names:
+        n_classes = len(class_names)
+
+    class_names_for_metrics = None
+    if class_names and n_classes is not None and len(class_names) >= n_classes:
+        class_names_for_metrics = class_names
+
+    if n_classes is not None and n_classes > 0:
+        for i in range(n_classes):
+            for metric_name in ("precision", "recall", "f1"):
+                key_idx = f"test/{metric_name}_c{i}"
+                if class_names_for_metrics:
+                    class_name = class_names_for_metrics[i]
+                    key_named = f"test/{metric_name}_{class_name}"
+                    if key_named in cm:
+                        test_metrics[key_named] = to_float(cm.get(key_named))
+                    elif key_idx in cm:
+                        test_metrics[key_named] = to_float(cm.get(key_idx))
+                else:
+                    if key_idx in cm:
+                        test_metrics[key_idx] = to_float(cm.get(key_idx))
 
     log.info(
         f"Run {run_idx}/{cfg.n_runs} completed | "
-        f"test/acc: {test_metrics['test/acc']:.4f} | "
-        f"test/loss: {test_metrics['test/loss']:.4f}"
+        f"test/acc: {(test_metrics.get('test/acc') or 0.0):.4f} | "
+        f"test/f1_macro: {(test_metrics.get('test/f1_macro') or 0.0):.4f}"
     )
 
     return test_metrics
@@ -214,34 +204,33 @@ def train_single_run(cfg: DictConfig, run_idx: int, base_save_dir: Path):
 def main(cfg: DictConfig) -> None:
     torch.set_float32_matmul_precision("medium")
 
-    local_rank = int(os.environ.get("LOCAL_RANK", "0"))
-
     if cfg.get("print_config"):
         log.info(f"Config:\n{OmegaConf.to_yaml(cfg)}")
 
-    base_save_dir = Path(HydraConfig.get().runtime.output_dir)
+    log_path = cfg.get("log_path", "logs")
+    research_name = cfg.get("research_name", "default")
+    experiment_name = cfg.get("experiment_name", "default")
+    run_name = cfg.get("run_name", date.today().strftime("%Y-%m-%d"))
+    base_save_dir = (
+        Path(log_path) / "train" / research_name / experiment_name / run_name
+    )
 
     log.info(f"Saving results to: {base_save_dir}")
 
     n_runs = int(cfg.get("n_runs", 1))
     log.info(f"Running {n_runs} training run(s)")
 
-    # Save hyperparameters (rank 0 only)
     summary_dir = base_save_dir / "summary"
     summary_dir.mkdir(parents=True, exist_ok=True)
     hparams_file = summary_dir / "hyperparameters.yaml"
-    if local_rank == 0:
-        with open(hparams_file, "w") as f:
-            f.write(OmegaConf.to_yaml(cfg, resolve=True))
+    with open(hparams_file, "w") as f:
+        f.write(OmegaConf.to_yaml(cfg, resolve=True))
+    log.info(f"Saved hyperparameters to: {hparams_file}")
 
     all_metrics = []
     for run_idx in range(1, n_runs + 1):
         run_metrics = train_single_run(cfg=cfg, run_idx=run_idx, base_save_dir=base_save_dir)
         all_metrics.append(run_metrics)
-
-    # Avoid duplicate summary writes from non-zero ranks in DDP script launch.
-    if local_rank != 0:
-        return
 
     if n_runs > 1:
         log.info("Calculating summary statistics across runs")

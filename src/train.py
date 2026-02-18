@@ -1,8 +1,7 @@
 import os
-import re
 from datetime import date
 from pathlib import Path
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any
 
 import hydra
 import numpy as np
@@ -16,7 +15,13 @@ from lightning.pytorch.callbacks import ModelCheckpoint
 import torch
 
 from utils.instantiators import instantiate_callbacks
-from utils.utils import calculate_summary_statistics, create_confusion_matrix, to_float
+from utils.utils import (
+    calculate_summary_statistics,
+    collect_preds_targets,
+    create_confusion_matrix,
+    get_class_names,
+    to_float,
+)
 
 # Setup root
 rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
@@ -25,72 +30,6 @@ from src.utils.pylogger import RankedLogger
 from lightning import seed_everything
 
 log = RankedLogger(__name__, rank_zero_only=True)
-
-
-def _get_class_names(datamodule) -> Optional[List[str]]:
-    if datamodule is not None and hasattr(datamodule, "class_names"):
-        return list(datamodule.class_names)
-    return None
-
-
-def _sanitize_class_name(name: str) -> str:
-    name = name.strip()
-    if not name:
-        return "unknown"
-    return re.sub(r"[^A-Za-z0-9_]+", "_", name)
-
-
-def _collect_preds_targets(
-    model: torch.nn.Module, dataloader: Any
-) -> tuple[torch.Tensor, torch.Tensor]:
-    device = getattr(model, "device", None)
-    if device is None:
-        try:
-            device = next(model.parameters()).device
-        except StopIteration:
-            device = torch.device("cpu")
-
-    preds_list: List[torch.Tensor] = []
-    targets_list: List[torch.Tensor] = []
-
-    model.eval()
-    with torch.no_grad():
-        for batch in dataloader:
-            if isinstance(batch, (list, tuple)):
-                inputs, targets = batch[0], batch[1]
-            else:
-                raise ValueError(
-                    "Unsupported batch type for confusion matrix generation."
-                )
-
-            inputs = inputs.to(device)
-            targets = targets.to(device)
-
-            if hasattr(model, "_eval_logits"):
-                logits = model._eval_logits(inputs)
-                preds = torch.argmax(logits, dim=1)
-                preds_list.append(preds.detach().cpu())
-                targets_list.append(targets.detach().cpu())
-                continue
-
-            if hasattr(model, "model_step"):
-                _, preds, targets_out = model.model_step((inputs, targets))
-                preds_list.append(preds.detach().cpu())
-                targets_list.append(targets_out.detach().cpu())
-                continue
-
-            if hasattr(model, "model1") and hasattr(model, "model2"):
-                logits1 = model.model1(inputs)
-                logits2 = model.model2(inputs)
-                logits = 0.5 * (logits1 + logits2)
-            else:
-                logits = model(inputs)
-
-            preds = torch.argmax(logits, dim=1)
-            preds_list.append(preds.detach().cpu())
-            targets_list.append(targets.detach().cpu())
-
-    return torch.cat(preds_list), torch.cat(targets_list)
 
 
 def train_single_run(
@@ -181,11 +120,11 @@ def train_single_run(
     # Confusion matrix on test split
     log.info("Generating confusion matrix")
     datamodule.setup(stage="test")
-    class_names = _get_class_names(datamodule)
+    class_names = get_class_names(datamodule)
     if class_names is None:
         log.warning("No class names found; skipping confusion matrix")
     else:
-        preds, targets = _collect_preds_targets(model, datamodule.test_dataloader())
+        preds, targets = collect_preds_targets(model, datamodule.test_dataloader())
         create_confusion_matrix(
             preds=preds.numpy(),
             targets=targets.numpy(),
@@ -230,8 +169,8 @@ def train_single_run(
             for metric_name in ("precision", "recall", "f1"):
                 key_idx = f"test/{metric_name}_c{i}"
                 if class_names_for_metrics:
-                    safe_name = _sanitize_class_name(class_names_for_metrics[i])
-                    key_named = f"test/{metric_name}_{safe_name}"
+                    class_name = class_names_for_metrics[i]
+                    key_named = f"test/{metric_name}_{class_name}"
                     if key_named in cm:
                         test_metrics[key_named] = to_float(cm.get(key_named))
                     elif key_idx in cm:

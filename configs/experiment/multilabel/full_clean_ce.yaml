@@ -7,7 +7,7 @@ defaults:
   - _self_
 
 research_name: SurfaceDefectDetection
-experiment_name: full_cleaned
+experiment_name: full_clean
 run_name_postfix: ce
 
 n_runs: 5
@@ -21,9 +21,9 @@ model:
   optimizer:
     _target_: torch.optim.SGD
     _partial_: true
-    lr: 0.005
+    lr: 0.01
     momentum: 0.9
-    weight_decay: 1e-5
+    weight_decay: 1e-4
   scheduler:
     _target_: torch.optim.lr_scheduler.CosineAnnealingLR
     T_max: ${trainer.max_epochs}

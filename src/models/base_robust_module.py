@@ -22,7 +22,7 @@ class BaseRobustModule(LightningModule):
         criterion: Optional[torch.nn.Module] = None,
         compile: bool = False,
         datamodule: Optional[Any] = None,
-        log_per_class: bool = True,  # per-class metrics for val/test
+        log_per_class: bool = True,
     ) -> None:
         super().__init__()
         self.save_hyperparameters(
