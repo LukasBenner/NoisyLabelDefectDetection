@@ -6,12 +6,15 @@ defaults:
 
 study_name: resnet50
 
+model:
+  net:
+    _target_: src.models.components.res_net.ResNet50
+    num_classes: ${model.num_classes}
+    pretrained: true
+    variant: null
+
 search_space:
   model:
-    net:
-      _target_: src.models.components.res_net.ResNet50
-      num_classes: ${model.num_classes}
-      pretrained: true
     optimizer:
       lr:
         type: float

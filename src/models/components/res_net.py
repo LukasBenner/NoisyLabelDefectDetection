@@ -4,7 +4,7 @@ from torchvision import models
 
 
 class ResNet50(nn.Module):
-    def __init__(self, num_classes: int, pretrained: bool = True) -> None:
+    def __init__(self, num_classes: int, pretrained: bool = True, variant: str = "default") -> None:
         """Initialize EfficientNetBaseline.
 
         :param num_classes: Number of output classes.

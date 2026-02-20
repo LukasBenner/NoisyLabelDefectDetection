@@ -6,13 +6,16 @@ defaults:
 
 study_name: efficientnet_l
 
+
+model:
+  net:
+    _target_: src.models.components.efficient_net.EfficientNet
+    num_classes: ${model.num_classes}
+    pretrained: true
+    variant: large
+
 search_space:
   model:
-    net:
-      _target_: src.models.components.efficient_net.EfficientNet
-      num_classes: ${model.num_classes}
-      pretrained: true
-      variant: large
     optimizer:
       lr:
         type: float
