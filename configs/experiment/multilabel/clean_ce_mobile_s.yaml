@@ -1,0 +1,41 @@
+# @package _global_
+
+defaults:
+  - /model: base
+  - override /data: holdout
+  - override /callbacks: with_early_stopping
+  - _self_
+
+research_name: SurfaceDefectDetection
+experiment_name: clean
+run_name_postfix: ce_mobile_s
+
+n_runs: 10
+
+model:
+  num_classes: 9
+  net:
+    _target_: src.models.components.mobile_net.MobileNet
+    pretrained: true
+    variant: small
+  optimizer:
+    _target_: torch.optim.SGD
+    _partial_: true
+    lr: 0.01079
+    momentum: 0.8240
+    weight_decay: 1.7826e-05
+  scheduler:
+    _target_: torch.optim.lr_scheduler.CosineAnnealingLR
+    T_max: ${trainer.max_epochs}
+  criterion:
+    _target_: src.models.components.loss.CELoss
+
+data:
+  batch_size: 16
+  weight_alpha: 0.17036880819841738
+  image1k_norm: true
+  transforms: strong
+
+callbacks:
+  early_stopping:
+    patience: 30

@@ -433,24 +433,32 @@ class MocoClassifier(BaseRobustModule):
         datamodule: Optional[LightningModule] = None,
         
     ):
-        self.save_hyperparameters(ignore=["criterion", "optimizer", "scheduler", "datamodule"])
-
-        self.backbone = _build_backbone(
+        backbone = _build_backbone(
             backbone_name=backbone_name,
             pretrained=pretrained,
             backbone_norm=backbone_norm,
             backbone_gn_groups=backbone_gn_groups,
         )
 
-        backbone_out_dim = int(getattr(self.backbone, "out_dim"))
-        self.head = nn.Linear(backbone_out_dim, num_classes)
-        
+        backbone_out_dim = int(getattr(backbone, "out_dim"))
+        head = nn.Linear(backbone_out_dim, num_classes)
+
+        super().__init__(
+            backbone,
+            num_classes,
+            optimizer,
+            scheduler,
+            criterion,
+            compile=False,
+            datamodule=datamodule,
+        )
+        self.save_hyperparameters(ignore=["criterion", "optimizer", "scheduler", "datamodule"])
+        self.backbone = backbone
+        self.head = head
+
         if freeze_backbone:
             for p in self.backbone.parameters():
                 p.requires_grad = False
-                
-        super().__init__(self.backbone, num_classes, optimizer, scheduler, criterion, compile=False, datamodule=datamodule)
-
 
     @staticmethod
     def _dist_is_initialized() -> bool:

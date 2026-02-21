@@ -7,10 +7,10 @@ defaults:
   - _self_
 
 research_name: SurfaceDefectDetection
-experiment_name: clean
-run_name_postfix: ce
+experiment_name: clean_old
+run_name_postfix: ce_mobile_s
 
-n_runs: 5
+n_runs: 10
 
 model:
   num_classes: 9
@@ -21,9 +21,9 @@ model:
   optimizer:
     _target_: torch.optim.SGD
     _partial_: true
-    lr: 0.01
-    momentum: 0.9
-    weight_decay: 1e-4
+    lr: 0.01079
+    momentum: 0.8240
+    weight_decay: 1.7826e-05
   scheduler:
     _target_: torch.optim.lr_scheduler.CosineAnnealingLR
     T_max: ${trainer.max_epochs}
@@ -31,9 +31,13 @@ model:
     _target_: src.models.components.loss.CELoss
 
 data:
-  batch_size: 32
+  batch_size: 16
+  weight_alpha: 0.17036880819841738
   image1k_norm: true
-  transforms: medium
+  transforms: strong
+  train_path: /srv/defectDetectionDataset/surfaceClassification/full_clean_clustered_cleaned/train
+  val_path: /srv/defectDetectionDataset/surfaceClassification/full_clean_clustered_cleaned/val
+  test_path: /srv/defectDetectionDataset/surfaceClassification/full_clean_clustered_cleaned/test
 
 callbacks:
   early_stopping:

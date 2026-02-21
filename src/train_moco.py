@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from datetime import date
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -11,6 +10,7 @@ import torch
 from lightning import Callback, Trainer, seed_everything
 from lightning.pytorch.callbacks import LearningRateMonitor, ModelCheckpoint
 from lightning.pytorch.loggers import CSVLogger
+from hydra.core.hydra_config import HydraConfig
 from omegaconf import DictConfig, OmegaConf
 
 from utils.instantiators import instantiate_callbacks
@@ -207,13 +207,7 @@ def main(cfg: DictConfig) -> None:
     if cfg.get("print_config"):
         log.info(f"Config:\n{OmegaConf.to_yaml(cfg)}")
 
-    log_path = cfg.get("log_path", "logs")
-    research_name = cfg.get("research_name", "default")
-    experiment_name = cfg.get("experiment_name", "default")
-    run_name = cfg.get("run_name", date.today().strftime("%Y-%m-%d"))
-    base_save_dir = (
-        Path(log_path) / "train" / research_name / experiment_name / run_name
-    )
+    base_save_dir = Path(HydraConfig.get().runtime.output_dir)
 
     log.info(f"Saving results to: {base_save_dir}")
 

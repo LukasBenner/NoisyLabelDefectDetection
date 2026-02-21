@@ -1,0 +1,40 @@
+# @package _global_
+
+defaults:
+  - /model: base
+  - override /data: holdout
+  - override /callbacks: with_early_stopping
+  - _self_
+
+research_name: SurfaceDefectDetection
+experiment_name: clean
+run_name_postfix: ce_resnet
+
+n_runs: 10
+
+model:
+  num_classes: 9
+  net:
+    _target_: src.models.components.res_net.ResNet50
+    pretrained: true
+  optimizer:
+    _target_: torch.optim.SGD
+    _partial_: true
+    lr: 0.015080
+    momentum: 0.7993
+    weight_decay: 0.0009644
+  scheduler:
+    _target_: torch.optim.lr_scheduler.CosineAnnealingLR
+    T_max: ${trainer.max_epochs}
+  criterion:
+    _target_: src.models.components.loss.CELoss
+
+data:
+  batch_size: 16
+  weight_alpha: 0.20127726786560007
+  image1k_norm: true
+  transforms: strong
+
+callbacks:
+  early_stopping:
+    patience: 30

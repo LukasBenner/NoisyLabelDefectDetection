@@ -119,7 +119,7 @@ def train_single_run(
 
     # # Confusion matrix on test split
     # datamodule.setup(stage="test")
-    # class_names = get_class_names(datamodule)
+    class_names = get_class_names(datamodule)
     # if class_names is None:
     #     log.warning("No class names found; skipping confusion matrix")
     # else:

@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Sequence
 
 from torch.utils.data import DataLoader, random_split
 from lightning import LightningDataModule
@@ -37,7 +37,13 @@ class BaselineDataModule(LightningDataModule):
     def class_weights(self) -> torch.Tensor:
         assert hasattr(self, "_class_weights"), "Class weights not computed. Call setup('fit') first."
         return self._class_weights
-        
+    
+    @property
+    def class_names(self) -> Sequence[str]:
+        if hasattr(self, "ds") and self.ds is not None:
+            return self.ds.classes
+        else:
+            raise ValueError("Dataset not prepared. Call setup() first.")
 
     def setup(self, stage: Optional[str] = None):
         self.ds = ImageFolder(self.hparams.data_path)
