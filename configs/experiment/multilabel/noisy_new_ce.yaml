@@ -7,7 +7,7 @@ defaults:
   - _self_
 
 research_name: SurfaceDefectDetection
-experiment_name: noisy
+experiment_name: noisy_new
 run_name_postfix: ce
 
 n_runs: 10
@@ -35,9 +35,9 @@ data:
   weight_alpha: 0.17
   transforms: strong
   image1k_norm: true
-  train_path: /srv/defectDetectionDataset/surfaceClassification/noisy_clustered/train
-  val_path: /srv/defectDetectionDataset/surfaceClassification/noisy_clustered/val
-  test_path: /srv/defectDetectionDataset/surfaceClassification/noisy_clustered/test
+  train_path: /srv/defectDetectionDataset/surfaceClassification/noisy_clustered_new/train
+  val_path: /srv/defectDetectionDataset/surfaceClassification/noisy_clustered_new/val
+  test_path: /srv/defectDetectionDataset/surfaceClassification/noisy_clustered_new/test
 
 callbacks:
   early_stopping:

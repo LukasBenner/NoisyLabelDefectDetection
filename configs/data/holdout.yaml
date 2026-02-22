@@ -3,7 +3,7 @@ _target_: src.data.holdout_datamodule.HoldoutDataModule
 train_path: /srv/defectDetectionDataset/surfaceClassification/full_clean_clustered_new/train
 val_path: /srv/defectDetectionDataset/surfaceClassification/full_clean_clustered_new/val
 test_path: /srv/defectDetectionDataset/surfaceClassification/full_clean_clustered_new/test
-classes: [black_stain, corrosion, crack, deformation, missing_part, ok, other, silicate_stain, water_stain]
+classes: [background, black_stain, corrosion, crack, deformation, missing_part, ok, other, silicate_stain, water_stain]
 batch_size: 32
 use_weighted_sampler: True
 weight_alpha: 1.0
