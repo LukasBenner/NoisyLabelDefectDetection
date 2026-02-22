@@ -10,7 +10,7 @@ research_name: SurfaceDefectDetection
 experiment_name: noisy_new
 run_name_postfix: ce
 
-n_runs: 10
+n_runs: 5
 
 model:
   num_classes: 10
