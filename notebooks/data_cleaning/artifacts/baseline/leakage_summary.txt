@@ -1,6 +1,6 @@
-Threshold: 0.995000
+Threshold: 0.920000
 Edge mode: mutual
-Mean train->val leakage over 5 splits: 18.90%
-Mean val<-train leakage over 5 splits: 35.34%
-Mean leaked train images over 5 splits: 839.0
-Mean leaked val images over 5 splits: 394.0
+Mean train->val leakage over 5 splits: 45.38%
+Mean val<-train leakage over 5 splits: 86.94%
+Mean leaked train images over 5 splits: 2014.8
+Mean leaked val images over 5 splits: 969.4
