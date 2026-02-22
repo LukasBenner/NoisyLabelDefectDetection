@@ -26,7 +26,8 @@ class HoldoutDataModule(LightningDataModule):
         transforms: str = "medium",
         image1k_norm: bool = True,
         batch_size: int = 96,
-        weight_alpha: float = 0.5,
+        use_weighted_sampler: bool = True,
+        weight_alpha: float = 1.0,
         num_workers: int = 4,
         pin_memory: bool = True,
         seed: int = 42,
@@ -126,14 +127,14 @@ class HoldoutDataModule(LightningDataModule):
             base = N / (num_classes * counts)
             self._class_weights = base.pow(self.hparams.weight_alpha)
 
-            # sample weight per sample
-            sample_weights = self._class_weights[targets]
-
-            self.sampler = torch.utils.data.WeightedRandomSampler(
-                weights=sample_weights,
-                num_samples=len(sample_weights),
-                replacement=True
-            )
+            if self.hparams.use_weighted_sampler:
+                # sample weight per sample
+                sample_weights = self._class_weights[targets]
+                self.sampler = torch.utils.data.WeightedRandomSampler(
+                    weights=sample_weights,
+                    num_samples=len(sample_weights),
+                    replacement=True
+                )
 
         if stage == "fit" or stage == "validate":
             self.val_ds = ImageFolder(self.hparams.val_path)
@@ -163,10 +164,10 @@ class HoldoutDataModule(LightningDataModule):
             batch_size=self.hparams.batch_size,
             num_workers=self.hparams.num_workers,
             pin_memory=self.hparams.pin_memory,
-            shuffle=False,
+            shuffle=False if self.hparams.use_weighted_sampler else True,
             drop_last=False,
             persistent_workers=True if self.hparams.num_workers > 0 else False,
-            sampler=self.sampler,
+            sampler=self.sampler if self.hparams.use_weighted_sampler else None,
         )
 
     def val_dataloader(self) -> DataLoader:

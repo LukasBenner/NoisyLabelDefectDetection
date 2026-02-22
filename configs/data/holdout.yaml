@@ -5,7 +5,8 @@ val_path: /srv/defectDetectionDataset/surfaceClassification/full_clean_clustered
 test_path: /srv/defectDetectionDataset/surfaceClassification/full_clean_clustered_new/test
 classes: [black_stain, corrosion, crack, deformation, missing_part, ok, other, silicate_stain, water_stain]
 batch_size: 32
-weight_alpha: 0.5
+use_weighted_sampler: True
+weight_alpha: 1.0
 num_workers: 8
 pin_memory: True
 image1k_norm: true
