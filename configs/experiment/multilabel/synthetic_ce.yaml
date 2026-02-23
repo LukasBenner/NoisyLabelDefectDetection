@@ -35,9 +35,9 @@ data:
   weight_alpha: 0.17036880819841738
   image1k_norm: true
   transforms: strong
-  train_path: /srv/defectDetectionDataset/surfaceClassification/full_clean_other/train
-  val_path: /srv/defectDetectionDataset/surfaceClassification/full_clean_other/val
-  test_path: /srv/defectDetectionDataset/surfaceClassification/full_clean_other/test
+  train_path: /srv/defectDetectionDataset/surfaceClassification/full_clean_clustered_new/train
+  val_path: /srv/defectDetectionDataset/surfaceClassification/full_clean_clustered_new/val
+  test_path: /srv/defectDetectionDataset/surfaceClassification/full_clean_clustered_new/test
   syn_path: /srv/defectDetectionDataset/sourceSets/synthetic
 
 callbacks:
