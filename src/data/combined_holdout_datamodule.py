@@ -27,6 +27,8 @@ class CombinedHoldoutDataModule(LightningDataModule):
         transforms: str = "medium",
         image1k_norm: bool = True,
         batch_size: int = 96,
+        weight_alpha: float = 1.0,
+        use_weighted_sampler: bool = True,
         num_workers: int = 4,
         pin_memory: bool = True,
         seed: int = 42,
@@ -124,7 +126,8 @@ class CombinedHoldoutDataModule(LightningDataModule):
             counts = torch.bincount(targets, minlength=num_classes).float()
             counts = torch.clamp(counts, min=1.0)
             N = counts.sum()
-            self._class_weights = N / (num_classes * counts)
+            base = N / (num_classes * counts)
+            self._class_weights = base.pow(self.hparams.weight_alpha)
 
         if stage == "fit" or stage == "validate":
             self.val_ds = ImageFolder(self.hparams.val_path)
@@ -137,6 +140,15 @@ class CombinedHoldoutDataModule(LightningDataModule):
                 transform=self.test_transforms,
                 return_index=False,
             )
+
+            if self.hparams.use_weighted_sampler:
+                # sample weight per sample
+                sample_weights = self._class_weights[targets]
+                self.sampler = torch.utils.data.WeightedRandomSampler(
+                    weights=sample_weights,
+                    num_samples=len(sample_weights),
+                    replacement=True
+                )
 
         if stage == "test" or stage == "predict":
             self.test_ds = ImageFolder(self.hparams.test_path)
@@ -156,9 +168,10 @@ class CombinedHoldoutDataModule(LightningDataModule):
             batch_size=self.hparams.batch_size,
             num_workers=self.hparams.num_workers,
             pin_memory=self.hparams.pin_memory,
-            shuffle=True,
+            shuffle=False if self.hparams.use_weighted_sampler else True,
             drop_last=False,
             persistent_workers=True if self.hparams.num_workers > 0 else False,
+            sampler=self.sampler if self.hparams.use_weighted_sampler else None,
         )
 
     def val_dataloader(self) -> DataLoader:
