@@ -7,13 +7,13 @@ defaults:
   - _self_
 
 research_name: SurfaceDefectDetection
-experiment_name: noisy
-run_name_postfix: nce_rce
+experiment_name: noisy_new_loss
+run_name_postfix: sce
 
 n_runs: 5
 
 model:
-  num_classes: 9
+  num_classes: 10
   net:
     _target_: src.models.components.mobile_net.MobileNet
     pretrained: true
@@ -28,17 +28,17 @@ model:
     _target_: torch.optim.lr_scheduler.CosineAnnealingLR
     T_max: ${trainer.max_epochs}
   criterion:
-    _target_: src.models.components.loss.NCEandRCE
-    alpha: 10
+    _target_: src.models.components.loss.SCELoss
+    alpha: 1
     beta: 0.1
 
 data:
   batch_size: 32
   image1k_norm: true
   transforms: medium
-  train_path: /srv/defectDetectionDataset/surfaceClassification/noisy_clean_split_new/train
-  val_path: /srv/defectDetectionDataset/surfaceClassification/noisy_clean_split_new/val
-  test_path: /srv/defectDetectionDataset/surfaceClassification/noisy_clean_split_new/test
+  train_path: /workspace/data/surfaceClassification/noisy_clustered_new/train
+  val_path: /workspace/data/surfaceClassification/noisy_clustered_new/val
+  test_path: /workspace/data/surfaceClassification/noisy_clustered_new/test
 
 callbacks:
   early_stopping:

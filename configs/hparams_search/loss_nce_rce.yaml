@@ -4,8 +4,8 @@ defaults:
   - default
   - _self_
 
-study_name: sce
-run_name_postfix: sce
+study_name: nce_rce
+run_name_postfix: nce_rce
 
 model:
   net:
