@@ -10,7 +10,7 @@ research_name: SurfaceDefectDetection
 experiment_name: noisy
 run_name_postfix: ce
 
-n_runs: 5
+n_runs: 10
 
 model:
   num_classes: 10
@@ -21,9 +21,9 @@ model:
   optimizer:
     _target_: torch.optim.SGD
     _partial_: true
-    lr: 0.0011
-    momentum: 0.82
-    weight_decay: 1.78e-5
+    lr: 0.001
+    momentum: 0.8
+    weight_decay: 1.8e-5
   scheduler:
     _target_: torch.optim.lr_scheduler.CosineAnnealingLR
     T_max: ${trainer.max_epochs}
@@ -33,7 +33,7 @@ model:
 data:
   batch_size: 16
   weight_alpha: 0.17
-  transforms: medium
+  transforms: strong
   image1k_norm: true
   train_path: /srv/defectDetectionDataset/surfaceClassification/noisy_clustered/train
   val_path: /srv/defectDetectionDataset/surfaceClassification/noisy_clustered/val

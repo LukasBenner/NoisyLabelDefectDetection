@@ -10,7 +10,7 @@ research_name: CombinedDetection
 experiment_name: clean
 run_name_postfix: ce
 
-n_runs: 5
+n_runs: 10
 
 model:
   num_classes: 3
@@ -21,9 +21,9 @@ model:
   optimizer:
     _target_: torch.optim.SGD
     _partial_: true
-    lr: 0.01079
-    momentum: 0.8240
-    weight_decay: 1.7826e-05
+    lr: 0.01
+    momentum: 0.8
+    weight_decay: 1.8e-05
   scheduler:
     _target_: torch.optim.lr_scheduler.CosineAnnealingLR
     T_max: ${trainer.max_epochs}
@@ -32,7 +32,7 @@ model:
 
 data:
   batch_size: 16
-  weight_alpha: 0.17036880819841738
+  weight_alpha: 0.17
   image1k_norm: true
   transforms: strong
   train_path: /srv/defectDetectionDataset/surfaceClassification/full_clean_clustered_new/train

@@ -10,7 +10,7 @@ research_name: SurfaceDefectDetection
 experiment_name: clean
 run_name_postfix: ce_mobile_s
 
-n_runs: 5
+n_runs: 10
 
 model:
   num_classes: 10
