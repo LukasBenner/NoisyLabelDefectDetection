@@ -33,7 +33,7 @@ model:
 data:
   batch_size: 16
   weight_alpha: 0.17
-  transforms: strong
+  transforms: medium
   image1k_norm: true
   train_path: /srv/defectDetectionDataset/surfaceClassification/noisy_clustered/train
   val_path: /srv/defectDetectionDataset/surfaceClassification/noisy_clustered/val
