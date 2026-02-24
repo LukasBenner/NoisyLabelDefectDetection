@@ -2,20 +2,19 @@ _target_: src.models.base_robust_module.BaseRobustModule
 
 num_classes: 9
 
-# Base network
 net:
-  _target_: src.models.components.efficient_net.EfficientNet
+  _target_: src.models.components.mobile_net.MobileNet
   num_classes: ${model.num_classes}
   pretrained: true
+  variant: small
 
-# Optimizer configuration (partial instantiation)
 optimizer:
-  _target_: torch.optim.AdamW
+  _target_: torch.optim.SGD
   _partial_: true
-  lr: 0.001
-  weight_decay: 0.01
+  lr: 0.01
+  momentum: 0.9
+  weight_decay: 1e-4
 
-# Scheduler configuration (partial instantiation)
 scheduler:
   _target_: torch.optim.lr_scheduler.CosineAnnealingLR
   _partial_: true
@@ -25,5 +24,4 @@ criterion:
   _target_: src.models.components.loss.CELoss
   _partial_: true
 
-# Model compilation
 compile: false

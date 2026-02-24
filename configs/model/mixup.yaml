@@ -9,10 +9,11 @@ net:
   variant: small
 
 optimizer:
-  _target_: torch.optim.AdamW
+  _target_: torch.optim.SGD
   _partial_: true
-  lr: 0.001
-  weight_decay: 1e-5
+  lr: 0.01
+  momentum: 0.9
+  weight_decay: 1e-4
 
 scheduler:
   _target_: torch.optim.lr_scheduler.CosineAnnealingLR
