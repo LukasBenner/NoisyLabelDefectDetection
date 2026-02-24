@@ -106,7 +106,6 @@ class DivideMixModule(LightningModule):
 
         self.val_f1_macro_best = MaxMetric()
 
-        self._reset_train_loader_epoch = -1
         self._rng: Optional[np.random.Generator] = None
 
     @staticmethod
@@ -130,17 +129,20 @@ class DivideMixModule(LightningModule):
         base_seed = int(self.hparams.get("seed", 42))
         rank = int(getattr(self, "global_rank", 0))
         self._rng = np.random.default_rng(base_seed + rank)
+        if self.datamodule is not None:
+            self.datamodule.set_train_mode("warmup")
 
     def on_train_start(self) -> None:
         self.val_f1_macro_best.reset()
 
-    def on_train_epoch_start(self) -> None:
+    def on_train_epoch_end(self) -> None:
         if self.trainer is None or self.datamodule is None:
             return
         if getattr(self.trainer, "sanity_checking", False):
             return
 
-        if self.current_epoch < int(self.hparams.warm_up):
+        next_epoch = self.current_epoch + 1
+        if next_epoch < int(self.hparams.warm_up):
             self.datamodule.set_train_mode("warmup")
         else:
             self.datamodule.set_train_mode("train")
@@ -150,11 +152,6 @@ class DivideMixModule(LightningModule):
             pred2 = prob2 > float(self.hparams.p_threshold)
             self.datamodule.set_pred_prob(pred1, prob1, pred2, prob2)
 
-        if self._reset_train_loader_epoch != self.current_epoch:
-            self.trainer.reset_train_dataloader(self)
-            self._reset_train_loader_epoch = self.current_epoch
-
-    def on_train_epoch_end(self) -> None:
         schedulers = self.lr_schedulers()
         if not schedulers:
             return
