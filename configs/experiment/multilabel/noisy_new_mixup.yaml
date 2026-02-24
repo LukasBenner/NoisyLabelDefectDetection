@@ -10,7 +10,7 @@ research_name: SurfaceDefectDetection
 experiment_name: noisy_new_mixup
 run_name_postfix: mixup
 
-n_runs: 5
+n_runs: 10
 
 model:
   num_classes: 10
@@ -21,18 +21,19 @@ model:
   optimizer:
     _target_: torch.optim.SGD
     _partial_: true
-    lr: 0.005
-    momentum: 0.9
-    weight_decay: 1e-5
+    lr: 0.0112
+    momentum:  0.892
+    weight_decay: 1.407e-05
   scheduler:
     _target_: torch.optim.lr_scheduler.CosineAnnealingLR
     T_max: ${trainer.max_epochs}
   criterion:
     _target_: src.models.components.loss.CELoss
-  mixup_alpha: 0.1
+  mixup_alpha: 0.351
 
 data:
-  batch_size: 32
+  batch_size: 16
+  weight_alpha: 0.00474
   image1k_norm: true
   transforms: medium
   train_path: /workspace/data/surfaceClassification/noisy_clustered_new/train
