@@ -1,14 +1,14 @@
 # @package _global_
 
 defaults:
-  - /model: nal
+  - /model: base
   - override /data: holdout
   - override /callbacks: with_early_stopping
   - _self_
 
 research_name: SurfaceDefectDetection
-experiment_name: noisy_new_nal
-run_name_postfix: nal
+experiment_name: noisy_new
+run_name_postfix: sce
 
 n_runs: 10
 
@@ -21,24 +21,22 @@ model:
   optimizer:
     _target_: torch.optim.SGD
     _partial_: true
-    lr: 0.001
-    momentum: 0.9
-    weight_decay: 1e-05
+    lr: 0.00391
+    momentum: 0.817
+    weight_decay: 2.854e-5
   scheduler:
     _target_: torch.optim.lr_scheduler.CosineAnnealingLR
     T_max: ${trainer.max_epochs}
   criterion:
-    _target_: src.models.components.loss.CELoss
-  noise_init_epoch: 10
-  noise_instance_epoch: 30
-  instance_hidden_dim: 128
-  noise_init_eps: 1.0e-4
+    _target_: src.models.components.loss.SCELoss
+    alpha: 1.356
+    beta: 1.0272
 
 data:
   batch_size: 32
-  weight_alpha: 1
+  weight_alpha: 0.00474
+  transforms: strong
   image1k_norm: true
-  transforms: medium
   train_path: /srv/defectDetectionDataset/surfaceClassification/noisy_clustered_new/train
   val_path: /srv/defectDetectionDataset/surfaceClassification/noisy_clustered_new/val
   test_path: /srv/defectDetectionDataset/surfaceClassification/noisy_clustered_new/test
