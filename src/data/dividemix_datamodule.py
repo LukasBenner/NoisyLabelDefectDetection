@@ -4,6 +4,8 @@ from typing import Optional, Sequence, List
 
 from lightning import LightningDataModule
 from lightning.pytorch.utilities.combined_loader import CombinedLoader
+from torch import device
+from torch._C import device
 from torch.utils.data import DataLoader
 from torchvision import transforms
 from torchvision import datasets

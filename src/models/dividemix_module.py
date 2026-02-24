@@ -269,14 +269,19 @@ class DivideMixModule(LightningModule):
 
     def _train_dividemix(
         self,
-        batch: Dict[str, Any],
+        batch,
         model: nn.Module,
         model_other: nn.Module,
         optimizer: torch.optim.Optimizer,
         epoch_progress: float,
     ) -> Dict[str, torch.Tensor]:
-        labeled = batch["labeled"]
-        unlabeled = batch["unlabeled"]
+        
+        print(len(batch))
+        
+        labeled = batch[0]
+        unlabeled = batch[1]
+        
+        print(len(labeled), len(unlabeled))
 
         inputs_x, inputs_x2, labels_x, w_x = labeled
         inputs_u, inputs_u2 = unlabeled
@@ -365,7 +370,14 @@ class DivideMixModule(LightningModule):
         else:
             opt1 = opt2 = optimizers
 
+        dual_batch = isinstance(batch, (list, tuple)) and len(batch) == 2
         if self.current_epoch < int(self.hparams.warm_up):
+            if dual_batch:
+                loss1 = self._warmup_step(self.model1, opt1, batch[0])
+                loss2 = self._warmup_step(self.model2, opt2, batch[1])
+                self.log("train/warmup_loss_net1", loss1, on_step=False, on_epoch=True, prog_bar=True)
+                self.log("train/warmup_loss_net2", loss2, on_step=False, on_epoch=True, prog_bar=True)
+                return 0.5 * (loss1 + loss2)
             if dataloader_idx == 0:
                 loss = self._warmup_step(self.model1, opt1, batch)
                 self.log("train/warmup_loss_net1", loss, on_step=False, on_epoch=True, prog_bar=True)
@@ -378,6 +390,22 @@ class DivideMixModule(LightningModule):
         if isinstance(num_batches, (list, tuple)):
             num_batches = num_batches[dataloader_idx]
         epoch_progress = self.current_epoch + batch_idx / max(1, int(num_batches))
+
+        if dual_batch:
+            print(len(batch))
+            stats1 = self._train_dividemix(batch[0], self.model1, self.model2, opt1, epoch_progress)
+            stats2 = self._train_dividemix(batch[1], self.model2, self.model1, opt2, epoch_progress)
+
+            mean_loss = 0.5 * (stats1["loss"] + stats2["loss"])
+            self.train_loss(mean_loss)
+            self.log("train/loss", self.train_loss, on_step=False, on_epoch=True, prog_bar=True)
+
+            for prefix, stats in (("train/net1", stats1), ("train/net2", stats2)):
+                self.log(f"{prefix}_loss", stats["loss"], on_step=False, on_epoch=True)
+                self.log(f"{prefix}_lx", stats["lx"], on_step=False, on_epoch=True)
+                self.log(f"{prefix}_lu", stats["lu"], on_step=False, on_epoch=True)
+                self.log(f"{prefix}_lambda_u", stats["lamb"], on_step=False, on_epoch=True)
+            return mean_loss
 
         if dataloader_idx == 0:
             stats = self._train_dividemix(batch, self.model1, self.model2, opt1, epoch_progress)

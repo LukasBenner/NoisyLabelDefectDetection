@@ -21,9 +21,15 @@ model:
   lambda_u: 0.1
   p_threshold: 0.5
   T: 0.5
-  warm_up: 10
+  warm_up: 2
   arch: mobilenet_small
 
 data:
   batch_size: 16
   image1k_norm: true
+  train_dir: /workspace/data/surfaceClassification/full_clean_clustered_new/train
+  val_dir: /workspace/data/surfaceClassification/full_clean_clustered_new/val
+  test_dir: /workspace/data/surfaceClassification/full_clean_clustered_new/test
+
+trainer:
+  reload_dataloaders_every_n_epochs: 1
