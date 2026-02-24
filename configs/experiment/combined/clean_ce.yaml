@@ -21,9 +21,9 @@ model:
   optimizer:
     _target_: torch.optim.SGD
     _partial_: true
-    lr: 0.01
-    momentum: 0.8
-    weight_decay: 1.8e-05
+    lr: 0.0010253509690168502
+    momentum: 0.9122782431253075
+    weight_decay: 0.0007114476009343421
   scheduler:
     _target_: torch.optim.lr_scheduler.CosineAnnealingLR
     T_max: ${trainer.max_epochs}
@@ -32,9 +32,9 @@ model:
 
 data:
   batch_size: 16
-  weight_alpha: 0.17
+  weight_alpha: 0.05808361216819946
   image1k_norm: true
-  transforms: strong
+  transforms: medium
   train_path: /srv/defectDetectionDataset/surfaceClassification/full_clean_clustered_new/train
   val_path: /srv/defectDetectionDataset/surfaceClassification/full_clean_clustered_new/val
   test_path: /srv/defectDetectionDataset/surfaceClassification/full_clean_clustered_new/test
