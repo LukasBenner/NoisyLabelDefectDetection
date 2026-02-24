@@ -1,0 +1,13 @@
+_target_: src.data.dividemix_datamodule.DivideMixImageFolderDataModule
+
+train_dir: /srv/defectDetectionDataset/surfaceClassification/full_clean_clustered_new/train
+val_dir: /srv/defectDetectionDataset/surfaceClassification/full_clean_clustered_new/val
+test_dir: /srv/defectDetectionDataset/surfaceClassification/full_clean_clustered_new/test
+
+img_size: 480
+image1k_norm: true
+batch_size: 16
+num_workers: 8
+pin_memory: true
+warmup_batch_mult: 2
+seed: ${seed}

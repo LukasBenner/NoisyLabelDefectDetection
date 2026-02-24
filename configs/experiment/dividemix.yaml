@@ -1,0 +1,22 @@
+# @package _global_
+
+defaults:
+  - /model: dividemix
+  - override /data: dividemix_imagefolder
+  - override /callbacks: no_early_stopping
+  - _self_
+
+experiment_name: "DivideMix"
+run_name_postfix: "dividemix"
+
+n_runs: 3
+
+data:
+  batch_size: 16
+  img_size: 480
+  image1k_norm: true
+
+model:
+  num_classes: 10
+  arch: mobilenet_small
+  warm_up: 10
