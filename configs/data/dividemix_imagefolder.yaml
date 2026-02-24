@@ -4,7 +4,6 @@ train_dir: /srv/defectDetectionDataset/surfaceClassification/full_clean_clustere
 val_dir: /srv/defectDetectionDataset/surfaceClassification/full_clean_clustered_new/val
 test_dir: /srv/defectDetectionDataset/surfaceClassification/full_clean_clustered_new/test
 
-img_size: 480
 image1k_norm: true
 batch_size: 16
 num_workers: 8

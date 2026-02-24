@@ -18,7 +18,6 @@ class DivideMixImageFolderDataModule(LightningDataModule):
         train_dir: str,
         val_dir: Optional[str] = None,
         test_dir: Optional[str] = None,
-        img_size: int = 224,
         image1k_norm: bool = True,
         batch_size: int = 32,
         num_workers: int = 8,
@@ -36,13 +35,14 @@ class DivideMixImageFolderDataModule(LightningDataModule):
         mean_custom = [0.3299, 0.3896, 0.4599]
         std_custom = [0.2219, 0.2155, 0.2540]
 
+        img_size = 480
+
         mean = mean_image1k if image1k_norm else mean_custom
         std = std_image1k if image1k_norm else std_custom
 
         self.transform_train = transforms.Compose(
             [
-                transforms.Resize(img_size + 32),
-                transforms.RandomCrop(img_size),
+                transforms.RandomResizedCrop(img_size, scale=(0.8, 1.0)),
                 transforms.RandomHorizontalFlip(),
                 transforms.ToTensor(),
                 transforms.Normalize(mean, std),
@@ -50,7 +50,6 @@ class DivideMixImageFolderDataModule(LightningDataModule):
         )
         self.transform_test = transforms.Compose(
             [
-                transforms.Resize(img_size + 32),
                 transforms.CenterCrop(img_size),
                 transforms.ToTensor(),
                 transforms.Normalize(mean, std),
