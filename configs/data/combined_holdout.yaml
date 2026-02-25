@@ -8,6 +8,7 @@ merge_classes:
   defect: [black_stain, corrosion, crack, deformation, missing_part, other, silicate_stain, water_stain]
 batch_size: 32
 num_workers: 8
+prefetch_factor: 2
 pin_memory: True
 image1k_norm: true
 transforms: medium

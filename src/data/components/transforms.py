@@ -3,29 +3,23 @@ from torchvision.transforms import v2
 
 class BaselineTransforms:
     @staticmethod
-    def train_transforms(mean, std):
+    def train_transforms():
         transforms = v2.Compose(
             [
                 v2.Resize(480, antialias=True),
                 v2.CenterCrop(480),
                 v2.RandomHorizontalFlip(),
                 v2.RandomVerticalFlip(),
-                v2.ToImage(),
-                v2.ToDtype(torch.float32, scale=True),
-                v2.Normalize(mean=mean, std=std),
             ]
         )
         return transforms
     
     @staticmethod
-    def eval_transforms(mean, std):
+    def eval_transforms():
         transforms = v2.Compose(
             [
                 v2.Resize(480, antialias=True),
                 v2.CenterCrop(480),
-                v2.ToImage(),
-                v2.ToDtype(torch.float32, scale=True),
-                v2.Normalize(mean=mean, std=std),
             ]
         )
         return transforms
@@ -33,7 +27,7 @@ class BaselineTransforms:
     
 class MediumTransforms:
     @staticmethod
-    def train_transforms(mean, std):
+    def train_transforms():
         transforms = v2.Compose(
             [
                 v2.Resize(480, antialias=True),
@@ -41,29 +35,23 @@ class MediumTransforms:
                 v2.RandomHorizontalFlip(p=0.5),
                 v2.RandomVerticalFlip(p=0.5),
                 v2.RandomRotation(degrees=(-10,10)),
-                v2.ToImage(),
-                v2.ToDtype(torch.float32, scale=True),
-                v2.Normalize(mean=mean, std=std),
             ]
         )
         return transforms
     
     @staticmethod
-    def eval_transforms(mean, std):
+    def eval_transforms():
         transforms = v2.Compose(
             [
                 v2.Resize(480, antialias=True),
                 v2.CenterCrop(480),
-                v2.ToImage(),
-                v2.ToDtype(torch.float32, scale=True),
-                v2.Normalize(mean=mean, std=std),
             ]
         )
         return transforms
 
 class StrongTransforms:
     @staticmethod
-    def train_transforms(mean, std):
+    def train_transforms():
         transforms = v2.Compose(
             [
                 v2.Resize(480, antialias=True),
@@ -72,22 +60,16 @@ class StrongTransforms:
                 v2.RandomVerticalFlip(p=0.5),
                 v2.RandomRotation(degrees=(-45,45)),
                 v2.GaussianBlur(kernel_size=(5,9), sigma=(0.1,5)),
-                v2.ToImage(),
-                v2.ToDtype(torch.float32, scale=True),
-                v2.Normalize(mean=mean, std=std),
             ]
         )
         return transforms
     
     @staticmethod
-    def eval_transforms(mean, std):
+    def eval_transforms():
         transforms = v2.Compose(
             [
                 v2.Resize(480, antialias=True),
                 v2.CenterCrop(480),
-                v2.ToImage(),
-                v2.ToDtype(torch.float32, scale=True),
-                v2.Normalize(mean=mean, std=std),
             ]
         )
         return transforms

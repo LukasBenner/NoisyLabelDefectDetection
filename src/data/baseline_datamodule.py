@@ -1,12 +1,15 @@
-from typing import Optional, Sequence
+from typing import Any, Optional, Sequence
 
 from torch.utils.data import DataLoader, random_split
 from lightning import LightningDataModule
 from torchvision.datasets import ImageFolder
+from torchvision.transforms import v2
 import torch
 
 from src.data.components.transform_subset import TransformSubset
 from src.data.components.transforms import BaselineTransforms
+
+from src.data.components.dataloader import collate_keep_images_as_list
 
 
 class BaselineDataModule(LightningDataModule):
@@ -21,12 +24,16 @@ class BaselineDataModule(LightningDataModule):
         super().__init__()
         
         self.save_hyperparameters(logger=False)
+        self.hparams: Any
         
         mean = [0.485, 0.456, 0.406]
         std = [0.229, 0.224, 0.225]
         
-        self.train_transforms = BaselineTransforms.train_transforms(mean, std)
-        self.test_transforms = BaselineTransforms.eval_transforms(mean, std)
+        self.train_transforms = BaselineTransforms.train_transforms()
+        self.test_transforms = BaselineTransforms.eval_transforms()
+        
+        self.to_float = v2.ToDtype(torch.float32, scale=True)
+        self.norm = v2.Normalize(mean=mean, std=std)
         
     @property
     def num_classes(self) -> int:
@@ -53,8 +60,8 @@ class BaselineDataModule(LightningDataModule):
         train_subset, val_subset = random_split(self.ds, [n_train, n_val])
 
         # Wrap subsets with TransformSubset to apply transforms properly
-        self.train_dataset = TransformSubset(self.ds, train_subset.indices, transform=self.train_transforms)
-        self.val_dataset = TransformSubset(self.ds, val_subset.indices, transform=self.test_transforms)
+        self.train_dataset = TransformSubset(self.ds, train_subset.indices)
+        self.val_dataset = TransformSubset(self.ds, val_subset.indices)
 
         # Calculate class weights from training set
         targets = torch.tensor([self.ds.targets[i] for i in train_subset.indices], dtype=torch.long)
@@ -64,9 +71,29 @@ class BaselineDataModule(LightningDataModule):
         N = counts.sum()
         self._class_weights = N / (num_classes * counts)
         
+    def on_after_batch_transfer(self, batch: Any, dataloader_idx: int) -> Any:
+        if len(batch) == 3:
+            imgs, y, idxs = batch
+        else:
+            imgs, y = batch
+            idxs = None
+
+        geom = self.train_transforms if self.trainer.training else self.test_transforms
+
+        # per-image GPU transforms; each output becomes (C,480,480)
+        imgs = [geom(img) for img in imgs]
+
+        # now shapes match -> stack
+        x = torch.stack(imgs, dim=0)          # (B,C,480,480)
+        x = self.to_float(x)                  # float in [0,1]
+        x = self.norm(x)
+
+        return (x, y, idxs) if idxs is not None else (x, y)
+        
     def train_dataloader(self) -> DataLoader:
         return DataLoader(
             self.train_dataset,
+            collate_fn=collate_keep_images_as_list,
             batch_size=self.hparams.batch_size,
             num_workers=self.hparams.num_workers,
             pin_memory=self.hparams.pin_memory,
@@ -78,6 +105,7 @@ class BaselineDataModule(LightningDataModule):
     def val_dataloader(self) -> DataLoader:
         return DataLoader(
             self.val_dataset,
+            collate_fn=collate_keep_images_as_list,
             batch_size=self.hparams.batch_size,
             num_workers=self.hparams.num_workers,
             pin_memory=self.hparams.pin_memory,
@@ -88,6 +116,7 @@ class BaselineDataModule(LightningDataModule):
     def test_dataloader(self) -> DataLoader:
         return DataLoader(
             self.val_dataset,
+            collate_fn=collate_keep_images_as_list,
             batch_size=self.hparams.batch_size,
             num_workers=self.hparams.num_workers,
             pin_memory=self.hparams.pin_memory,

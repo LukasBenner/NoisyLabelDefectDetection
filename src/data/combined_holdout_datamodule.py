@@ -3,6 +3,7 @@ from typing import Any, Dict, Optional, Sequence
 from torch.utils.data import DataLoader
 from lightning import LightningDataModule
 from torchvision.datasets import ImageFolder
+from torchvision.transforms import v2
 import torch
 
 from src.data.components.combined_image_folder import CombinedImageFolder
@@ -13,6 +14,7 @@ from src.data.components.transforms import (
     StrongTransforms,
 )
 from src.data.components.utils import filter_classes, merge_classes
+from src.data.components.dataloader import collate_keep_images_as_list
 
 class CombinedHoldoutDataModule(LightningDataModule):
     def __init__(
@@ -27,9 +29,10 @@ class CombinedHoldoutDataModule(LightningDataModule):
         transforms: str = "medium",
         image1k_norm: bool = True,
         batch_size: int = 96,
-        weight_alpha: float = 1.0,
         use_weighted_sampler: bool = True,
+        weight_alpha: float = 1.0,
         num_workers: int = 4,
+        prefetch_factor: int = 2,
         pin_memory: bool = True,
         seed: int = 42,
     ) -> None:
@@ -48,19 +51,19 @@ class CombinedHoldoutDataModule(LightningDataModule):
         std = std_image1k if image1k_norm else std_custom
 
         if transforms == "baseline":
-            self.train_transforms = BaselineTransforms.train_transforms(mean, std)
-            self.test_transforms = BaselineTransforms.eval_transforms(mean, std)
-
+            self.train_transforms = BaselineTransforms.train_transforms()
+            self.test_transforms = BaselineTransforms.eval_transforms()
         elif transforms == "medium":
-            self.train_transforms = MediumTransforms.train_transforms(mean, std)
-            self.test_transforms = MediumTransforms.eval_transforms(mean, std)
-
+            self.train_transforms = MediumTransforms.train_transforms()
+            self.test_transforms = MediumTransforms.eval_transforms()
         elif transforms == "strong":
-            self.train_transforms = StrongTransforms.train_transforms(mean, std)
-            self.test_transforms = StrongTransforms.eval_transforms(mean, std)
-
+            self.train_transforms = StrongTransforms.train_transforms()
+            self.test_transforms = StrongTransforms.eval_transforms()
         else:
             raise ValueError(f"Transforms '{transforms}' not recognized.")
+
+        self.to_float = v2.ToDtype(torch.float32, scale=True)
+        self.norm = v2.Normalize(mean=mean, std=std)
 
     @property
     def num_classes(self) -> int:
@@ -105,6 +108,25 @@ class CombinedHoldoutDataModule(LightningDataModule):
         syn_ds = merge_classes(syn_ds, self.hparams.merge_classes, allow_missing=True)
         combined_ds = CombinedImageFolder([dataset, syn_ds])
         return combined_ds
+    
+    def on_after_batch_transfer(self, batch: Any, dataloader_idx: int) -> Any:
+        if len(batch) == 3:
+            imgs, y, idxs = batch
+        else:
+            imgs, y = batch
+            idxs = None
+
+        geom = self.train_transforms if self.trainer.training else self.test_transforms
+
+        # per-image GPU transforms; each output becomes (C,480,480)
+        imgs = [geom(img) for img in imgs]
+
+        # now shapes match -> stack
+        x = torch.stack(imgs, dim=0)          # (B,C,480,480)
+        x = self.to_float(x)                  # float in [0,1]
+        x = self.norm(x)
+
+        return (x, y, idxs) if idxs is not None else (x, y)
 
     def setup(self, stage: Optional[str] = None):
         if stage == "fit":
@@ -117,7 +139,6 @@ class CombinedHoldoutDataModule(LightningDataModule):
             self.train_dataset = TransformSubset(
                 self.train_ds,
                 idxs_train,
-                transform=self.train_transforms,
                 return_index=False,
             )
 
@@ -129,18 +150,6 @@ class CombinedHoldoutDataModule(LightningDataModule):
             base = N / (num_classes * counts)
             self._class_weights = base.pow(self.hparams.weight_alpha)
 
-        if stage == "fit" or stage == "validate":
-            self.val_ds = ImageFolder(self.hparams.val_path)
-            self.val_ds = filter_classes(self.val_ds, self.hparams.classes)
-            self.val_ds = merge_classes(self.val_ds, self.hparams.merge_classes)
-            idxs_val = list(range(len(self.val_ds)))
-            self.val_dataset = TransformSubset(
-                self.val_ds,
-                idxs_val,
-                transform=self.test_transforms,
-                return_index=False,
-            )
-
             if self.hparams.use_weighted_sampler:
                 # sample weight per sample
                 sample_weights = self._class_weights[targets]
@@ -150,21 +159,31 @@ class CombinedHoldoutDataModule(LightningDataModule):
                     replacement=True
                 )
 
+        if stage == "fit" or stage == "validate":
+            self.val_ds = ImageFolder(self.hparams.val_path)
+            self.val_ds = filter_classes(self.val_ds, self.hparams.classes)
+            self.val_ds = merge_classes(self.val_ds, self.hparams.merge_classes)
+            idxs_val = list(range(len(self.val_ds)))
+            self.val_dataset = TransformSubset(
+                self.val_ds,
+                idxs_val,
+                return_index=False,
+            )
+
         if stage == "test" or stage == "predict":
             self.test_ds = ImageFolder(self.hparams.test_path)
             self.test_ds = filter_classes(self.test_ds, self.hparams.classes)
-            self.test_ds = merge_classes(self.test_ds, self.hparams.merge_classes)
             idxs_test = list(range(len(self.test_ds)))
             self.test_dataset = TransformSubset(
                 self.test_ds,
                 idxs_test,
-                transform=self.test_transforms,
                 return_index=False,
             )
 
     def train_dataloader(self) -> DataLoader:
         return DataLoader(
             self.train_dataset,
+            collate_fn=collate_keep_images_as_list,
             batch_size=self.hparams.batch_size,
             num_workers=self.hparams.num_workers,
             pin_memory=self.hparams.pin_memory,
@@ -172,11 +191,13 @@ class CombinedHoldoutDataModule(LightningDataModule):
             drop_last=False,
             persistent_workers=True if self.hparams.num_workers > 0 else False,
             sampler=self.sampler if self.hparams.use_weighted_sampler else None,
+            prefetch_factor=self.hparams.prefetch_factor,
         )
 
     def val_dataloader(self) -> DataLoader:
         return DataLoader(
             self.val_dataset,
+            collate_fn=collate_keep_images_as_list,
             batch_size=self.hparams.batch_size,
             num_workers=self.hparams.num_workers,
             pin_memory=self.hparams.pin_memory,
@@ -187,16 +208,7 @@ class CombinedHoldoutDataModule(LightningDataModule):
     def test_dataloader(self) -> DataLoader:
         return DataLoader(
             self.test_dataset,
-            batch_size=self.hparams.batch_size,
-            num_workers=self.hparams.num_workers,
-            pin_memory=self.hparams.pin_memory,
-            shuffle=False,
-            persistent_workers=True if self.hparams.num_workers > 0 else False,
-        )
-
-    def predict_dataloader(self) -> DataLoader:
-        return DataLoader(
-            self.test_dataset,
+            collate_fn=collate_keep_images_as_list,
             batch_size=self.hparams.batch_size,
             num_workers=self.hparams.num_workers,
             pin_memory=self.hparams.pin_memory,
