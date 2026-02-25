@@ -369,23 +369,10 @@ def main(cfg: DictConfig) -> Optional[float]:
             weights_only=False,
         )
 
-    log.info("Generating confusion matrix")
-    best_datamodule.setup(stage="test")
     class_names = get_class_names(best_datamodule)
-    if class_names is None:
-        log.warning("No class names found; skipping confusion matrix")
-    else:
-        preds, targets = collect_preds_targets(
-            best_model, best_datamodule.test_dataloader()
-        )
-        create_confusion_matrix(
-            preds=preds.numpy(),
-            targets=targets.numpy(),
-            class_names=class_names,
-            logging_directory=str(test_dir),
-        )
 
     cm = test_trainer.callback_metrics
+    
     test_metrics: Dict[str, Any] = {
         "test/f1_macro": to_float(cm.get("test/f1_macro")),
         "test/precision_macro": to_float(cm.get("test/precision_macro")),

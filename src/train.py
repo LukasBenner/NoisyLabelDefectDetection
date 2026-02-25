@@ -117,23 +117,8 @@ def train_single_run(
             weights_only=False,
         )
 
-    # # Confusion matrix on test split
-    # datamodule.setup(stage="test")
     class_names = get_class_names(datamodule)
-    # if class_names is None:
-    #     log.warning("No class names found; skipping confusion matrix")
-    # else:
-    #     log.info("Collecting predictions and targets for confusion matrix")
-    #     preds, targets = collect_preds_targets(model, datamodule.test_dataloader())
-    #     log.info("Generating and saving confusion matrix")
-    #     create_confusion_matrix(
-    #         preds=preds.numpy(),
-    #         targets=targets.numpy(),
-    #         class_names=class_names,
-    #         logging_directory=str(test_dir),
-    #     )
 
-    # Extract test metrics
     cm = test_trainer.callback_metrics
 
     test_metrics: Dict[str, Any] = {

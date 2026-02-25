@@ -14,7 +14,7 @@ model:
     pretrained: true
     variant: small
   criterion:
-    _target_: src.models.components.loss.SCELoss
+    _target_: src.models.components.loss.NCEandRCE
     alpha: 1
     beta: 0.1
 
