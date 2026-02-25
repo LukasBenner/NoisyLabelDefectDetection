@@ -8,7 +8,7 @@ defaults:
 
 research_name: SurfaceDefectDetection
 experiment_name: noisy_new_nal
-run_name_postfix: not_precomputed
+run_name_postfix: precomputed
 
 n_runs: 10
 
@@ -29,11 +29,11 @@ model:
     T_max: ${trainer.max_epochs}
   criterion:
     _target_: src.models.components.loss.CELoss
-  noise_init_epoch: 10
-  noise_instance_epoch: 30
+  noise_init_epoch: 5
+  noise_instance_epoch: 10
   instance_hidden_dim: 256
   noise_init_eps: 0.000349
-  use_precomputed_noise_matrix: false
+  use_precomputed_noise_matrix: true
 
 data:
   batch_size: 16

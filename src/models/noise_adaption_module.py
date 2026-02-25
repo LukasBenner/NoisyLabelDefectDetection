@@ -17,6 +17,7 @@ class NoiseAdaptionModule(BaseRobustModule):
         noise_instance_epoch: int = 30,
         instance_hidden_dim: int = 128,
         noise_init_eps: float = 1e-6,
+        use_precomputed_noise_matrix: bool = True,
         noise_matrix_path: Optional[str] = None,
         **kwargs,
     ) -> None:
@@ -29,6 +30,7 @@ class NoiseAdaptionModule(BaseRobustModule):
         self.noise_instance_epoch = int(noise_instance_epoch)
         self.instance_hidden_dim = int(instance_hidden_dim)
         self.noise_init_eps = float(noise_init_eps)
+        self.use_precomputed_noise_matrix = use_precomputed_noise_matrix
         self.noise_matrix_path = noise_matrix_path
         self._noise_initialized = False
         self._instance_noise_initialized = False
@@ -122,8 +124,7 @@ class NoiseAdaptionModule(BaseRobustModule):
         if val_loader is None:
             return
 
-        confusion = self._compute_confusion_matrix(val_loader)
-        if self.noise_matrix_path is not None:
+        if self.use_precomputed_noise_matrix and self.noise_matrix_path is not None:
             try:
                 noise_data = torch.load(self.noise_matrix_path, map_location="cpu")
                 if isinstance(noise_data, dict) and "T" in noise_data:
@@ -132,6 +133,8 @@ class NoiseAdaptionModule(BaseRobustModule):
                     confusion = noise_data
             except Exception as e:
                 print(f"Failed to load noise matrix from {self.noise_matrix_path}: {e}")
+        else:
+            confusion = self._compute_confusion_matrix(val_loader)
 
         try:
             confusion = self._sanitize_transition_matrix(confusion)
