@@ -46,7 +46,7 @@ class CutMixModule(BaseRobustModule):
         preds = torch.argmax(logits, dim=1)
 
         self.train_loss(loss)
-        self.train_metrics(preds, mixed_targets)
+        self.train_metrics(preds, targets)
 
         self.log("train/loss", self.train_loss, on_step=False, on_epoch=True, prog_bar=True)
         self.log_dict(self.train_metrics, on_step=False, on_epoch=True, prog_bar=False)
