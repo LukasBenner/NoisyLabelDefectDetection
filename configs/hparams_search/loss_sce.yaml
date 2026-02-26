@@ -19,6 +19,16 @@ model:
     beta: 0.1
 
 
+enqueue_trials:
+  - "model.optimizer.lr": 3.91e-3
+    "model.optimizer.weight_decay": 2.854e-5
+    "model.optimizer.momentum": 0.817
+    "model.criterion.alpha": 1.356
+    "model.criterion.beta": 1.0272
+    "data.batch_size": 32
+    "data.weight_alpha": 0.00474
+    "data.transforms": strong
+
 search_space:
   model:
     optimizer:

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any, Optional
 
 import torch
@@ -19,6 +20,7 @@ class NoiseAdaptionModule(BaseRobustModule):
         noise_init_eps: float = 1e-6,
         use_precomputed_noise_matrix: bool = True,
         noise_matrix_path: Optional[str] = None,
+        save_transition_matrix: bool = False,
         **kwargs,
     ) -> None:
         super().__init__(*args, **kwargs)
@@ -32,6 +34,7 @@ class NoiseAdaptionModule(BaseRobustModule):
         self.noise_init_eps = float(noise_init_eps)
         self.use_precomputed_noise_matrix = use_precomputed_noise_matrix
         self.noise_matrix_path = noise_matrix_path
+        self.save_transition_matrix = save_transition_matrix
         self._noise_initialized = False
         self._instance_noise_initialized = False
 
@@ -228,6 +231,17 @@ class NoiseAdaptionModule(BaseRobustModule):
             and (self.current_epoch + 1) >= self.noise_instance_epoch
         ):
             self._initialize_instance_noise()
+
+    def on_train_end(self) -> None:
+        if not self.save_transition_matrix:
+            return
+        if not self._noise_initialized or not hasattr(self.net, "get_transition_matrix"):
+            return
+        T = self.net.get_transition_matrix().detach().cpu()
+        log_dir = getattr(self.trainer, "log_dir", None)
+        if log_dir is None:
+            return
+        torch.save(T, Path(log_dir) / "final_transition_matrix.pt")
 
     def _eval_logits(self, inputs: torch.Tensor) -> torch.Tensor:
         if self._noise_initialized and hasattr(self.net, "get_clean_output"):

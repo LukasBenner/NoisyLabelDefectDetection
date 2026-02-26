@@ -34,6 +34,7 @@ model:
   instance_hidden_dim: 256
   noise_init_eps: 0.000349
   use_precomputed_noise_matrix: true
+  save_transition_matrix: true
 
 data:
   batch_size: 16

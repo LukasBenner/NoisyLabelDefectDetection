@@ -7,13 +7,23 @@ defaults:
 study_name: cutmix
 run_name_postfix: cutmix
 
+enqueue_trials:
+  - "model.optimizer.lr": 0.0415
+    "model.optimizer.weight_decay": 3.14e-4
+    "model.optimizer.momentum": 0.762
+    "model.mixup_alpha": 0.182
+    "model.cutmix_alpha": 0.183
+    "data.batch_size": 32
+    "data.weight_alpha": 0.291
+    "data.transforms": medium
+
 search_space:
   model:
     optimizer:
       lr:
         type: float
         low: 1.0e-4
-        high: 5.0e-2
+        high: 1.0e-1
         log: true
       weight_decay:
         type: float

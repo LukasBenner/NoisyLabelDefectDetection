@@ -7,6 +7,15 @@ defaults:
 study_name: mixup
 run_name_postfix: mixup
 
+enqueue_trials:
+  - "model.optimizer.lr": 0.0112
+    "model.optimizer.weight_decay": 1.407e-5
+    "model.optimizer.momentum": 0.892
+    "model.mixup_alpha": 0.351
+    "data.batch_size": 16
+    "data.weight_alpha": 0.00474
+    "data.transforms": medium
+
 search_space:
   model:
     optimizer:

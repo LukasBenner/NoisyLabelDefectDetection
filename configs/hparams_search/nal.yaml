@@ -10,6 +10,16 @@ run_name_postfix: nal
 trainer:
   deterministic: False
 
+enqueue_trials:
+  - "model.optimizer.lr": 0.01983
+    "model.optimizer.weight_decay": 7.513e-5
+    "model.optimizer.momentum": 0.793
+    "model.instance_hidden_dim": 256
+    "model.noise_init_eps": 3.49e-4
+    "data.batch_size": 16
+    "data.weight_alpha": 0.999
+    "data.transforms": strong
+
 search_space:
   model:
     optimizer:
