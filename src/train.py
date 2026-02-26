@@ -1,20 +1,21 @@
-import os
+import torch
 from datetime import date
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Any, Dict, List, Optional
 
 import hydra
-import numpy as np
 import pandas as pd
 import rootutils
-from lightning import Callback, Trainer
+from hydra.core.hydra_config import HydraConfig
+from lightning import Callback, Trainer, seed_everything
+from lightning.pytorch.callbacks import ModelCheckpoint
 from lightning.pytorch.loggers import CSVLogger
 from omegaconf import DictConfig, OmegaConf
-from scipy import stats
-from lightning.pytorch.callbacks import ModelCheckpoint
-import torch
+
+rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 
 from utils.instantiators import instantiate_callbacks
+from utils.pylogger import RankedLogger
 from utils.utils import (
     calculate_summary_statistics,
     collect_preds_targets,
@@ -23,13 +24,45 @@ from utils.utils import (
     to_float,
 )
 
-# Setup root
-rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
-
-from src.utils.pylogger import RankedLogger
-from lightning import seed_everything
-
 log = RankedLogger(__name__, rank_zero_only=True)
+
+
+def _collect_per_class_metrics(
+    cm: Dict, prefix: str, datamodule: Any
+) -> Dict[str, Any]:
+    """Collect per-class precision/recall/f1 from callback_metrics."""
+    metrics: Dict[str, Any] = {}
+
+    n_classes: Optional[int] = None
+    try:
+        n_classes = int(getattr(datamodule, "num_classes"))
+    except Exception:
+        pass
+
+    class_names = get_class_names(datamodule)
+    if n_classes is None and class_names:
+        n_classes = len(class_names)
+
+    class_names_for_metrics = None
+    if class_names and n_classes is not None and len(class_names) >= n_classes:
+        class_names_for_metrics = class_names
+
+    if n_classes is not None and n_classes > 0:
+        for i in range(n_classes):
+            for metric_name in ("precision", "recall", "f1"):
+                key_idx = f"{prefix}/{metric_name}_c{i}"
+                if class_names_for_metrics:
+                    class_name = class_names_for_metrics[i]
+                    key_named = f"{prefix}/{metric_name}_{class_name}"
+                    if key_named in cm:
+                        metrics[key_named] = to_float(cm.get(key_named))
+                    elif key_idx in cm:
+                        metrics[key_named] = to_float(cm.get(key_idx))
+                else:
+                    if key_idx in cm:
+                        metrics[key_idx] = to_float(cm.get(key_idx))
+
+    return metrics
 
 
 def train_single_run(
@@ -86,11 +119,14 @@ def train_single_run(
         except Exception:
             val_f1_macro_best = None
 
+    # Resolve best checkpoint path safely (checkpoint_callback is None if no
+    # ModelCheckpoint callback is configured)
+    best_model_path = None
+    if trainer.checkpoint_callback:
+        best_model_path = trainer.checkpoint_callback.best_model_path or None
 
     if cfg.get("run_test", False):
-        # Test the model on best checkpoint
         log.info(f"Starting testing for run {run_idx}")
-        best_model_path = trainer.checkpoint_callback.best_model_path
 
         test_dir = run_save_dir / "final_test"
         test_dir.mkdir(parents=True, exist_ok=True)
@@ -105,25 +141,13 @@ def train_single_run(
 
         if best_model_path:
             log.info(f"Loading best checkpoint: {best_model_path}")
-            test_trainer.test(
-                model=model,
-                datamodule=datamodule,
-                ckpt_path=best_model_path,
-                weights_only=False,
-            )
+            test_trainer.test(model=model, datamodule=datamodule, ckpt_path=best_model_path)
         else:
             log.warning("No best checkpoint found, testing with final model")
-            test_trainer.test(
-                model=model,
-                datamodule=datamodule,
-                weights_only=False,
-            )
-
-        class_names = get_class_names(datamodule)
+            test_trainer.test(model=model, datamodule=datamodule)
 
         cm = test_trainer.callback_metrics
-
-        test_metrics: Dict[str, Any] = {
+        result_metrics: Dict[str, Any] = {
             "run_idx": run_idx,
             # Primary reporting (imbalance + equal class importance)
             "test/f1_macro": to_float(cm.get("test/f1_macro")),
@@ -135,49 +159,19 @@ def train_single_run(
             "test/precision_weighted": to_float(cm.get("test/precision_weighted")),
             "test/recall_weighted": to_float(cm.get("test/recall_weighted")),
             "test/loss": to_float(cm.get("test/loss")),
-            # Best validation metric(s)
+            # Best validation metric
             "val/f1_macro_best": to_float(val_f1_macro_best),
         }
-
-        n_classes = None
-        try:
-            n_classes = int(getattr(datamodule, "num_classes"))
-        except Exception:
-            n_classes = None
-
-        if n_classes is None and class_names:
-            n_classes = len(class_names)
-
-        class_names_for_metrics = None
-        if class_names and n_classes is not None and len(class_names) >= n_classes:
-            class_names_for_metrics = class_names
-
-        if n_classes is not None and n_classes > 0:
-            for i in range(n_classes):
-                for metric_name in ("precision", "recall", "f1"):
-                    key_idx = f"test/{metric_name}_c{i}"
-                    if class_names_for_metrics:
-                        class_name = class_names_for_metrics[i]
-                        key_named = f"test/{metric_name}_{class_name}"
-                        if key_named in cm:
-                            test_metrics[key_named] = to_float(cm.get(key_named))
-                        elif key_idx in cm:
-                            test_metrics[key_named] = to_float(cm.get(key_idx))
-                    else:
-                        if key_idx in cm:
-                            test_metrics[key_idx] = to_float(cm.get(key_idx))
+        result_metrics.update(_collect_per_class_metrics(cm, "test", datamodule))
 
         log.info(
             f"Run {run_idx}/{cfg.n_runs} completed | "
-            f"test/acc: {(test_metrics.get('test/acc') or 0.0):.4f} | "
-            f"test/f1_macro: {(test_metrics.get('test/f1_macro') or 0.0):.4f}"
+            f"test/acc: {(result_metrics.get('test/acc') or 0.0):.4f} | "
+            f"test/f1_macro: {(result_metrics.get('test/f1_macro') or 0.0):.4f}"
         )
-
-        return test_metrics
 
     else:
         log.info(f"Starting validation run {run_idx}")
-        best_model_path = trainer.checkpoint_callback.best_model_path
 
         val_dir = run_save_dir / "final_val"
         val_dir.mkdir(parents=True, exist_ok=True)
@@ -192,25 +186,13 @@ def train_single_run(
 
         if best_model_path:
             log.info(f"Loading best checkpoint: {best_model_path}")
-            val_trainer.validate(
-                model=model,
-                datamodule=datamodule,
-                ckpt_path=best_model_path,
-                weights_only=False,
-            )
+            val_trainer.validate(model=model, datamodule=datamodule, ckpt_path=best_model_path)
         else:
             log.warning("No best checkpoint found, validating with final model")
-            val_trainer.validate(
-                model=model,
-                datamodule=datamodule,
-                weights_only=False,
-            )
-
-        class_names = get_class_names(datamodule)
+            val_trainer.validate(model=model, datamodule=datamodule)
 
         cm = val_trainer.callback_metrics
-
-        val_metrics: Dict[str, Any] = {
+        result_metrics = {
             "run_idx": run_idx,
             # Primary reporting (imbalance + equal class importance)
             "val/f1_macro": to_float(cm.get("val/f1_macro")),
@@ -222,45 +204,18 @@ def train_single_run(
             "val/precision_weighted": to_float(cm.get("val/precision_weighted")),
             "val/recall_weighted": to_float(cm.get("val/recall_weighted")),
             "val/loss": to_float(cm.get("val/loss")),
-            # Best validation metric(s)
+            # Best validation metric
             "val/f1_macro_best": to_float(val_f1_macro_best),
         }
-
-        n_classes = None
-        try:
-            n_classes = int(getattr(datamodule, "num_classes"))
-        except Exception:
-            n_classes = None
-
-        if n_classes is None and class_names:
-            n_classes = len(class_names)
-
-        class_names_for_metrics = None
-        if class_names and n_classes is not None and len(class_names) >= n_classes:
-            class_names_for_metrics = class_names
-
-        if n_classes is not None and n_classes > 0:
-            for i in range(n_classes):
-                for metric_name in ("precision", "recall", "f1"):
-                    key_idx = f"val/{metric_name}_c{i}"
-                    if class_names_for_metrics:
-                        class_name = class_names_for_metrics[i]
-                        key_named = f"val/{metric_name}_{class_name}"
-                        if key_named in cm:
-                            val_metrics[key_named] = to_float(cm.get(key_named))
-                        elif key_idx in cm:
-                            val_metrics[key_named] = to_float(cm.get(key_idx))
-                    else:
-                        if key_idx in cm:
-                            val_metrics[key_idx] = to_float(cm.get(key_idx))
+        result_metrics.update(_collect_per_class_metrics(cm, "val", datamodule))
 
         log.info(
             f"Run {run_idx}/{cfg.n_runs} completed | "
-            f"val/acc: {(val_metrics.get('val/acc') or 0.0):.4f} | "
-            f"val/f1_macro: {(val_metrics.get('val/f1_macro') or 0.0):.4f}"
+            f"val/acc: {(result_metrics.get('val/acc') or 0.0):.4f} | "
+            f"val/f1_macro: {(result_metrics.get('val/f1_macro') or 0.0):.4f}"
         )
 
-        return val_metrics
+    return result_metrics
 
 
 @hydra.main(version_base="1.3", config_path="../configs", config_name="train.yaml")
@@ -276,13 +231,8 @@ def main(cfg: DictConfig) -> None:
     if cfg.get("print_config"):
         log.info(f"Config:\n{OmegaConf.to_yaml(cfg)}")
 
-    log_path = cfg.get("log_path", "logs")
-    research_name = cfg.get("research_name", "default")
-    experiment_name = cfg.get("experiment_name", "default")
-    run_name = cfg.get("run_name", date.today().strftime("%Y-%m-%d"))
-    base_save_dir = (
-        Path(log_path) / "train" / research_name / experiment_name / run_name
-    )
+    # Hydra already sets the output dir to match log_path/train/.../run_name
+    base_save_dir = Path(HydraConfig.get().runtime.output_dir)
 
     log.info(f"Saving results to: {base_save_dir}")
 
@@ -295,7 +245,7 @@ def main(cfg: DictConfig) -> None:
         summary_dir = base_save_dir / "test_summary"
     else:
         summary_dir = base_save_dir / "val_summary"
-    
+
     summary_dir.mkdir(parents=True, exist_ok=True)
     hparams_file = summary_dir / "hyperparameters.yaml"
     with open(hparams_file, "w") as f:

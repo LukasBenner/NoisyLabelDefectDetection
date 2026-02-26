@@ -97,6 +97,9 @@ def update_config_with_suggestions(
 @hydra.main(version_base="1.3", config_path="../configs", config_name="sweep.yaml")
 def main(cfg: DictConfig) -> Optional[float]:
     """Main sweep function using PyTorch Lightning and Optuna."""
+    import torch
+    torch.set_float32_matmul_precision("medium")
+
     n_trials = cfg.get("n_trials", 10)
     optimized_metric = cfg.get("optimized_metric", "val/f1_macro_best")
     direction = cfg.get("direction", "maximize")
