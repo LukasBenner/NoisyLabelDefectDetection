@@ -1,9 +1,9 @@
 # @package _global_
 
 defaults:
-  - _self_
   - paths: default
   - trainer: gpu
+  - _self_
   - callbacks: with_early_stopping
   - data: surface_data
   - experiment: null
@@ -16,6 +16,10 @@ run_name: "${now:%Y-%m-%d_%H-%M-%S}_${run_name_postfix}"
 log_path: ./logs
 
 seed: 42
+
+trainer:
+  deterministic: false
+  max_epochs: 100
 
 hydra:
   run:

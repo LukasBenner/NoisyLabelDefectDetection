@@ -36,9 +36,9 @@ data:
   weight_alpha: 0.00474
   image1k_norm: true
   transforms: medium
-  train_path: /workspace/data/surfaceClassification/noisy_clustered_new/train
-  val_path: /workspace/data/surfaceClassification/noisy_clustered_new/val
-  test_path: /workspace/data/surfaceClassification/noisy_clustered_new/test
+  train_path: /srv/defectDetectionDataset/surfaceClassification/noisy_clustered_new/train
+  val_path: /srv/defectDetectionDataset/surfaceClassification/noisy_clustered_new/val
+  test_path: /srv/defectDetectionDataset/surfaceClassification/noisy_clustered_new/test
 
 callbacks:
   early_stopping:

@@ -37,6 +37,7 @@ model:
 
 data:
   batch_size: 16
+  prefetch_factor: 4
   weight_alpha: 0.999
   image1k_norm: true
   transforms: strong

@@ -1,4 +1,4 @@
-_target_: src.models.mixup_module.MixupModule
+_target_: src.models.cutmix_module.CutMixModule
 
 num_classes: 10
 
@@ -24,5 +24,6 @@ criterion:
   _target_: src.models.components.loss.CELoss
   _partial_: true
 
-mixup_alpha: 0.2
+mixup_alpha: 0.5
+cutmix_alpha: 0.5
 compile: false

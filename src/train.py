@@ -291,7 +291,11 @@ def main(cfg: DictConfig) -> None:
     log.info(f"Running {n_runs} training run(s)")
 
     # Save hyperparameters
-    summary_dir = base_save_dir / "summary"
+    if cfg.get("run_test", False):
+        summary_dir = base_save_dir / "test_summary"
+    else:
+        summary_dir = base_save_dir / "val_summary"
+    
     summary_dir.mkdir(parents=True, exist_ok=True)
     hparams_file = summary_dir / "hyperparameters.yaml"
     with open(hparams_file, "w") as f:

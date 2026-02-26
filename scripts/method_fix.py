@@ -169,7 +169,7 @@ def run_validation(experiment_directory: Path):
 
 if __name__ == "__main__":
     experiments = [
-        "/home/lukasb/Documents/NoisyLabelDefectDetection/logs/train/SurfaceDefectDetection/noisy_new_nal/2026-02-25_08-21-57_not_precomputed"
+        "/home/lukasb/Documents/NoisyLabelDefectDetection/logs/train/SurfaceDefectDetection/noisy_new/2026-02-25_08-05-00_nce_rce"
     ]
     
     for exp in experiments:

@@ -6,6 +6,3 @@ direction: maximize
 study_name: null
 
 n_trials: 20
-
-trainer:
-  max_epochs: 100
