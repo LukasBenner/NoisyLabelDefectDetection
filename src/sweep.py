@@ -267,10 +267,6 @@ def main(cfg: DictConfig) -> Optional[float]:
         "study_name", f"optuna_study_{experiment_name}"
     )
 
-    # Persist study to SQLite so it survives crashes and can be resumed
-    storage_path = base_log_path / "study.db"
-    storage_url = f"sqlite:///{storage_path}"
-
     study = optuna.create_study(
         study_name=study_name,
         direction=direction,
@@ -282,13 +278,10 @@ def main(cfg: DictConfig) -> Optional[float]:
         pruner=optuna.pruners.MedianPruner(
             n_startup_trials=pruner_n_startup_trials,
             n_warmup_steps=pruner_n_warmup_steps,
-        ),
-        storage=storage_url,
-        load_if_exists=True,
+        )
     )
 
     log.info(f"Created/loaded Optuna study: {study_name}")
-    log.info(f"Study storage: {storage_url}")
 
     # Warm-start: enqueue any explicitly specified trials from config
     if "enqueue_trials" in cfg:
