@@ -55,10 +55,6 @@ def suggest_hyperparameters(
                         result[key] = trial.suggest_categorical(
                             full_key, value.choices
                         )  # type: ignore
-                    elif param_type == "uniform":
-                        result[key] = trial.suggest_uniform(
-                            full_key, value.low, value.high
-                        )
                     else:
                         log.warning(f"Unknown parameter type: {param_type}")
                 else:
@@ -105,7 +101,13 @@ def main(cfg: DictConfig) -> Optional[float]:
     optimized_metric = cfg.get("optimized_metric", "val/f1_macro_best")
     direction = cfg.get("direction", "maximize")
     seed = cfg.get("seed", 42)
-    
+    timeout_hours = cfg.get("timeout_hours", None)
+    timeout_seconds = timeout_hours * 3600 if timeout_hours is not None else None
+
+    # Pruner config: n_startup_trials before pruning begins, n_warmup_steps per trial
+    pruner_n_startup_trials = cfg.get("pruner_n_startup_trials", 5)
+    pruner_n_warmup_steps = cfg.get("pruner_n_warmup_steps", 10)
+
     # Set global seed
     seed_everything(seed, workers=True)
 
@@ -136,7 +138,7 @@ def main(cfg: DictConfig) -> Optional[float]:
             # Set seed for this trial
             trial_seed = seed + trial.number
             seed_everything(trial_seed, workers=True)
-            
+
             # Create a copy of config for this trial
             run_cfg = OmegaConf.create(OmegaConf.to_container(cfg, resolve=True))
             assert isinstance(run_cfg, DictConfig)
@@ -262,17 +264,37 @@ def main(cfg: DictConfig) -> Optional[float]:
         "study_name", f"optuna_study_{experiment_name}"
     )
 
-    # Create study with direction
+    # Persist study to SQLite so it survives crashes and can be resumed
+    storage_path = base_log_path / "study.db"
+    storage_url = f"sqlite:///{storage_path}"
+
     study = optuna.create_study(
         study_name=study_name,
         direction=direction,
-        sampler=optuna.samplers.TPESampler(seed=seed),
+        sampler=optuna.samplers.TPESampler(
+            seed=seed,
+            multivariate=True,
+            n_startup_trials=max(10, n_trials // 5),
+        ),
+        pruner=optuna.pruners.MedianPruner(
+            n_startup_trials=pruner_n_startup_trials,
+            n_warmup_steps=pruner_n_warmup_steps,
+        ),
+        storage=storage_url,
+        load_if_exists=True,
     )
 
-    log.info(f"Created Optuna study: {study_name}")
+    log.info(f"Created/loaded Optuna study: {study_name}")
+    log.info(f"Study storage: {storage_url}")
+
+    # Warm-start: enqueue any explicitly specified trials from config
+    if "enqueue_trials" in cfg:
+        for i, params in enumerate(cfg.enqueue_trials):
+            study.enqueue_trial(OmegaConf.to_container(params, resolve=True))
+            log.info(f"Enqueued warm-start trial {i}: {dict(params)}")
 
     # Run optimization
-    study.optimize(objective, n_trials=n_trials)
+    study.optimize(objective, n_trials=n_trials, timeout=timeout_seconds)
 
     # Log best results
     log.info(f"{'='*60}")
@@ -293,6 +315,27 @@ def main(cfg: DictConfig) -> Optional[float]:
         for key, value in study.best_params.items():
             f.write(f"{key}: {value}\n")
     log.info(f"Saved best hyperparameters to: {best_hparams_file}")
+
+    # Save all trial results as CSV
+    trials_df = study.trials_dataframe()
+    trials_csv = base_log_path / "all_trials.csv"
+    trials_df.to_csv(trials_csv, index=False)
+    log.info(f"Saved all trial results to: {trials_csv}")
+
+    # Save Optuna visualizations (requires plotly)
+    try:
+        import optuna.visualization as vis
+        plots = {
+            "optimization_history.html": vis.plot_optimization_history(study),
+            "param_importances.html": vis.plot_param_importances(study),
+            "parallel_coordinate.html": vis.plot_parallel_coordinate(study),
+            "contour.html": vis.plot_contour(study),
+        }
+        for filename, fig in plots.items():
+            fig.write_html(str(base_log_path / filename))
+            log.info(f"Saved plot: {filename}")
+    except Exception as e:
+        log.warning(f"Could not save Optuna visualizations (install plotly): {e}")
 
     return study.best_value
 
