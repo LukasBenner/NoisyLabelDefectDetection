@@ -289,14 +289,20 @@ class FocalLoss(torch.nn.Module):
     def __init__(self, gamma=0, alpha=None, size_average=True, num_classes=None):
         super(FocalLoss, self).__init__()
         self.gamma = gamma
-        self.alpha = alpha
+        self.scalar_alpha = None
         if isinstance(alpha, (float, int)):
-            self.alpha = torch.Tensor([alpha, 1-alpha])
-        if isinstance(alpha, list):
-            self.alpha = torch.Tensor(alpha)
+            self.scalar_alpha = float(alpha)
+            alpha_tensor = None
+        elif isinstance(alpha, list):
+            alpha_tensor = torch.Tensor(alpha)
+        else:
+            alpha_tensor = None
+        self.register_buffer('alpha', alpha_tensor)
         self.size_average = size_average
 
     def forward(self, input, target):
+        assert target.min() >= 0 and target.max() < input.size(1), \
+            f"Target label out of range: got [{target.min()}, {target.max()}], expected [0, {input.size(1)-1}]"
         if input.dim() > 2:
             input = input.view(input.size(0), input.size(1), -1)  # N,C,H,W => N,C,H*W
             input = input.transpose(1, 2)                         # N,C,H*W => N,H*W,C
@@ -306,13 +312,15 @@ class FocalLoss(torch.nn.Module):
         logpt = F.log_softmax(input, dim=1)
         logpt = logpt.gather(1, target)
         logpt = logpt.view(-1)
-        pt = torch.autograd.Variable(logpt.data.exp())
+        pt = logpt.exp()
 
         if self.alpha is not None:
-            if self.alpha.type() != input.data.type():
-                self.alpha = self.alpha.type_as(input.data)
-            at = self.alpha.gather(0, target.data.view(-1))
-            logpt = logpt * torch.autograd.Variable(at)
+            assert self.alpha.size(0) == input.size(1), \
+                f"alpha list length ({self.alpha.size(0)}) must equal num_classes ({input.size(1)})"
+            at = self.alpha.gather(0, target.view(-1))
+            logpt = logpt * at
+        elif self.scalar_alpha is not None:
+            logpt = logpt * self.scalar_alpha
 
         loss = -1 * (1-pt)**self.gamma * logpt
         if self.size_average:

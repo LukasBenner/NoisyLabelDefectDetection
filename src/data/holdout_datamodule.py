@@ -61,6 +61,7 @@ class HoldoutDataModule(LightningDataModule):
         else:
             raise ValueError(f"Transforms '{transforms}' not recognized.")
 
+        self.cpu_resize = v2.Resize(480, antialias=True)
         self.to_float = v2.ToDtype(torch.float32, scale=True)
         self.norm = v2.Normalize(mean=mean, std=std)
 
@@ -139,6 +140,7 @@ class HoldoutDataModule(LightningDataModule):
                 self.train_ds,
                 idxs_train,
                 return_index=False,
+                cpu_transform=self.cpu_resize,
             )
 
             targets = torch.tensor(self.train_ds.targets, dtype=torch.long)
@@ -166,6 +168,7 @@ class HoldoutDataModule(LightningDataModule):
                 self.val_ds,
                 idxs_val,
                 return_index=False,
+                cpu_transform=self.cpu_resize,
             )
 
         if stage == "test" or stage == "predict":
@@ -176,6 +179,7 @@ class HoldoutDataModule(LightningDataModule):
                 self.test_ds,
                 idxs_test,
                 return_index=False,
+                cpu_transform=self.cpu_resize,
             )
 
     def train_dataloader(self) -> DataLoader:

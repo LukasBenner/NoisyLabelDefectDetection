@@ -32,6 +32,7 @@ class BaselineDataModule(LightningDataModule):
         self.train_transforms = BaselineTransforms.train_transforms()
         self.test_transforms = BaselineTransforms.eval_transforms()
         
+        self.cpu_resize = v2.Resize(480, antialias=True)
         self.to_float = v2.ToDtype(torch.float32, scale=True)
         self.norm = v2.Normalize(mean=mean, std=std)
         
@@ -60,8 +61,8 @@ class BaselineDataModule(LightningDataModule):
         train_subset, val_subset = random_split(self.ds, [n_train, n_val])
 
         # Wrap subsets with TransformSubset to apply transforms properly
-        self.train_dataset = TransformSubset(self.ds, train_subset.indices)
-        self.val_dataset = TransformSubset(self.ds, val_subset.indices)
+        self.train_dataset = TransformSubset(self.ds, train_subset.indices, cpu_transform=self.cpu_resize)
+        self.val_dataset = TransformSubset(self.ds, val_subset.indices, cpu_transform=self.cpu_resize)
 
         # Calculate class weights from training set
         targets = torch.tensor([self.ds.targets[i] for i in train_subset.indices], dtype=torch.long)
