@@ -141,7 +141,7 @@ def train_single_run(
 
         if best_model_path:
             log.info(f"Loading best checkpoint: {best_model_path}")
-            test_trainer.test(model=model, datamodule=datamodule, ckpt_path=best_model_path)
+            test_trainer.test(model=model, datamodule=datamodule, ckpt_path=best_model_path, weights_only=False)
         else:
             log.warning("No best checkpoint found, testing with final model")
             test_trainer.test(model=model, datamodule=datamodule)
@@ -186,7 +186,7 @@ def train_single_run(
 
         if best_model_path:
             log.info(f"Loading best checkpoint: {best_model_path}")
-            val_trainer.validate(model=model, datamodule=datamodule, ckpt_path=best_model_path)
+            val_trainer.validate(model=model, datamodule=datamodule, ckpt_path=best_model_path, weights_only=False)
         else:
             log.warning("No best checkpoint found, validating with final model")
             val_trainer.validate(model=model, datamodule=datamodule)
