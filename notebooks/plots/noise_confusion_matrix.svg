@@ -1,0 +1,2801 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="820.160938pt" height="699.951894pt" viewBox="0 0 820.160938 699.951894" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-02-27T10:39:38.606641</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.10.6, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 699.951894 
+L 820.160938 699.951894 
+L 820.160938 0 
+L 0 0 
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 182.259375 550.115394 
+L 719.659457 550.115394 
+L 719.659457 12.715312 
+L 182.259375 12.715312 
+z
+" style="fill: #ffffff"/>
+   </g>
+   <g clip-path="url(#pf00f358726)">
+    <image xlink:href="data:image/png;base64,
+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" id="imaged3af4ce7b2" transform="scale(1 -1) translate(0 -537.84)" x="182.259375" y="-12.275394" width="537.84" height="537.84"/>
+   </g>
+   <g id="matplotlib.axis_1">
+    <g id="xtick_1">
+     <g id="line2d_1">
+      <defs>
+       <path id="m9b85219561" d="M 0 0 
+L 0 3.5 
+" style="stroke: #000000; stroke-width: 0.8"/>
+      </defs>
+      <g>
+       <use xlink:href="#m9b85219561" x="209.129379" y="550.115394" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_1">
+      <!-- background -->
+      <g transform="translate(130.343542 641.302644) rotate(-45) scale(0.18 -0.18)">
+       <defs>
+        <path id="CourierNewPSMT-62" d="M 931 3922 
+L 931 2181 
+Q 1406 2800 2078 2800 
+Q 2653 2800 3062 2383 
+Q 3472 1966 3472 1359 
+Q 3472 747 3058 322 
+Q 2644 -103 2078 -103 
+Q 1391 -103 931 516 
+L 931 0 
+L 316 0 
+Q 222 0 181 37 
+Q 141 75 141 131 
+Q 141 191 181 227 
+Q 222 263 316 263 
+L 669 263 
+L 669 3656 
+L 316 3656 
+Q 222 3656 181 3693 
+Q 141 3731 141 3791 
+Q 141 3847 181 3884 
+Q 222 3922 316 3922 
+L 931 3922 
+z
+M 3209 1347 
+Q 3209 1844 2868 2189 
+Q 2528 2534 2072 2534 
+Q 1616 2534 1275 2189 
+Q 934 1844 934 1347 
+Q 934 850 1275 504 
+Q 1616 159 2072 159 
+Q 2528 159 2868 504 
+Q 3209 850 3209 1347 
+z
+" transform="scale(0.015625)"/>
+        <path id="CourierNewPSMT-61" d="M 2675 0 
+L 2675 378 
+Q 2103 -103 1453 -103 
+Q 981 -103 715 136 
+Q 450 375 450 722 
+Q 450 1103 800 1387 
+Q 1150 1672 1822 1672 
+Q 2003 1672 2215 1648 
+Q 2428 1625 2675 1575 
+L 2675 2000 
+Q 2675 2216 2475 2375 
+Q 2275 2534 1875 2534 
+Q 1569 2534 1016 2356 
+Q 916 2325 888 2325 
+Q 838 2325 802 2362 
+Q 766 2400 766 2456 
+Q 766 2509 797 2541 
+Q 841 2588 1150 2669 
+Q 1638 2800 1888 2800 
+Q 2384 2800 2662 2554 
+Q 2941 2309 2941 2000 
+L 2941 263 
+L 3291 263 
+Q 3388 263 3428 227 
+Q 3469 191 3469 131 
+Q 3469 75 3428 37 
+Q 3388 0 3291 0 
+L 2675 0 
+z
+M 2675 1306 
+Q 2491 1359 2284 1384 
+Q 2078 1409 1850 1409 
+Q 1278 1409 956 1163 
+Q 713 978 713 722 
+Q 713 484 898 321 
+Q 1084 159 1441 159 
+Q 1781 159 2073 295 
+Q 2366 431 2675 728 
+L 2675 1306 
+z
+" transform="scale(0.015625)"/>
+        <path id="CourierNewPSMT-63" d="M 3016 2441 
+L 3016 2528 
+Q 3016 2625 3053 2665 
+Q 3091 2706 3147 2706 
+Q 3206 2706 3243 2665 
+Q 3281 2625 3281 2528 
+L 3281 1934 
+Q 3278 1838 3242 1797 
+Q 3206 1756 3147 1756 
+Q 3094 1756 3058 1792 
+Q 3022 1828 3016 1913 
+Q 2997 2134 2723 2334 
+Q 2450 2534 1988 2534 
+Q 1403 2534 1100 2168 
+Q 797 1803 797 1331 
+Q 797 822 1131 490 
+Q 1466 159 1997 159 
+Q 2303 159 2620 271 
+Q 2938 384 3194 634 
+Q 3259 697 3309 697 
+Q 3363 697 3398 661 
+Q 3434 625 3434 572 
+Q 3434 438 3119 231 
+Q 2609 -103 1984 -103 
+Q 1350 -103 942 301 
+Q 534 706 534 1328 
+Q 534 1963 951 2381 
+Q 1369 2800 2003 2800 
+Q 2606 2800 3016 2441 
+z
+" transform="scale(0.015625)"/>
+        <path id="CourierNewPSMT-6b" d="M 1388 1169 
+L 1388 0 
+L 772 0 
+Q 678 0 637 37 
+Q 597 75 597 131 
+Q 597 191 637 227 
+Q 678 263 772 263 
+L 1125 263 
+L 1125 3656 
+L 772 3656 
+Q 678 3656 637 3693 
+Q 597 3731 597 3791 
+Q 597 3847 637 3884 
+Q 678 3922 772 3922 
+L 1388 3922 
+L 1388 1503 
+L 2503 2441 
+L 2369 2441 
+Q 2275 2441 2234 2478 
+Q 2194 2516 2194 2572 
+Q 2194 2631 2234 2668 
+Q 2275 2706 2369 2706 
+L 3209 2706 
+Q 3306 2706 3347 2668 
+Q 3388 2631 3388 2572 
+Q 3388 2516 3347 2478 
+Q 3306 2441 3209 2441 
+L 2906 2441 
+L 1881 1584 
+L 3178 263 
+L 3481 263 
+Q 3578 263 3618 227 
+Q 3659 191 3659 131 
+Q 3659 75 3618 37 
+Q 3578 0 3481 0 
+L 2631 0 
+Q 2538 0 2497 37 
+Q 2456 75 2456 131 
+Q 2456 191 2497 227 
+Q 2538 263 2631 263 
+L 2816 263 
+L 1688 1422 
+L 1388 1169 
+z
+" transform="scale(0.015625)"/>
+        <path id="CourierNewPSMT-67" d="M 2803 2225 
+L 2803 2706 
+L 3419 2706 
+Q 3513 2706 3553 2668 
+Q 3594 2631 3594 2572 
+Q 3594 2516 3553 2478 
+Q 3513 2441 3419 2441 
+L 3066 2441 
+L 3066 -181 
+Q 3066 -444 2953 -650 
+Q 2878 -788 2703 -934 
+Q 2528 -1081 2384 -1143 
+Q 2241 -1206 2000 -1206 
+L 1256 -1206 
+Q 1163 -1206 1122 -1170 
+Q 1081 -1134 1081 -1075 
+Q 1081 -1016 1122 -978 
+Q 1163 -941 1256 -941 
+L 2009 -944 
+Q 2241 -944 2427 -825 
+Q 2613 -706 2734 -478 
+Q 2803 -347 2803 -144 
+L 2803 644 
+Q 2381 66 1716 66 
+Q 1175 66 783 467 
+Q 391 869 391 1434 
+Q 391 2000 783 2400 
+Q 1175 2800 1716 2800 
+Q 2381 2800 2803 2225 
+z
+M 2803 1434 
+Q 2803 1897 2486 2215 
+Q 2169 2534 1728 2534 
+Q 1288 2534 972 2214 
+Q 656 1894 656 1434 
+Q 656 972 972 651 
+Q 1288 331 1728 331 
+Q 2169 331 2486 651 
+Q 2803 972 2803 1434 
+z
+" transform="scale(0.015625)"/>
+        <path id="CourierNewPSMT-72" d="M 1606 2706 
+L 1606 2044 
+Q 2119 2506 2373 2639 
+Q 2628 2772 2844 2772 
+Q 3078 2772 3279 2614 
+Q 3481 2456 3481 2375 
+Q 3481 2316 3442 2277 
+Q 3403 2238 3344 2238 
+Q 3313 2238 3291 2248 
+Q 3269 2259 3209 2319 
+Q 3100 2428 3019 2468 
+Q 2938 2509 2859 2509 
+Q 2688 2509 2445 2371 
+Q 2203 2234 1606 1700 
+L 1606 263 
+L 2769 263 
+Q 2866 263 2906 227 
+Q 2947 191 2947 131 
+Q 2947 75 2906 37 
+Q 2866 0 2769 0 
+L 709 0 
+Q 616 0 575 36 
+Q 534 72 534 128 
+Q 534 181 573 217 
+Q 613 253 709 253 
+L 1344 253 
+L 1344 2441 
+L 859 2441 
+Q 766 2441 725 2478 
+Q 684 2516 684 2575 
+Q 684 2631 723 2668 
+Q 763 2706 859 2706 
+L 1606 2706 
+z
+" transform="scale(0.015625)"/>
+        <path id="CourierNewPSMT-6f" d="M 3388 1347 
+Q 3388 747 2958 322 
+Q 2528 -103 1922 -103 
+Q 1309 -103 881 323 
+Q 453 750 453 1347 
+Q 453 1947 881 2373 
+Q 1309 2800 1922 2800 
+Q 2528 2800 2958 2375 
+Q 3388 1950 3388 1347 
+z
+M 3122 1347 
+Q 3122 1841 2770 2187 
+Q 2419 2534 1919 2534 
+Q 1419 2534 1067 2186 
+Q 716 1838 716 1347 
+Q 716 859 1067 509 
+Q 1419 159 1919 159 
+Q 2419 159 2770 507 
+Q 3122 856 3122 1347 
+z
+" transform="scale(0.015625)"/>
+        <path id="CourierNewPSMT-75" d="M 2819 0 
+L 2819 384 
+Q 2281 -103 1656 -103 
+Q 1272 -103 1072 106 
+Q 813 381 813 747 
+L 813 2441 
+L 459 2441 
+Q 366 2441 325 2478 
+Q 284 2516 284 2575 
+Q 284 2631 325 2668 
+Q 366 2706 459 2706 
+L 1075 2706 
+L 1075 747 
+Q 1075 491 1237 325 
+Q 1400 159 1644 159 
+Q 2284 159 2819 747 
+L 2819 2441 
+L 2334 2441 
+Q 2241 2441 2200 2478 
+Q 2159 2516 2159 2575 
+Q 2159 2631 2200 2668 
+Q 2241 2706 2334 2706 
+L 3081 2706 
+L 3081 263 
+L 3303 263 
+Q 3397 263 3437 227 
+Q 3478 191 3478 131 
+Q 3478 75 3437 37 
+Q 3397 0 3303 0 
+L 2819 0 
+z
+" transform="scale(0.015625)"/>
+        <path id="CourierNewPSMT-6e" d="M 1072 2706 
+L 1072 2309 
+Q 1347 2588 1569 2694 
+Q 1791 2800 2069 2800 
+Q 2369 2800 2616 2672 
+Q 2791 2578 2933 2361 
+Q 3075 2144 3075 1916 
+L 3075 263 
+L 3297 263 
+Q 3391 263 3431 227 
+Q 3472 191 3472 131 
+Q 3472 75 3431 37 
+Q 3391 0 3297 0 
+L 2594 0 
+Q 2497 0 2456 37 
+Q 2416 75 2416 131 
+Q 2416 191 2456 227 
+Q 2497 263 2594 263 
+L 2813 263 
+L 2813 1872 
+Q 2813 2150 2609 2342 
+Q 2406 2534 2066 2534 
+Q 1806 2534 1615 2429 
+Q 1425 2325 1072 1909 
+L 1072 263 
+L 1369 263 
+Q 1463 263 1503 227 
+Q 1544 191 1544 131 
+Q 1544 75 1503 37 
+Q 1463 0 1369 0 
+L 513 0 
+Q 419 0 378 37 
+Q 338 75 338 131 
+Q 338 191 378 227 
+Q 419 263 513 263 
+L 809 263 
+L 809 2441 
+L 588 2441 
+Q 494 2441 453 2478 
+Q 413 2516 413 2575 
+Q 413 2631 453 2668 
+Q 494 2706 588 2706 
+L 1072 2706 
+z
+" transform="scale(0.015625)"/>
+        <path id="CourierNewPSMT-64" d="M 3206 3922 
+L 3206 263 
+L 3556 263 
+Q 3653 263 3693 227 
+Q 3734 191 3734 131 
+Q 3734 75 3693 37 
+Q 3653 0 3556 0 
+L 2941 0 
+L 2941 522 
+Q 2484 -103 1781 -103 
+Q 1425 -103 1098 86 
+Q 772 275 583 625 
+Q 394 975 394 1347 
+Q 394 1722 583 2070 
+Q 772 2419 1098 2609 
+Q 1425 2800 1784 2800 
+Q 2472 2800 2941 2175 
+L 2941 3656 
+L 2591 3656 
+Q 2494 3656 2453 3693 
+Q 2413 3731 2413 3791 
+Q 2413 3847 2453 3884 
+Q 2494 3922 2591 3922 
+L 3206 3922 
+z
+M 2941 1347 
+Q 2941 1847 2603 2190 
+Q 2266 2534 1800 2534 
+Q 1331 2534 993 2190 
+Q 656 1847 656 1347 
+Q 656 850 993 504 
+Q 1331 159 1800 159 
+Q 2266 159 2603 504 
+Q 2941 850 2941 1347 
+z
+" transform="scale(0.015625)"/>
+       </defs>
+       <use xlink:href="#CourierNewPSMT-62"/>
+       <use xlink:href="#CourierNewPSMT-61" transform="translate(60.009766 0)"/>
+       <use xlink:href="#CourierNewPSMT-63" transform="translate(120.019531 0)"/>
+       <use xlink:href="#CourierNewPSMT-6b" transform="translate(180.029297 0)"/>
+       <use xlink:href="#CourierNewPSMT-67" transform="translate(240.039062 0)"/>
+       <use xlink:href="#CourierNewPSMT-72" transform="translate(300.048828 0)"/>
+       <use xlink:href="#CourierNewPSMT-6f" transform="translate(360.058594 0)"/>
+       <use xlink:href="#CourierNewPSMT-75" transform="translate(420.068359 0)"/>
+       <use xlink:href="#CourierNewPSMT-6e" transform="translate(480.078125 0)"/>
+       <use xlink:href="#CourierNewPSMT-64" transform="translate(540.087891 0)"/>
+      </g>
+     </g>
+    </g>
+    <g id="xtick_2">
+     <g id="line2d_2">
+      <g>
+       <use xlink:href="#m9b85219561" x="262.869387" y="550.115394" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_2">
+      <!-- black_stain -->
+      <g transform="translate(175.356968 649.20191) rotate(-45) scale(0.18 -0.18)">
+       <defs>
+        <path id="CourierNewPSMT-6c" d="M 2053 3922 
+L 2053 263 
+L 3084 263 
+Q 3181 263 3222 227 
+Q 3263 191 3263 131 
+Q 3263 75 3222 37 
+Q 3181 0 3084 0 
+L 759 0 
+Q 666 0 625 37 
+Q 584 75 584 131 
+Q 584 191 625 227 
+Q 666 263 759 263 
+L 1791 263 
+L 1791 3656 
+L 1034 3656 
+Q 941 3656 898 3693 
+Q 856 3731 856 3791 
+Q 856 3847 897 3884 
+Q 938 3922 1034 3922 
+L 2053 3922 
+z
+" transform="scale(0.015625)"/>
+        <path id="CourierNewPSMT-5f" d="M 3666 -1753 
+L 175 -1753 
+Q 81 -1753 40 -1717 
+Q 0 -1681 0 -1622 
+Q 0 -1563 40 -1527 
+Q 81 -1491 175 -1491 
+L 3666 -1491 
+Q 3763 -1491 3802 -1527 
+Q 3841 -1563 3841 -1622 
+Q 3841 -1681 3802 -1717 
+Q 3763 -1753 3666 -1753 
+z
+" transform="scale(0.015625)"/>
+        <path id="CourierNewPSMT-73" d="M 2788 2534 
+Q 2788 2625 2825 2665 
+Q 2863 2706 2919 2706 
+Q 2978 2706 3015 2665 
+Q 3053 2625 3053 2528 
+L 3053 2078 
+Q 3053 1984 3015 1943 
+Q 2978 1903 2919 1903 
+Q 2866 1903 2830 1937 
+Q 2794 1972 2788 2050 
+Q 2769 2238 2594 2359 
+Q 2338 2534 1916 2534 
+Q 1475 2534 1231 2356 
+Q 1047 2222 1047 2056 
+Q 1047 1869 1266 1744 
+Q 1416 1656 1834 1609 
+Q 2381 1550 2594 1475 
+Q 2897 1366 3045 1172 
+Q 3194 978 3194 753 
+Q 3194 419 2872 158 
+Q 2550 -103 1928 -103 
+Q 1306 -103 909 213 
+Q 909 106 896 75 
+Q 884 44 851 22 
+Q 819 0 778 0 
+Q 722 0 684 40 
+Q 647 81 647 175 
+L 647 716 
+Q 647 809 683 850 
+Q 719 891 778 891 
+Q 834 891 873 852 
+Q 913 813 913 747 
+Q 913 603 984 506 
+Q 1094 356 1333 257 
+Q 1572 159 1919 159 
+Q 2431 159 2681 350 
+Q 2931 541 2931 753 
+Q 2931 997 2678 1144 
+Q 2422 1291 1933 1341 
+Q 1444 1391 1231 1472 
+Q 1019 1553 900 1715 
+Q 781 1878 781 2066 
+Q 781 2403 1112 2601 
+Q 1444 2800 1903 2800 
+Q 2447 2800 2788 2534 
+z
+" transform="scale(0.015625)"/>
+        <path id="CourierNewPSMT-74" d="M 1381 2706 
+L 2806 2706 
+Q 2900 2706 2940 2668 
+Q 2981 2631 2981 2572 
+Q 2981 2516 2940 2478 
+Q 2900 2441 2806 2441 
+L 1381 2441 
+L 1381 694 
+Q 1381 466 1564 312 
+Q 1747 159 2100 159 
+Q 2366 159 2675 239 
+Q 2984 319 3156 419 
+Q 3219 459 3259 459 
+Q 3309 459 3346 420 
+Q 3384 381 3384 328 
+Q 3384 281 3344 241 
+Q 3244 138 2858 17 
+Q 2472 -103 2119 -103 
+Q 1659 -103 1387 112 
+Q 1116 328 1116 694 
+L 1116 2441 
+L 631 2441 
+Q 538 2441 497 2478 
+Q 456 2516 456 2575 
+Q 456 2631 497 2668 
+Q 538 2706 631 2706 
+L 1116 2706 
+L 1116 3481 
+Q 1116 3575 1153 3615 
+Q 1191 3656 1247 3656 
+Q 1306 3656 1343 3615 
+Q 1381 3575 1381 3481 
+L 1381 2706 
+z
+" transform="scale(0.015625)"/>
+        <path id="CourierNewPSMT-69" d="M 2050 4053 
+L 2050 3375 
+L 1663 3375 
+L 1663 4053 
+L 2050 4053 
+z
+M 2059 2706 
+L 2059 263 
+L 3091 263 
+Q 3188 263 3228 227 
+Q 3269 191 3269 131 
+Q 3269 75 3228 37 
+Q 3188 0 3091 0 
+L 766 0 
+Q 672 0 631 37 
+Q 591 75 591 131 
+Q 591 191 631 227 
+Q 672 263 766 263 
+L 1797 263 
+L 1797 2441 
+L 1031 2441 
+Q 938 2441 895 2478 
+Q 853 2516 853 2572 
+Q 853 2631 893 2668 
+Q 934 2706 1031 2706 
+L 2059 2706 
+z
+" transform="scale(0.015625)"/>
+       </defs>
+       <use xlink:href="#CourierNewPSMT-62"/>
+       <use xlink:href="#CourierNewPSMT-6c" transform="translate(60.009766 0)"/>
+       <use xlink:href="#CourierNewPSMT-61" transform="translate(120.019531 0)"/>
+       <use xlink:href="#CourierNewPSMT-63" transform="translate(180.029297 0)"/>
+       <use xlink:href="#CourierNewPSMT-6b" transform="translate(240.039062 0)"/>
+       <use xlink:href="#CourierNewPSMT-5f" transform="translate(300.048828 0)"/>
+       <use xlink:href="#CourierNewPSMT-73" transform="translate(360.058594 0)"/>
+       <use xlink:href="#CourierNewPSMT-74" transform="translate(420.068359 0)"/>
+       <use xlink:href="#CourierNewPSMT-61" transform="translate(480.078125 0)"/>
+       <use xlink:href="#CourierNewPSMT-69" transform="translate(540.087891 0)"/>
+       <use xlink:href="#CourierNewPSMT-6e" transform="translate(600.097656 0)"/>
+      </g>
+     </g>
+    </g>
+    <g id="xtick_3">
+     <g id="line2d_3">
+      <g>
+       <use xlink:href="#m9b85219561" x="316.609395" y="550.115394" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_3">
+      <!-- corrosion -->
+      <g transform="translate(245.4623 633.663902) rotate(-45) scale(0.18 -0.18)">
+       <use xlink:href="#CourierNewPSMT-63"/>
+       <use xlink:href="#CourierNewPSMT-6f" transform="translate(60.009766 0)"/>
+       <use xlink:href="#CourierNewPSMT-72" transform="translate(120.019531 0)"/>
+       <use xlink:href="#CourierNewPSMT-72" transform="translate(180.029297 0)"/>
+       <use xlink:href="#CourierNewPSMT-6f" transform="translate(240.039062 0)"/>
+       <use xlink:href="#CourierNewPSMT-73" transform="translate(300.048828 0)"/>
+       <use xlink:href="#CourierNewPSMT-69" transform="translate(360.058594 0)"/>
+       <use xlink:href="#CourierNewPSMT-6f" transform="translate(420.068359 0)"/>
+       <use xlink:href="#CourierNewPSMT-6e" transform="translate(480.078125 0)"/>
+      </g>
+     </g>
+    </g>
+    <g id="xtick_4">
+     <g id="line2d_4">
+      <g>
+       <use xlink:href="#m9b85219561" x="370.349404" y="550.115394" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_4">
+      <!-- crack -->
+      <g transform="translate(329.757276 603.108934) rotate(-45) scale(0.18 -0.18)">
+       <use xlink:href="#CourierNewPSMT-63"/>
+       <use xlink:href="#CourierNewPSMT-72" transform="translate(60.009766 0)"/>
+       <use xlink:href="#CourierNewPSMT-61" transform="translate(120.019531 0)"/>
+       <use xlink:href="#CourierNewPSMT-63" transform="translate(180.029297 0)"/>
+       <use xlink:href="#CourierNewPSMT-6b" transform="translate(240.039062 0)"/>
+      </g>
+     </g>
+    </g>
+    <g id="xtick_5">
+     <g id="line2d_5">
+      <g>
+       <use xlink:href="#m9b85219561" x="424.089412" y="550.115394" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_5">
+      <!-- deformation -->
+      <g transform="translate(337.664832 648.941386) rotate(-45) scale(0.18 -0.18)">
+       <defs>
+        <path id="CourierNewPSMT-65" d="M 3341 1291 
+L 666 1291 
+Q 734 781 1092 470 
+Q 1450 159 1978 159 
+Q 2272 159 2594 256 
+Q 2916 353 3119 513 
+Q 3178 559 3222 559 
+Q 3272 559 3309 520 
+Q 3347 481 3347 428 
+Q 3347 375 3297 325 
+Q 3147 169 2764 33 
+Q 2381 -103 1978 -103 
+Q 1303 -103 851 339 
+Q 400 781 400 1409 
+Q 400 1981 823 2390 
+Q 1247 2800 1872 2800 
+Q 2516 2800 2931 2379 
+Q 3347 1959 3341 1291 
+z
+M 3075 1556 
+Q 2997 1991 2664 2262 
+Q 2331 2534 1872 2534 
+Q 1413 2534 1081 2265 
+Q 750 1997 669 1556 
+L 3075 1556 
+z
+" transform="scale(0.015625)"/>
+        <path id="CourierNewPSMT-66" d="M 1747 2441 
+L 1747 263 
+L 2900 263 
+Q 2994 263 3034 227 
+Q 3075 191 3075 131 
+Q 3075 75 3034 37 
+Q 2994 0 2900 0 
+L 847 0 
+Q 753 0 712 37 
+Q 672 75 672 131 
+Q 672 191 712 227 
+Q 753 263 847 263 
+L 1481 263 
+L 1481 2441 
+L 913 2441 
+Q 819 2441 778 2478 
+Q 738 2516 738 2575 
+Q 738 2631 778 2668 
+Q 819 2706 913 2706 
+L 1481 2706 
+L 1481 3103 
+Q 1481 3434 1750 3678 
+Q 2019 3922 2463 3922 
+Q 2834 3922 3256 3853 
+Q 3416 3828 3448 3793 
+Q 3481 3759 3481 3703 
+Q 3481 3647 3443 3611 
+Q 3406 3575 3344 3575 
+Q 3319 3575 3259 3584 
+Q 2788 3656 2463 3656 
+Q 2119 3656 1933 3487 
+Q 1747 3319 1747 3103 
+L 1747 2706 
+L 2975 2706 
+Q 3069 2706 3109 2668 
+Q 3150 2631 3150 2572 
+Q 3150 2516 3109 2478 
+Q 3069 2441 2975 2441 
+L 1747 2441 
+z
+" transform="scale(0.015625)"/>
+        <path id="CourierNewPSMT-6d" d="M 725 2706 
+L 725 2441 
+Q 1059 2800 1397 2800 
+Q 1600 2800 1753 2692 
+Q 1906 2584 2009 2366 
+Q 2184 2584 2364 2692 
+Q 2544 2800 2725 2800 
+Q 3009 2800 3178 2616 
+Q 3400 2378 3400 2097 
+L 3400 263 
+L 3622 263 
+Q 3716 263 3756 227 
+Q 3797 191 3797 131 
+Q 3797 75 3756 37 
+Q 3716 0 3622 0 
+L 3138 0 
+L 3138 2072 
+Q 3138 2272 3016 2403 
+Q 2894 2534 2734 2534 
+Q 2591 2534 2431 2426 
+Q 2272 2319 2069 2003 
+L 2069 263 
+L 2288 263 
+Q 2381 263 2422 227 
+Q 2463 191 2463 131 
+Q 2463 75 2422 37 
+Q 2381 0 2288 0 
+L 1803 0 
+L 1803 2053 
+Q 1803 2263 1679 2398 
+Q 1556 2534 1403 2534 
+Q 1263 2534 1125 2444 
+Q 934 2316 725 2003 
+L 725 263 
+L 947 263 
+Q 1041 263 1081 227 
+Q 1122 191 1122 131 
+Q 1122 75 1081 37 
+Q 1041 0 947 0 
+L 241 0 
+Q 147 0 106 37 
+Q 66 75 66 131 
+Q 66 191 106 227 
+Q 147 263 241 263 
+L 463 263 
+L 463 2441 
+L 241 2441 
+Q 147 2441 106 2478 
+Q 66 2516 66 2575 
+Q 66 2631 106 2668 
+Q 147 2706 241 2706 
+L 725 2706 
+z
+" transform="scale(0.015625)"/>
+       </defs>
+       <use xlink:href="#CourierNewPSMT-64"/>
+       <use xlink:href="#CourierNewPSMT-65" transform="translate(60.009766 0)"/>
+       <use xlink:href="#CourierNewPSMT-66" transform="translate(120.019531 0)"/>
+       <use xlink:href="#CourierNewPSMT-6f" transform="translate(180.029297 0)"/>
+       <use xlink:href="#CourierNewPSMT-72" transform="translate(240.039062 0)"/>
+       <use xlink:href="#CourierNewPSMT-6d" transform="translate(300.048828 0)"/>
+       <use xlink:href="#CourierNewPSMT-61" transform="translate(360.058594 0)"/>
+       <use xlink:href="#CourierNewPSMT-74" transform="translate(420.068359 0)"/>
+       <use xlink:href="#CourierNewPSMT-69" transform="translate(480.078125 0)"/>
+       <use xlink:href="#CourierNewPSMT-6f" transform="translate(540.087891 0)"/>
+       <use xlink:href="#CourierNewPSMT-6e" transform="translate(600.097656 0)"/>
+      </g>
+     </g>
+    </g>
+    <g id="xtick_6">
+     <g id="line2d_6">
+      <g>
+       <use xlink:href="#m9b85219561" x="477.82942" y="550.115394" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_6">
+      <!-- missing_part -->
+      <g transform="translate(382.678259 656.840652) rotate(-45) scale(0.18 -0.18)">
+       <defs>
+        <path id="CourierNewPSMT-70" d="M 931 2706 
+L 931 2228 
+Q 1166 2513 1434 2656 
+Q 1703 2800 2069 2800 
+Q 2456 2800 2784 2619 
+Q 3113 2438 3292 2114 
+Q 3472 1791 3472 1434 
+Q 3472 869 3067 467 
+Q 2663 66 2072 66 
+Q 1369 66 931 638 
+L 931 -944 
+L 1569 -944 
+Q 1663 -944 1703 -980 
+Q 1744 -1016 1744 -1075 
+Q 1744 -1131 1703 -1168 
+Q 1663 -1206 1569 -1206 
+L 316 -1206 
+Q 222 -1206 181 -1170 
+Q 141 -1134 141 -1075 
+Q 141 -1016 181 -980 
+Q 222 -944 316 -944 
+L 669 -944 
+L 669 2441 
+L 316 2441 
+Q 222 2441 181 2478 
+Q 141 2516 141 2575 
+Q 141 2631 181 2668 
+Q 222 2706 316 2706 
+L 931 2706 
+z
+M 3206 1434 
+Q 3206 1888 2876 2211 
+Q 2547 2534 2072 2534 
+Q 1594 2534 1262 2209 
+Q 931 1884 931 1434 
+Q 931 981 1262 656 
+Q 1594 331 2072 331 
+Q 2544 331 2875 654 
+Q 3206 978 3206 1434 
+z
+" transform="scale(0.015625)"/>
+       </defs>
+       <use xlink:href="#CourierNewPSMT-6d"/>
+       <use xlink:href="#CourierNewPSMT-69" transform="translate(60.009766 0)"/>
+       <use xlink:href="#CourierNewPSMT-73" transform="translate(120.019531 0)"/>
+       <use xlink:href="#CourierNewPSMT-73" transform="translate(180.029297 0)"/>
+       <use xlink:href="#CourierNewPSMT-69" transform="translate(240.039062 0)"/>
+       <use xlink:href="#CourierNewPSMT-6e" transform="translate(300.048828 0)"/>
+       <use xlink:href="#CourierNewPSMT-67" transform="translate(360.058594 0)"/>
+       <use xlink:href="#CourierNewPSMT-5f" transform="translate(420.068359 0)"/>
+       <use xlink:href="#CourierNewPSMT-70" transform="translate(480.078125 0)"/>
+       <use xlink:href="#CourierNewPSMT-61" transform="translate(540.087891 0)"/>
+       <use xlink:href="#CourierNewPSMT-72" transform="translate(600.097656 0)"/>
+       <use xlink:href="#CourierNewPSMT-74" transform="translate(660.107422 0)"/>
+      </g>
+     </g>
+    </g>
+    <g id="xtick_7">
+     <g id="line2d_7">
+      <g>
+       <use xlink:href="#m9b85219561" x="531.569428" y="550.115394" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_7">
+      <!-- ok -->
+      <g transform="translate(513.893526 580.192708) rotate(-45) scale(0.18 -0.18)">
+       <use xlink:href="#CourierNewPSMT-6f"/>
+       <use xlink:href="#CourierNewPSMT-6b" transform="translate(60.009766 0)"/>
+      </g>
+     </g>
+    </g>
+    <g id="xtick_8">
+     <g id="line2d_8">
+      <g>
+       <use xlink:href="#m9b85219561" x="585.309436" y="550.115394" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_8">
+      <!-- other -->
+      <g transform="translate(544.717309 603.108934) rotate(-45) scale(0.18 -0.18)">
+       <defs>
+        <path id="CourierNewPSMT-68" d="M 1056 3922 
+L 1056 2306 
+Q 1306 2578 1536 2689 
+Q 1766 2800 2050 2800 
+Q 2356 2800 2570 2692 
+Q 2784 2584 2928 2361 
+Q 3072 2138 3072 1891 
+L 3072 263 
+L 3366 263 
+Q 3463 263 3502 227 
+Q 3541 191 3541 131 
+Q 3541 75 3502 37 
+Q 3463 0 3366 0 
+L 2513 0 
+Q 2416 0 2375 37 
+Q 2334 75 2334 131 
+Q 2334 191 2375 227 
+Q 2416 263 2513 263 
+L 2806 263 
+L 2806 1872 
+Q 2806 2156 2601 2347 
+Q 2397 2538 2031 2538 
+Q 1744 2538 1541 2397 
+Q 1394 2297 1056 1925 
+L 1056 263 
+L 1353 263 
+Q 1447 263 1487 227 
+Q 1528 191 1528 131 
+Q 1528 75 1487 37 
+Q 1447 0 1353 0 
+L 497 0 
+Q 403 0 362 37 
+Q 322 75 322 131 
+Q 322 191 362 227 
+Q 403 263 497 263 
+L 794 263 
+L 794 3656 
+L 441 3656 
+Q 347 3656 306 3693 
+Q 266 3731 266 3791 
+Q 266 3847 306 3884 
+Q 347 3922 441 3922 
+L 1056 3922 
+z
+" transform="scale(0.015625)"/>
+       </defs>
+       <use xlink:href="#CourierNewPSMT-6f"/>
+       <use xlink:href="#CourierNewPSMT-74" transform="translate(60.009766 0)"/>
+       <use xlink:href="#CourierNewPSMT-68" transform="translate(120.019531 0)"/>
+       <use xlink:href="#CourierNewPSMT-65" transform="translate(180.029297 0)"/>
+       <use xlink:href="#CourierNewPSMT-72" transform="translate(240.039062 0)"/>
+      </g>
+     </g>
+    </g>
+    <g id="xtick_9">
+     <g id="line2d_9">
+      <g>
+       <use xlink:href="#m9b85219561" x="639.049444" y="550.115394" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_9">
+      <!-- silicate_stain -->
+      <g transform="translate(528.620799 672.118136) rotate(-45) scale(0.18 -0.18)">
+       <use xlink:href="#CourierNewPSMT-73"/>
+       <use xlink:href="#CourierNewPSMT-69" transform="translate(60.009766 0)"/>
+       <use xlink:href="#CourierNewPSMT-6c" transform="translate(120.019531 0)"/>
+       <use xlink:href="#CourierNewPSMT-69" transform="translate(180.029297 0)"/>
+       <use xlink:href="#CourierNewPSMT-63" transform="translate(240.039062 0)"/>
+       <use xlink:href="#CourierNewPSMT-61" transform="translate(300.048828 0)"/>
+       <use xlink:href="#CourierNewPSMT-74" transform="translate(360.058594 0)"/>
+       <use xlink:href="#CourierNewPSMT-65" transform="translate(420.068359 0)"/>
+       <use xlink:href="#CourierNewPSMT-5f" transform="translate(480.078125 0)"/>
+       <use xlink:href="#CourierNewPSMT-73" transform="translate(540.087891 0)"/>
+       <use xlink:href="#CourierNewPSMT-74" transform="translate(600.097656 0)"/>
+       <use xlink:href="#CourierNewPSMT-61" transform="translate(660.107422 0)"/>
+       <use xlink:href="#CourierNewPSMT-69" transform="translate(720.117188 0)"/>
+       <use xlink:href="#CourierNewPSMT-6e" transform="translate(780.126953 0)"/>
+      </g>
+     </g>
+    </g>
+    <g id="xtick_10">
+     <g id="line2d_10">
+      <g>
+       <use xlink:href="#m9b85219561" x="692.789453" y="550.115394" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_10">
+      <!-- water_stain -->
+      <g transform="translate(605.277034 649.20191) rotate(-45) scale(0.18 -0.18)">
+       <defs>
+        <path id="CourierNewPSMT-77" d="M 2825 0 
+L 2500 -3 
+L 1922 1684 
+L 1347 -3 
+L 1022 0 
+L 478 2441 
+L 350 2441 
+Q 256 2441 215 2478 
+Q 175 2516 175 2575 
+Q 175 2631 215 2668 
+Q 256 2706 350 2706 
+L 1072 2706 
+Q 1166 2706 1206 2668 
+Q 1247 2631 1247 2572 
+Q 1247 2516 1206 2478 
+Q 1166 2441 1072 2441 
+L 738 2441 
+L 1203 359 
+L 1763 2022 
+L 2075 2022 
+L 2650 359 
+L 3097 2441 
+L 2766 2441 
+Q 2672 2441 2630 2478 
+Q 2588 2516 2588 2575 
+Q 2588 2631 2628 2668 
+Q 2669 2706 2766 2706 
+L 3484 2706 
+Q 3581 2706 3622 2668 
+Q 3663 2631 3663 2572 
+Q 3663 2516 3622 2478 
+Q 3581 2441 3484 2441 
+L 3359 2441 
+L 2825 0 
+z
+" transform="scale(0.015625)"/>
+       </defs>
+       <use xlink:href="#CourierNewPSMT-77"/>
+       <use xlink:href="#CourierNewPSMT-61" transform="translate(60.009766 0)"/>
+       <use xlink:href="#CourierNewPSMT-74" transform="translate(120.019531 0)"/>
+       <use xlink:href="#CourierNewPSMT-65" transform="translate(180.029297 0)"/>
+       <use xlink:href="#CourierNewPSMT-72" transform="translate(240.039062 0)"/>
+       <use xlink:href="#CourierNewPSMT-5f" transform="translate(300.048828 0)"/>
+       <use xlink:href="#CourierNewPSMT-73" transform="translate(360.058594 0)"/>
+       <use xlink:href="#CourierNewPSMT-74" transform="translate(420.068359 0)"/>
+       <use xlink:href="#CourierNewPSMT-61" transform="translate(480.078125 0)"/>
+       <use xlink:href="#CourierNewPSMT-69" transform="translate(540.087891 0)"/>
+       <use xlink:href="#CourierNewPSMT-6e" transform="translate(600.097656 0)"/>
+      </g>
+     </g>
+    </g>
+    <g id="text_11">
+     <!-- Noisy label -->
+     <g transform="translate(398.145666 689.736894) scale(0.16 -0.16)">
+      <defs>
+       <path id="CourierNewPSMT-4e" d="M 3206 0 
+L 2869 0 
+L 934 3272 
+L 934 263 
+L 1419 263 
+Q 1516 263 1556 227 
+Q 1597 191 1597 131 
+Q 1597 75 1556 37 
+Q 1516 0 1419 0 
+L 453 0 
+Q 356 0 315 37 
+Q 275 75 275 131 
+Q 275 191 315 227 
+Q 356 263 453 263 
+L 672 263 
+L 672 3394 
+L 319 3394 
+Q 225 3394 184 3430 
+Q 144 3466 144 3525 
+Q 144 3584 184 3620 
+Q 225 3656 319 3656 
+L 1006 3656 
+L 2944 378 
+L 2944 3394 
+L 2459 3394 
+Q 2366 3394 2325 3430 
+Q 2284 3466 2284 3525 
+Q 2284 3584 2323 3620 
+Q 2363 3656 2459 3656 
+L 3428 3656 
+Q 3522 3656 3562 3620 
+Q 3603 3584 3603 3525 
+Q 3603 3466 3562 3430 
+Q 3522 3394 3428 3394 
+L 3206 3394 
+L 3206 0 
+z
+" transform="scale(0.015625)"/>
+       <path id="CourierNewPSMT-79" d="M 1938 0 
+L 719 2441 
+L 641 2441 
+Q 547 2441 506 2478 
+Q 466 2516 466 2572 
+Q 466 2613 486 2645 
+Q 506 2678 539 2692 
+Q 572 2706 641 2706 
+L 1359 2706 
+Q 1453 2706 1493 2668 
+Q 1534 2631 1534 2572 
+Q 1534 2516 1493 2478 
+Q 1453 2441 1359 2441 
+L 1006 2441 
+L 2078 288 
+L 3134 2441 
+L 2781 2441 
+Q 2688 2441 2647 2478 
+Q 2606 2516 2606 2575 
+Q 2606 2631 2647 2668 
+Q 2688 2706 2781 2706 
+L 3497 2706 
+Q 3594 2706 3634 2668 
+Q 3675 2631 3675 2572 
+Q 3675 2531 3650 2497 
+Q 3625 2463 3594 2452 
+Q 3563 2441 3419 2441 
+L 1756 -944 
+L 2166 -944 
+Q 2259 -944 2300 -980 
+Q 2341 -1016 2341 -1075 
+Q 2341 -1131 2300 -1168 
+Q 2259 -1206 2166 -1206 
+L 653 -1206 
+Q 559 -1206 518 -1170 
+Q 478 -1134 478 -1075 
+Q 478 -1016 518 -980 
+Q 559 -944 653 -944 
+L 1475 -944 
+L 1938 0 
+z
+" transform="scale(0.015625)"/>
+       <path id="CourierNewPSMT-20" transform="scale(0.015625)"/>
+      </defs>
+      <use xlink:href="#CourierNewPSMT-4e"/>
+      <use xlink:href="#CourierNewPSMT-6f" transform="translate(60.009766 0)"/>
+      <use xlink:href="#CourierNewPSMT-69" transform="translate(120.019531 0)"/>
+      <use xlink:href="#CourierNewPSMT-73" transform="translate(180.029297 0)"/>
+      <use xlink:href="#CourierNewPSMT-79" transform="translate(240.039062 0)"/>
+      <use xlink:href="#CourierNewPSMT-20" transform="translate(300.048828 0)"/>
+      <use xlink:href="#CourierNewPSMT-6c" transform="translate(360.058594 0)"/>
+      <use xlink:href="#CourierNewPSMT-61" transform="translate(420.068359 0)"/>
+      <use xlink:href="#CourierNewPSMT-62" transform="translate(480.078125 0)"/>
+      <use xlink:href="#CourierNewPSMT-65" transform="translate(540.087891 0)"/>
+      <use xlink:href="#CourierNewPSMT-6c" transform="translate(600.097656 0)"/>
+     </g>
+    </g>
+   </g>
+   <g id="matplotlib.axis_2">
+    <g id="ytick_1">
+     <g id="line2d_11">
+      <defs>
+       <path id="m17285c2c38" d="M 0 0 
+L -3.5 0 
+" style="stroke: #000000; stroke-width: 0.8"/>
+      </defs>
+      <g>
+       <use xlink:href="#m17285c2c38" x="182.259375" y="39.585317" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_12">
+      <!-- background -->
+      <g transform="translate(67.23125 45.100629) scale(0.18 -0.18)">
+       <use xlink:href="#CourierNewPSMT-62"/>
+       <use xlink:href="#CourierNewPSMT-61" transform="translate(60.009766 0)"/>
+       <use xlink:href="#CourierNewPSMT-63" transform="translate(120.019531 0)"/>
+       <use xlink:href="#CourierNewPSMT-6b" transform="translate(180.029297 0)"/>
+       <use xlink:href="#CourierNewPSMT-67" transform="translate(240.039062 0)"/>
+       <use xlink:href="#CourierNewPSMT-72" transform="translate(300.048828 0)"/>
+       <use xlink:href="#CourierNewPSMT-6f" transform="translate(360.058594 0)"/>
+       <use xlink:href="#CourierNewPSMT-75" transform="translate(420.068359 0)"/>
+       <use xlink:href="#CourierNewPSMT-6e" transform="translate(480.078125 0)"/>
+       <use xlink:href="#CourierNewPSMT-64" transform="translate(540.087891 0)"/>
+      </g>
+     </g>
+    </g>
+    <g id="ytick_2">
+     <g id="line2d_12">
+      <g>
+       <use xlink:href="#m17285c2c38" x="182.259375" y="93.325325" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_13">
+      <!-- black_stain -->
+      <g transform="translate(56.428438 99.024856) scale(0.18 -0.18)">
+       <use xlink:href="#CourierNewPSMT-62"/>
+       <use xlink:href="#CourierNewPSMT-6c" transform="translate(60.009766 0)"/>
+       <use xlink:href="#CourierNewPSMT-61" transform="translate(120.019531 0)"/>
+       <use xlink:href="#CourierNewPSMT-63" transform="translate(180.029297 0)"/>
+       <use xlink:href="#CourierNewPSMT-6b" transform="translate(240.039062 0)"/>
+       <use xlink:href="#CourierNewPSMT-5f" transform="translate(300.048828 0)"/>
+       <use xlink:href="#CourierNewPSMT-73" transform="translate(360.058594 0)"/>
+       <use xlink:href="#CourierNewPSMT-74" transform="translate(420.068359 0)"/>
+       <use xlink:href="#CourierNewPSMT-61" transform="translate(480.078125 0)"/>
+       <use xlink:href="#CourierNewPSMT-69" transform="translate(540.087891 0)"/>
+       <use xlink:href="#CourierNewPSMT-6e" transform="translate(600.097656 0)"/>
+      </g>
+     </g>
+    </g>
+    <g id="ytick_3">
+     <g id="line2d_13">
+      <g>
+       <use xlink:href="#m17285c2c38" x="182.259375" y="147.065333" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_14">
+      <!-- corrosion -->
+      <g transform="translate(78.034063 152.580645) scale(0.18 -0.18)">
+       <use xlink:href="#CourierNewPSMT-63"/>
+       <use xlink:href="#CourierNewPSMT-6f" transform="translate(60.009766 0)"/>
+       <use xlink:href="#CourierNewPSMT-72" transform="translate(120.019531 0)"/>
+       <use xlink:href="#CourierNewPSMT-72" transform="translate(180.029297 0)"/>
+       <use xlink:href="#CourierNewPSMT-6f" transform="translate(240.039062 0)"/>
+       <use xlink:href="#CourierNewPSMT-73" transform="translate(300.048828 0)"/>
+       <use xlink:href="#CourierNewPSMT-69" transform="translate(360.058594 0)"/>
+       <use xlink:href="#CourierNewPSMT-6f" transform="translate(420.068359 0)"/>
+       <use xlink:href="#CourierNewPSMT-6e" transform="translate(480.078125 0)"/>
+      </g>
+     </g>
+    </g>
+    <g id="ytick_4">
+     <g id="line2d_14">
+      <g>
+       <use xlink:href="#m17285c2c38" x="182.259375" y="200.805341" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_15">
+      <!-- crack -->
+      <g transform="translate(121.245313 206.320654) scale(0.18 -0.18)">
+       <use xlink:href="#CourierNewPSMT-63"/>
+       <use xlink:href="#CourierNewPSMT-72" transform="translate(60.009766 0)"/>
+       <use xlink:href="#CourierNewPSMT-61" transform="translate(120.019531 0)"/>
+       <use xlink:href="#CourierNewPSMT-63" transform="translate(180.029297 0)"/>
+       <use xlink:href="#CourierNewPSMT-6b" transform="translate(240.039062 0)"/>
+      </g>
+     </g>
+    </g>
+    <g id="ytick_5">
+     <g id="line2d_15">
+      <g>
+       <use xlink:href="#m17285c2c38" x="182.259375" y="254.545349" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_16">
+      <!-- deformation -->
+      <g transform="translate(56.428438 260.060662) scale(0.18 -0.18)">
+       <use xlink:href="#CourierNewPSMT-64"/>
+       <use xlink:href="#CourierNewPSMT-65" transform="translate(60.009766 0)"/>
+       <use xlink:href="#CourierNewPSMT-66" transform="translate(120.019531 0)"/>
+       <use xlink:href="#CourierNewPSMT-6f" transform="translate(180.029297 0)"/>
+       <use xlink:href="#CourierNewPSMT-72" transform="translate(240.039062 0)"/>
+       <use xlink:href="#CourierNewPSMT-6d" transform="translate(300.048828 0)"/>
+       <use xlink:href="#CourierNewPSMT-61" transform="translate(360.058594 0)"/>
+       <use xlink:href="#CourierNewPSMT-74" transform="translate(420.068359 0)"/>
+       <use xlink:href="#CourierNewPSMT-69" transform="translate(480.078125 0)"/>
+       <use xlink:href="#CourierNewPSMT-6f" transform="translate(540.087891 0)"/>
+       <use xlink:href="#CourierNewPSMT-6e" transform="translate(600.097656 0)"/>
+      </g>
+     </g>
+    </g>
+    <g id="ytick_6">
+     <g id="line2d_16">
+      <g>
+       <use xlink:href="#m17285c2c38" x="182.259375" y="308.285357" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_17">
+      <!-- missing_part -->
+      <g transform="translate(45.625625 313.984889) scale(0.18 -0.18)">
+       <use xlink:href="#CourierNewPSMT-6d"/>
+       <use xlink:href="#CourierNewPSMT-69" transform="translate(60.009766 0)"/>
+       <use xlink:href="#CourierNewPSMT-73" transform="translate(120.019531 0)"/>
+       <use xlink:href="#CourierNewPSMT-73" transform="translate(180.029297 0)"/>
+       <use xlink:href="#CourierNewPSMT-69" transform="translate(240.039062 0)"/>
+       <use xlink:href="#CourierNewPSMT-6e" transform="translate(300.048828 0)"/>
+       <use xlink:href="#CourierNewPSMT-67" transform="translate(360.058594 0)"/>
+       <use xlink:href="#CourierNewPSMT-5f" transform="translate(420.068359 0)"/>
+       <use xlink:href="#CourierNewPSMT-70" transform="translate(480.078125 0)"/>
+       <use xlink:href="#CourierNewPSMT-61" transform="translate(540.087891 0)"/>
+       <use xlink:href="#CourierNewPSMT-72" transform="translate(600.097656 0)"/>
+       <use xlink:href="#CourierNewPSMT-74" transform="translate(660.107422 0)"/>
+      </g>
+     </g>
+    </g>
+    <g id="ytick_7">
+     <g id="line2d_17">
+      <g>
+       <use xlink:href="#m17285c2c38" x="182.259375" y="362.025366" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_18">
+      <!-- ok -->
+      <g transform="translate(153.65375 367.540678) scale(0.18 -0.18)">
+       <use xlink:href="#CourierNewPSMT-6f"/>
+       <use xlink:href="#CourierNewPSMT-6b" transform="translate(60.009766 0)"/>
+      </g>
+     </g>
+    </g>
+    <g id="ytick_8">
+     <g id="line2d_18">
+      <g>
+       <use xlink:href="#m17285c2c38" x="182.259375" y="415.765374" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_19">
+      <!-- other -->
+      <g transform="translate(121.245313 421.280686) scale(0.18 -0.18)">
+       <use xlink:href="#CourierNewPSMT-6f"/>
+       <use xlink:href="#CourierNewPSMT-74" transform="translate(60.009766 0)"/>
+       <use xlink:href="#CourierNewPSMT-68" transform="translate(120.019531 0)"/>
+       <use xlink:href="#CourierNewPSMT-65" transform="translate(180.029297 0)"/>
+       <use xlink:href="#CourierNewPSMT-72" transform="translate(240.039062 0)"/>
+      </g>
+     </g>
+    </g>
+    <g id="ytick_9">
+     <g id="line2d_19">
+      <g>
+       <use xlink:href="#m17285c2c38" x="182.259375" y="469.505382" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_20">
+      <!-- silicate_stain -->
+      <g transform="translate(24.02 475.204913) scale(0.18 -0.18)">
+       <use xlink:href="#CourierNewPSMT-73"/>
+       <use xlink:href="#CourierNewPSMT-69" transform="translate(60.009766 0)"/>
+       <use xlink:href="#CourierNewPSMT-6c" transform="translate(120.019531 0)"/>
+       <use xlink:href="#CourierNewPSMT-69" transform="translate(180.029297 0)"/>
+       <use xlink:href="#CourierNewPSMT-63" transform="translate(240.039062 0)"/>
+       <use xlink:href="#CourierNewPSMT-61" transform="translate(300.048828 0)"/>
+       <use xlink:href="#CourierNewPSMT-74" transform="translate(360.058594 0)"/>
+       <use xlink:href="#CourierNewPSMT-65" transform="translate(420.068359 0)"/>
+       <use xlink:href="#CourierNewPSMT-5f" transform="translate(480.078125 0)"/>
+       <use xlink:href="#CourierNewPSMT-73" transform="translate(540.087891 0)"/>
+       <use xlink:href="#CourierNewPSMT-74" transform="translate(600.097656 0)"/>
+       <use xlink:href="#CourierNewPSMT-61" transform="translate(660.107422 0)"/>
+       <use xlink:href="#CourierNewPSMT-69" transform="translate(720.117188 0)"/>
+       <use xlink:href="#CourierNewPSMT-6e" transform="translate(780.126953 0)"/>
+      </g>
+     </g>
+    </g>
+    <g id="ytick_10">
+     <g id="line2d_20">
+      <g>
+       <use xlink:href="#m17285c2c38" x="182.259375" y="523.24539" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_21">
+      <!-- water_stain -->
+      <g transform="translate(56.428438 528.944921) scale(0.18 -0.18)">
+       <use xlink:href="#CourierNewPSMT-77"/>
+       <use xlink:href="#CourierNewPSMT-61" transform="translate(60.009766 0)"/>
+       <use xlink:href="#CourierNewPSMT-74" transform="translate(120.019531 0)"/>
+       <use xlink:href="#CourierNewPSMT-65" transform="translate(180.029297 0)"/>
+       <use xlink:href="#CourierNewPSMT-72" transform="translate(240.039062 0)"/>
+       <use xlink:href="#CourierNewPSMT-5f" transform="translate(300.048828 0)"/>
+       <use xlink:href="#CourierNewPSMT-73" transform="translate(360.058594 0)"/>
+       <use xlink:href="#CourierNewPSMT-74" transform="translate(420.068359 0)"/>
+       <use xlink:href="#CourierNewPSMT-61" transform="translate(480.078125 0)"/>
+       <use xlink:href="#CourierNewPSMT-69" transform="translate(540.087891 0)"/>
+       <use xlink:href="#CourierNewPSMT-6e" transform="translate(600.097656 0)"/>
+      </g>
+     </g>
+    </g>
+    <g id="text_22">
+     <!-- Clean label -->
+     <g transform="translate(17.005 334.229103) rotate(-90) scale(0.16 -0.16)">
+      <defs>
+       <path id="CourierNewPSMT-43" d="M 3075 3297 
+L 3075 3481 
+Q 3075 3575 3111 3615 
+Q 3147 3656 3206 3656 
+Q 3266 3656 3302 3615 
+Q 3338 3575 3338 3481 
+L 3338 2753 
+Q 3338 2656 3302 2615 
+Q 3266 2575 3206 2575 
+Q 3153 2575 3117 2612 
+Q 3081 2650 3075 2734 
+Q 3059 2997 2791 3200 
+Q 2428 3478 1966 3478 
+Q 1663 3478 1394 3344 
+Q 1194 3247 1075 3106 
+Q 869 2863 747 2566 
+Q 659 2347 659 2072 
+L 659 1613 
+Q 659 1025 1084 592 
+Q 1509 159 2072 159 
+Q 2409 159 2676 306 
+Q 2944 453 3194 750 
+Q 3247 816 3313 816 
+Q 3369 816 3403 781 
+Q 3438 747 3438 694 
+Q 3438 622 3303 475 
+Q 3047 188 2726 42 
+Q 2406 -103 2078 -103 
+Q 1794 -103 1500 6 
+Q 1275 91 1128 203 
+Q 981 316 767 583 
+Q 553 850 475 1076 
+Q 397 1303 397 1575 
+L 397 2109 
+Q 397 2497 605 2901 
+Q 813 3306 1173 3523 
+Q 1534 3741 1956 3741 
+Q 2606 3741 3075 3297 
+z
+" transform="scale(0.015625)"/>
+      </defs>
+      <use xlink:href="#CourierNewPSMT-43"/>
+      <use xlink:href="#CourierNewPSMT-6c" transform="translate(60.009766 0)"/>
+      <use xlink:href="#CourierNewPSMT-65" transform="translate(120.019531 0)"/>
+      <use xlink:href="#CourierNewPSMT-61" transform="translate(180.029297 0)"/>
+      <use xlink:href="#CourierNewPSMT-6e" transform="translate(240.039062 0)"/>
+      <use xlink:href="#CourierNewPSMT-20" transform="translate(300.048828 0)"/>
+      <use xlink:href="#CourierNewPSMT-6c" transform="translate(360.058594 0)"/>
+      <use xlink:href="#CourierNewPSMT-61" transform="translate(420.068359 0)"/>
+      <use xlink:href="#CourierNewPSMT-62" transform="translate(480.078125 0)"/>
+      <use xlink:href="#CourierNewPSMT-65" transform="translate(540.087891 0)"/>
+      <use xlink:href="#CourierNewPSMT-6c" transform="translate(600.097656 0)"/>
+     </g>
+    </g>
+   </g>
+   <g id="patch_3">
+    <path d="M 182.259375 550.115394 
+L 182.259375 12.715313 
+" style="fill: none; stroke: #000000; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 719.659457 550.115394 
+L 719.659457 12.715313 
+" style="fill: none; stroke: #000000; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 182.259375 550.115394 
+L 719.659457 550.115394 
+" style="fill: none; stroke: #000000; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 182.259375 12.715312 
+L 719.659457 12.715312 
+" style="fill: none; stroke: #000000; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="text_23">
+    <!-- 1.00 -->
+    <g transform="translate(199.526879 41.282817) scale(0.08 -0.08)">
+     <defs>
+      <path id="CourierNewPSMT-31" d="M 2050 3975 
+L 2050 263 
+L 2950 263 
+Q 3044 263 3084 227 
+Q 3125 191 3125 131 
+Q 3125 75 3084 37 
+Q 3044 0 2950 0 
+L 888 0 
+Q 794 0 753 37 
+Q 713 75 713 131 
+Q 713 191 753 227 
+Q 794 263 888 263 
+L 1788 263 
+L 1788 3613 
+L 931 3344 
+Q 869 3325 841 3325 
+Q 794 3325 755 3364 
+Q 716 3403 716 3456 
+Q 716 3503 747 3544 
+Q 772 3569 850 3597 
+L 2050 3975 
+z
+" transform="scale(0.015625)"/>
+      <path id="CourierNewPSMT-2e" d="M 1866 753 
+L 1978 753 
+Q 2153 753 2278 629 
+Q 2403 506 2403 331 
+Q 2403 150 2276 28 
+Q 2150 -94 1978 -94 
+L 1866 -94 
+Q 1691 -94 1566 29 
+Q 1441 153 1441 328 
+Q 1441 509 1567 631 
+Q 1694 753 1866 753 
+z
+" transform="scale(0.015625)"/>
+      <path id="CourierNewPSMT-30" d="M 3125 2284 
+L 3125 1634 
+Q 3125 788 2722 294 
+Q 2406 -94 1925 -94 
+Q 1694 -94 1489 -1 
+Q 1284 91 1141 256 
+Q 1050 359 942 587 
+Q 834 816 788 1006 
+Q 716 1275 716 1634 
+L 716 2284 
+Q 716 3134 1119 3628 
+Q 1434 4016 1916 4016 
+Q 2150 4016 2353 3923 
+Q 2556 3831 2700 3666 
+Q 2794 3559 2900 3331 
+Q 3006 3103 3056 2916 
+Q 3125 2647 3125 2284 
+z
+M 2863 2250 
+Q 2863 2622 2758 2942 
+Q 2653 3263 2522 3453 
+Q 2444 3563 2319 3641 
+Q 2141 3750 1919 3750 
+Q 1478 3750 1228 3300 
+Q 978 2850 978 2250 
+L 978 1672 
+Q 978 1300 1083 978 
+Q 1188 656 1322 466 
+Q 1397 359 1522 281 
+Q 1700 169 1925 169 
+Q 2363 169 2613 620 
+Q 2863 1072 2863 1672 
+L 2863 2250 
+z
+" transform="scale(0.015625)"/>
+     </defs>
+     <use xlink:href="#CourierNewPSMT-31"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_24">
+    <!-- 0.00 -->
+    <g transform="translate(253.266887 41.282817) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_25">
+    <!-- 0.00 -->
+    <g transform="translate(307.006895 41.282817) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_26">
+    <!-- 0.00 -->
+    <g transform="translate(360.746904 41.282817) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_27">
+    <!-- 0.00 -->
+    <g transform="translate(414.486912 41.282817) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_28">
+    <!-- 0.00 -->
+    <g transform="translate(468.22692 41.282817) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_29">
+    <!-- 0.00 -->
+    <g transform="translate(521.966928 41.282817) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_30">
+    <!-- 0.00 -->
+    <g transform="translate(575.706936 41.282817) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_31">
+    <!-- 0.00 -->
+    <g transform="translate(629.446944 41.282817) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_32">
+    <!-- 0.00 -->
+    <g transform="translate(683.186953 41.282817) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_33">
+    <!-- 0.00 -->
+    <g transform="translate(199.526879 95.022825) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_34">
+    <!-- 1.00 -->
+    <g transform="translate(253.266887 95.022825) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-31"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_35">
+    <!-- 0.00 -->
+    <g transform="translate(307.006895 95.022825) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_36">
+    <!-- 0.00 -->
+    <g transform="translate(360.746904 95.022825) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_37">
+    <!-- 0.00 -->
+    <g transform="translate(414.486912 95.022825) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_38">
+    <!-- 0.00 -->
+    <g transform="translate(468.22692 95.022825) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_39">
+    <!-- 0.00 -->
+    <g transform="translate(521.966928 95.022825) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_40">
+    <!-- 0.00 -->
+    <g transform="translate(575.706936 95.022825) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_41">
+    <!-- 0.00 -->
+    <g transform="translate(629.446944 95.022825) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_42">
+    <!-- 0.00 -->
+    <g transform="translate(683.186953 95.022825) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_43">
+    <!-- 0.00 -->
+    <g transform="translate(199.526879 148.762833) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_44">
+    <!-- 0.00 -->
+    <g transform="translate(253.266887 148.762833) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_45">
+    <!-- 0.86 -->
+    <g transform="translate(307.006895 148.762833) scale(0.08 -0.08)">
+     <defs>
+      <path id="CourierNewPSMT-38" d="M 2459 2034 
+Q 2788 1875 2955 1614 
+Q 3122 1353 3122 1053 
+Q 3122 588 2772 247 
+Q 2422 -94 1922 -94 
+Q 1422 -94 1072 247 
+Q 722 588 722 1053 
+Q 722 1350 889 1611 
+Q 1056 1872 1388 2034 
+Q 1100 2200 969 2378 
+Q 788 2631 788 2938 
+Q 788 3369 1120 3692 
+Q 1453 4016 1922 4016 
+Q 2394 4016 2725 3692 
+Q 3056 3369 3056 2938 
+Q 3056 2631 2875 2381 
+Q 2747 2200 2459 2034 
+z
+M 2788 2928 
+Q 2788 3266 2536 3508 
+Q 2284 3750 1919 3750 
+Q 1556 3750 1304 3506 
+Q 1053 3263 1053 2931 
+Q 1053 2625 1301 2395 
+Q 1550 2166 1919 2166 
+Q 2291 2166 2539 2395 
+Q 2788 2625 2788 2928 
+z
+M 2859 1047 
+Q 2859 1394 2590 1650 
+Q 2322 1906 1922 1906 
+Q 1522 1906 1253 1650 
+Q 984 1394 984 1050 
+Q 984 694 1254 431 
+Q 1525 169 1922 169 
+Q 2319 169 2589 431 
+Q 2859 694 2859 1047 
+z
+" transform="scale(0.015625)"/>
+      <path id="CourierNewPSMT-36" d="M 1138 1659 
+Q 1381 2019 1639 2191 
+Q 1897 2363 2213 2363 
+Q 2631 2363 2956 2014 
+Q 3281 1666 3281 1153 
+Q 3281 684 2984 295 
+Q 2688 -94 2166 -94 
+Q 1825 -94 1529 115 
+Q 1234 325 1066 759 
+Q 856 1300 856 1956 
+Q 856 2450 1053 2875 
+Q 1203 3203 1453 3451 
+Q 1703 3700 2036 3858 
+Q 2369 4016 2756 4016 
+Q 3019 4016 3194 3909 
+Q 3269 3863 3269 3784 
+Q 3269 3728 3234 3692 
+Q 3200 3656 3147 3656 
+Q 3106 3656 3050 3688 
+Q 2922 3750 2731 3750 
+Q 2122 3750 1620 3226 
+Q 1119 2703 1119 1981 
+Q 1119 1878 1138 1659 
+z
+M 1197 1225 
+Q 1316 656 1570 412 
+Q 1825 169 2172 169 
+Q 2522 169 2770 442 
+Q 3019 716 3019 1153 
+Q 3019 1563 2769 1831 
+Q 2519 2100 2203 2100 
+Q 1900 2100 1619 1841 
+Q 1431 1669 1197 1225 
+z
+" transform="scale(0.015625)"/>
+     </defs>
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-38" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-36" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_46">
+    <!-- 0.00 -->
+    <g transform="translate(360.746904 148.762833) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_47">
+    <!-- 0.00 -->
+    <g transform="translate(414.486912 148.762833) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_48">
+    <!-- 0.00 -->
+    <g transform="translate(468.22692 148.762833) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_49">
+    <!-- 0.05 -->
+    <g transform="translate(521.966928 148.762833) scale(0.08 -0.08)">
+     <defs>
+      <path id="CourierNewPSMT-35" d="M 1197 3656 
+L 1197 2372 
+Q 1428 2469 1640 2517 
+Q 1853 2566 2044 2566 
+Q 2538 2566 2870 2219 
+Q 3203 1872 3203 1306 
+Q 3203 681 2828 293 
+Q 2453 -94 1891 -94 
+Q 1519 -94 1175 72 
+Q 931 188 731 359 
+Q 613 463 613 531 
+Q 613 588 650 627 
+Q 688 666 738 666 
+Q 791 666 850 609 
+Q 1322 169 1878 169 
+Q 2338 169 2638 483 
+Q 2938 797 2938 1319 
+Q 2938 1763 2678 2033 
+Q 2419 2303 2019 2303 
+Q 1609 2303 1200 2088 
+Q 1100 2038 1059 2038 
+Q 1003 2038 968 2075 
+Q 934 2113 934 2181 
+L 934 3922 
+L 2766 3922 
+Q 2859 3922 2900 3884 
+Q 2941 3847 2941 3788 
+Q 2941 3731 2900 3693 
+Q 2859 3656 2766 3656 
+L 1197 3656 
+z
+" transform="scale(0.015625)"/>
+     </defs>
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-35" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_50">
+    <!-- 0.02 -->
+    <g transform="translate(575.706936 148.762833) scale(0.08 -0.08)">
+     <defs>
+      <path id="CourierNewPSMT-32" d="M 791 263 
+L 2806 263 
+L 2806 366 
+Q 2806 459 2843 500 
+Q 2881 541 2941 541 
+Q 2997 541 3034 500 
+Q 3072 459 3072 366 
+L 3072 0 
+L 534 0 
+L 534 388 
+Q 1334 1106 2091 1850 
+Q 2444 2197 2575 2359 
+Q 2706 2522 2754 2645 
+Q 2803 2769 2803 2894 
+Q 2803 3231 2531 3490 
+Q 2259 3750 1875 3750 
+Q 1531 3750 1265 3553 
+Q 1000 3356 922 3066 
+Q 903 2991 875 2969 
+Q 838 2938 788 2938 
+Q 734 2938 698 2973 
+Q 663 3009 663 3059 
+Q 663 3209 827 3465 
+Q 991 3722 1280 3869 
+Q 1569 4016 1872 4016 
+Q 2363 4016 2716 3675 
+Q 3069 3334 3069 2903 
+Q 3069 2722 3009 2570 
+Q 2950 2419 2808 2239 
+Q 2666 2059 2297 1697 
+Q 1372 784 791 281 
+L 791 263 
+z
+" transform="scale(0.015625)"/>
+     </defs>
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-32" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_51">
+    <!-- 0.01 -->
+    <g transform="translate(629.446944 148.762833) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-31" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_52">
+    <!-- 0.07 -->
+    <g transform="translate(683.186953 148.762833) scale(0.08 -0.08)">
+     <defs>
+      <path id="CourierNewPSMT-37" d="M 2803 3538 
+L 2803 3656 
+L 922 3656 
+L 922 3425 
+Q 922 3331 886 3290 
+Q 850 3250 791 3250 
+Q 734 3250 696 3290 
+Q 659 3331 659 3425 
+L 659 3922 
+L 3069 3922 
+L 3069 3503 
+L 2013 128 
+Q 1988 47 1953 20 
+Q 1919 -6 1875 -6 
+Q 1819 -6 1781 31 
+Q 1744 69 1744 119 
+Q 1744 150 1763 206 
+L 2803 3538 
+z
+" transform="scale(0.015625)"/>
+     </defs>
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-37" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_53">
+    <!-- 0.00 -->
+    <g transform="translate(199.526879 202.502841) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_54">
+    <!-- 0.00 -->
+    <g transform="translate(253.266887 202.502841) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_55">
+    <!-- 0.00 -->
+    <g transform="translate(307.006895 202.502841) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_56">
+    <!-- 1.00 -->
+    <g transform="translate(360.746904 202.502841) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-31"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_57">
+    <!-- 0.00 -->
+    <g transform="translate(414.486912 202.502841) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_58">
+    <!-- 0.00 -->
+    <g transform="translate(468.22692 202.502841) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_59">
+    <!-- 0.00 -->
+    <g transform="translate(521.966928 202.502841) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_60">
+    <!-- 0.00 -->
+    <g transform="translate(575.706936 202.502841) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_61">
+    <!-- 0.00 -->
+    <g transform="translate(629.446944 202.502841) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_62">
+    <!-- 0.00 -->
+    <g transform="translate(683.186953 202.502841) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_63">
+    <!-- 0.00 -->
+    <g transform="translate(199.526879 256.242849) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_64">
+    <!-- 0.00 -->
+    <g transform="translate(253.266887 256.242849) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_65">
+    <!-- 0.00 -->
+    <g transform="translate(307.006895 256.242849) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_66">
+    <!-- 0.02 -->
+    <g transform="translate(360.746904 256.242849) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-32" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_67">
+    <!-- 0.57 -->
+    <g transform="translate(414.486912 256.242849) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-35" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-37" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_68">
+    <!-- 0.00 -->
+    <g transform="translate(468.22692 256.242849) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_69">
+    <!-- 0.39 -->
+    <g transform="translate(521.966928 256.242849) scale(0.08 -0.08)">
+     <defs>
+      <path id="CourierNewPSMT-33" d="M 2459 2134 
+Q 2822 1972 3012 1689 
+Q 3203 1406 3203 1100 
+Q 3203 628 2820 267 
+Q 2438 -94 1863 -94 
+Q 1525 -94 1162 50 
+Q 800 194 656 344 
+Q 609 394 609 450 
+Q 609 500 645 537 
+Q 681 575 731 575 
+Q 781 575 844 528 
+Q 1328 169 1869 169 
+Q 2325 169 2633 455 
+Q 2941 741 2941 1091 
+Q 2941 1325 2789 1550 
+Q 2638 1775 2353 1904 
+Q 2069 2034 1778 2034 
+Q 1684 2034 1643 2070 
+Q 1603 2106 1603 2166 
+Q 1603 2222 1642 2259 
+Q 1681 2297 1759 2297 
+L 1984 2294 
+Q 2338 2294 2567 2509 
+Q 2797 2725 2797 3009 
+Q 2797 3303 2556 3528 
+Q 2316 3753 1928 3753 
+Q 1656 3753 1428 3659 
+Q 1200 3566 1063 3403 
+Q 1013 3341 986 3327 
+Q 959 3313 925 3313 
+Q 872 3313 834 3348 
+Q 797 3384 797 3434 
+Q 797 3559 1069 3750 
+Q 1447 4016 1928 4016 
+Q 2425 4016 2744 3717 
+Q 3063 3419 3063 3006 
+Q 3063 2744 2909 2509 
+Q 2756 2275 2459 2134 
+z
+" transform="scale(0.015625)"/>
+      <path id="CourierNewPSMT-39" d="M 2997 2219 
+Q 2794 1859 2514 1678 
+Q 2234 1497 1941 1497 
+Q 1669 1497 1414 1653 
+Q 1159 1809 1009 2111 
+Q 859 2413 859 2744 
+Q 859 3225 1157 3620 
+Q 1456 4016 1956 4016 
+Q 2313 4016 2606 3794 
+Q 2900 3572 3063 3150 
+Q 3272 2609 3272 1894 
+Q 3272 1338 3094 969 
+Q 2975 719 2745 484 
+Q 2516 250 2228 103 
+Q 1834 -94 1409 -94 
+Q 1128 -94 950 13 
+Q 869 63 869 138 
+Q 869 191 906 227 
+Q 944 263 997 263 
+Q 1034 263 1106 228 
+Q 1228 169 1388 169 
+Q 2053 169 2531 648 
+Q 3009 1128 3009 1850 
+Q 3009 1981 2997 2219 
+z
+M 2947 2656 
+Q 2781 3291 2536 3520 
+Q 2291 3750 1963 3750 
+Q 1628 3750 1375 3469 
+Q 1122 3188 1122 2747 
+Q 1122 2319 1375 2039 
+Q 1628 1759 1947 1759 
+Q 2131 1759 2311 1859 
+Q 2491 1959 2650 2159 
+Q 2753 2294 2947 2656 
+z
+" transform="scale(0.015625)"/>
+     </defs>
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-33" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-39" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_70">
+    <!-- 0.01 -->
+    <g transform="translate(575.706936 256.242849) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-31" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_71">
+    <!-- 0.00 -->
+    <g transform="translate(629.446944 256.242849) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_72">
+    <!-- 0.00 -->
+    <g transform="translate(683.186953 256.242849) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_73">
+    <!-- 0.00 -->
+    <g transform="translate(199.526879 309.982857) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_74">
+    <!-- 0.00 -->
+    <g transform="translate(253.266887 309.982857) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_75">
+    <!-- 0.00 -->
+    <g transform="translate(307.006895 309.982857) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_76">
+    <!-- 0.03 -->
+    <g transform="translate(360.746904 309.982857) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-33" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_77">
+    <!-- 0.00 -->
+    <g transform="translate(414.486912 309.982857) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_78">
+    <!-- 0.94 -->
+    <g transform="translate(468.22692 309.982857) scale(0.08 -0.08)">
+     <defs>
+      <path id="CourierNewPSMT-34" d="M 2409 1097 
+L 669 1097 
+L 669 1400 
+L 2128 3922 
+L 2675 3922 
+L 2675 1359 
+L 2894 1359 
+Q 2991 1359 3031 1323 
+Q 3072 1288 3072 1228 
+Q 3072 1172 3031 1134 
+Q 2991 1097 2894 1097 
+L 2675 1097 
+L 2675 263 
+L 2894 263 
+Q 2991 263 3031 227 
+Q 3072 191 3072 131 
+Q 3072 75 3031 37 
+Q 2991 0 2894 0 
+L 1919 0 
+Q 1822 0 1781 37 
+Q 1741 75 1741 131 
+Q 1741 191 1781 227 
+Q 1822 263 1919 263 
+L 2409 263 
+L 2409 1097 
+z
+M 2409 1359 
+L 2409 3656 
+L 2272 3656 
+L 944 1359 
+L 2409 1359 
+z
+" transform="scale(0.015625)"/>
+     </defs>
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-39" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-34" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_79">
+    <!-- 0.03 -->
+    <g transform="translate(521.966928 309.982857) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-33" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_80">
+    <!-- 0.00 -->
+    <g transform="translate(575.706936 309.982857) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_81">
+    <!-- 0.00 -->
+    <g transform="translate(629.446944 309.982857) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_82">
+    <!-- 0.00 -->
+    <g transform="translate(683.186953 309.982857) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_83">
+    <!-- 0.00 -->
+    <g transform="translate(199.526879 363.722866) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_84">
+    <!-- 0.00 -->
+    <g transform="translate(253.266887 363.722866) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_85">
+    <!-- 0.00 -->
+    <g transform="translate(307.006895 363.722866) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_86">
+    <!-- 0.00 -->
+    <g transform="translate(360.746904 363.722866) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_87">
+    <!-- 0.01 -->
+    <g transform="translate(414.486912 363.722866) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-31" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_88">
+    <!-- 0.00 -->
+    <g transform="translate(468.22692 363.722866) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_89">
+    <!-- 0.98 -->
+    <g transform="translate(521.966928 363.722866) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-39" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-38" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_90">
+    <!-- 0.00 -->
+    <g transform="translate(575.706936 363.722866) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_91">
+    <!-- 0.00 -->
+    <g transform="translate(629.446944 363.722866) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_92">
+    <!-- 0.00 -->
+    <g transform="translate(683.186953 363.722866) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_93">
+    <!-- 0.00 -->
+    <g transform="translate(199.526879 417.462874) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_94">
+    <!-- 0.00 -->
+    <g transform="translate(253.266887 417.462874) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_95">
+    <!-- 0.00 -->
+    <g transform="translate(307.006895 417.462874) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_96">
+    <!-- 0.00 -->
+    <g transform="translate(360.746904 417.462874) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_97">
+    <!-- 0.10 -->
+    <g transform="translate(414.486912 417.462874) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-31" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_98">
+    <!-- 0.00 -->
+    <g transform="translate(468.22692 417.462874) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_99">
+    <!-- 0.13 -->
+    <g transform="translate(521.966928 417.462874) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-31" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-33" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_100">
+    <!-- 0.77 -->
+    <g transform="translate(575.706936 417.462874) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-37" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-37" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_101">
+    <!-- 0.00 -->
+    <g transform="translate(629.446944 417.462874) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_102">
+    <!-- 0.00 -->
+    <g transform="translate(683.186953 417.462874) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_103">
+    <!-- 0.00 -->
+    <g transform="translate(199.526879 471.202882) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_104">
+    <!-- 0.03 -->
+    <g transform="translate(253.266887 471.202882) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-33" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_105">
+    <!-- 0.00 -->
+    <g transform="translate(307.006895 471.202882) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_106">
+    <!-- 0.00 -->
+    <g transform="translate(360.746904 471.202882) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_107">
+    <!-- 0.00 -->
+    <g transform="translate(414.486912 471.202882) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_108">
+    <!-- 0.00 -->
+    <g transform="translate(468.22692 471.202882) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_109">
+    <!-- 0.12 -->
+    <g transform="translate(521.966928 471.202882) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-31" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-32" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_110">
+    <!-- 0.00 -->
+    <g transform="translate(575.706936 471.202882) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_111">
+    <!-- 0.79 -->
+    <g transform="translate(629.446944 471.202882) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-37" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-39" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_112">
+    <!-- 0.05 -->
+    <g transform="translate(683.186953 471.202882) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-35" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_113">
+    <!-- 0.00 -->
+    <g transform="translate(199.526879 524.94289) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_114">
+    <!-- 0.00 -->
+    <g transform="translate(253.266887 524.94289) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_115">
+    <!-- 0.00 -->
+    <g transform="translate(307.006895 524.94289) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_116">
+    <!-- 0.00 -->
+    <g transform="translate(360.746904 524.94289) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_117">
+    <!-- 0.00 -->
+    <g transform="translate(414.486912 524.94289) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_118">
+    <!-- 0.00 -->
+    <g transform="translate(468.22692 524.94289) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_119">
+    <!-- 0.00 -->
+    <g transform="translate(521.966928 524.94289) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_120">
+    <!-- 0.05 -->
+    <g transform="translate(575.706936 524.94289) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-35" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_121">
+    <!-- 0.00 -->
+    <g transform="translate(629.446944 524.94289) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-30" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+   <g id="text_122">
+    <!-- 0.95 -->
+    <g transform="translate(683.186953 524.94289) scale(0.08 -0.08)">
+     <use xlink:href="#CourierNewPSMT-30"/>
+     <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+     <use xlink:href="#CourierNewPSMT-39" transform="translate(120.019531 0)"/>
+     <use xlink:href="#CourierNewPSMT-35" transform="translate(180.029297 0)"/>
+    </g>
+   </g>
+  </g>
+  <g id="axes_2">
+   <g id="patch_7">
+    <path d="M 746.682497 550.115394 
+L 773.552501 550.115394 
+L 773.552501 12.715312 
+L 746.682497 12.715312 
+z
+" style="fill: #ffffff"/>
+   </g>
+   <image xlink:href="data:image/png;base64,
+iVBORw0KGgoAAAANSUhEUgAAACUAAALqCAYAAACyv51LAAAFVElEQVR4nO3cwY0bQRAEwVSh/HdXDwEcubDPbKDCgkPn9swedeKfv//eQyYIBaH64uGcVBDqw9cvCAWhCuuhnFQQqrAeykkFoe7uu50P3/4FoSBUYT2ck3r4BKEg1F0zt/Ph278gFIS67bucLwgFoSDUbd/tfOzuu5zvoROEglCF9VBOKghVeHainFQQ6u6+2/keOkGowkGhnFQQ6q6Z0/mesF8QCkLdNXM7Hz5BKAh123c6H7v7Lud7wtMzCAWhCuuhnFQQ6rbvdj58+xeEKhwUykkFoQrroZxUEOqumdv58O1fEApCFdZDOakgVGE9lJMKQt3ddzsfvv0LQkGownooJxWEKqyHclJBqLv7bufDt39BqMJBoZxUEKqwHspJBaHumrmdD9/+BaEgVGE9lJMKQhXWQzmpINTdfbfz4du/IBSEKqyHclJBqMJ6KCcVhLq773Y+fPsXhCocFMpJBaEK66GcVBDqrpnb+fDtXxAKQhXWQzmpIFRhPZSTCkLd3Xc7H779C0JBqMJ6KCcVhCqsh3JSQag/4eUXhIJQffGwTuqhE4SCUPeSdzrfb9t3Od8TvqQHoSDU3X2387HtO5zv56uHclJBqNu+2/keOkEoCHX5Tuf77dXlcr63w/ObvSV8tQf99KSCUHfNnM73ds2czodPEApCfcL1C0JBqD98glAQ6rbvdj58glAQ6rbvdL4fPkEoCHXb99F+Qz7+oOMThIJQ90fyp/M9fIJQEOreEk7n++EThIJQhR8Oo5xUEOpeXU7ne9u+y/l+wn5BKAh1f7n/0c6p4w86O6cO53u+eignFYS6a+Z4vodNEApCFdZDOakg1B2ep/M94foFoSDUbd9Hy3d6UkGo+2qC0/l+vqsP56TeJnU530/YLwgFoe6cOp3v+ZYP5aSCUHd4ns73tn2X8/3wCUJBqDs8T+d7Ozwv5/st3+V8T7h+QSgIddv30SZ1+0F/O6cu5/vhE4SCULd9x/OhE4SCUPcBx+l8b9t3O9/DJggFoQrroZxUEOruvtP5Hj5BKAh1d99H+3jxqz3opycVhLqXvOP5HjZBKAh1/wh5Ot/b9p3Oh08QCkLdBxyn8z3h+gWhINTdfcfzoROEglB39320B/32g/6EB1UQCkLdBxyn87198+npfA+dIBSEurvvdL7ftu9yvic8PYNQEKqwHspJBaHuA47T+d6273a+h00QqnBQKCcVhLoH/Xg+dIJQEOq276PlOz2pINQdnsfzPWyCUBCqsB7KSQWhbvuO50MnCAWhbvuO50MnCHUP+vF86AShINRt3/F86AShINRt3/F86AShINRt30fLd3pSQag7PI/ne9gEoSBUYT2ck/oJ/5NDEApC3YN+PN/DJggFoQrroZxUEOq273g+dIJQEOq276PlOz2pIFTh94KgnFQQ6g7Pj5bv9KSCULd9H21Stx909pZwOd8T/oochIJQl++j5Ts9qSDU3X2n873dfd8s3+lJBaFu+z5avtOTCkLdq8vpfG+vLt9sUl/tQT89qSDUXTOn871dM98s3+lJBaFu+z5avtOTCkLdq8vpfG+vLt8s3+lJBaFu+z5avtuTwvfnUygnFYS6c+qj5Ts9qSBU9o5+O98PmyCk/KG67Tue74dNEApC3fYdz/fDJggFoS7f8XwPmyAUhLrt+2gP+ld70E9PKgh118zxfD9sglAQ6rbveL4fNkEoCHXbdzzfD5sgFITKvnP/dL637ftk+U5PKgh1ry4f7Zz6ag/66UkFoe4t4Xi+h00QCkLd9h3P97AJQkGo277j+R42QSgIddt3PN/DJggFoW77+OY/P+EekFcf3wMAAAAASUVORK5CYII=" id="imagec684228d16" transform="scale(1 -1) translate(0 -537.12)" x="746.64" y="-12.96" width="26.64" height="537.12"/>
+   <g id="matplotlib.axis_3"/>
+   <g id="matplotlib.axis_4">
+    <g id="ytick_11">
+     <g id="line2d_21">
+      <defs>
+       <path id="m887980d6f2" d="M 0 0 
+L 3.5 0 
+" style="stroke: #000000; stroke-width: 0.8"/>
+      </defs>
+      <g>
+       <use xlink:href="#m887980d6f2" x="773.552501" y="550.115394" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_123">
+      <!-- 0.0 -->
+      <g transform="translate(780.552501 555.630707) scale(0.18 -0.18)">
+       <use xlink:href="#CourierNewPSMT-30"/>
+       <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+       <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+      </g>
+     </g>
+    </g>
+    <g id="ytick_12">
+     <g id="line2d_22">
+      <g>
+       <use xlink:href="#m887980d6f2" x="773.552501" y="442.635378" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_124">
+      <!-- 0.2 -->
+      <g transform="translate(780.552501 448.15069) scale(0.18 -0.18)">
+       <use xlink:href="#CourierNewPSMT-30"/>
+       <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+       <use xlink:href="#CourierNewPSMT-32" transform="translate(120.019531 0)"/>
+      </g>
+     </g>
+    </g>
+    <g id="ytick_13">
+     <g id="line2d_23">
+      <g>
+       <use xlink:href="#m887980d6f2" x="773.552501" y="335.155362" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_125">
+      <!-- 0.4 -->
+      <g transform="translate(780.552501 340.670674) scale(0.18 -0.18)">
+       <use xlink:href="#CourierNewPSMT-30"/>
+       <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+       <use xlink:href="#CourierNewPSMT-34" transform="translate(120.019531 0)"/>
+      </g>
+     </g>
+    </g>
+    <g id="ytick_14">
+     <g id="line2d_24">
+      <g>
+       <use xlink:href="#m887980d6f2" x="773.552501" y="227.675345" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_126">
+      <!-- 0.6 -->
+      <g transform="translate(780.552501 233.190658) scale(0.18 -0.18)">
+       <use xlink:href="#CourierNewPSMT-30"/>
+       <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+       <use xlink:href="#CourierNewPSMT-36" transform="translate(120.019531 0)"/>
+      </g>
+     </g>
+    </g>
+    <g id="ytick_15">
+     <g id="line2d_25">
+      <g>
+       <use xlink:href="#m887980d6f2" x="773.552501" y="120.195329" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_127">
+      <!-- 0.8 -->
+      <g transform="translate(780.552501 125.710641) scale(0.18 -0.18)">
+       <use xlink:href="#CourierNewPSMT-30"/>
+       <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+       <use xlink:href="#CourierNewPSMT-38" transform="translate(120.019531 0)"/>
+      </g>
+     </g>
+    </g>
+    <g id="ytick_16">
+     <g id="line2d_26">
+      <g>
+       <use xlink:href="#m887980d6f2" x="773.552501" y="12.715312" style="stroke: #000000; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_128">
+      <!-- 1.0 -->
+      <g transform="translate(780.552501 18.230625) scale(0.18 -0.18)">
+       <use xlink:href="#CourierNewPSMT-31"/>
+       <use xlink:href="#CourierNewPSMT-2e" transform="translate(60.009766 0)"/>
+       <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
+      </g>
+     </g>
+    </g>
+   </g>
+   <g id="LineCollection_1"/>
+   <g id="patch_8">
+    <path d="M 746.682497 550.115394 
+L 760.117499 550.115394 
+L 773.552501 550.115394 
+L 773.552501 12.715312 
+L 760.117499 12.715312 
+L 746.682497 12.715312 
+L 746.682497 550.115394 
+z
+" style="fill: none; stroke: #000000; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="pf00f358726">
+   <rect x="182.259375" y="12.715312" width="537.400082" height="537.400082"/>
+  </clipPath>
+ </defs>
+</svg>

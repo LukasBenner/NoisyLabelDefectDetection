@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
   "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="843.71125pt" height="411.649081pt" viewBox="0 0 843.71125 411.649081" xmlns="http://www.w3.org/2000/svg" version="1.1">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="843.71125pt" height="409.895827pt" viewBox="0 0 843.71125 409.895827" xmlns="http://www.w3.org/2000/svg" version="1.1">
  <metadata>
   <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
    <cc:Work>
     <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-    <dc:date>2026-02-26T18:15:37.196762</dc:date>
+    <dc:date>2026-02-27T10:56:28.408585</dc:date>
     <dc:format>image/svg+xml</dc:format>
     <dc:creator>
      <cc:Agent>
@@ -21,8 +21,8 @@
  </defs>
  <g id="figure_1">
   <g id="patch_1">
-   <path d="M 0 411.649081 
-L 843.71125 411.649081 
+   <path d="M 0 409.895827 
+L 843.71125 409.895827 
 L 843.71125 0 
 L 0 0 
 z
@@ -30,188 +30,188 @@ z
   </g>
   <g id="axes_1">
    <g id="patch_2">
-    <path d="M 74.23125 278.960082 
-L 836.51125 278.960082 
-L 836.51125 7.2 
-L 74.23125 7.2 
+    <path d="M 74.23125 277.206827 
+L 836.51125 277.206827 
+L 836.51125 38.979546 
+L 74.23125 38.979546 
 z
 " style="fill: #ffffff"/>
    </g>
    <g id="patch_3">
-    <path d="M 108.880341 278.960082 
-L 137.165313 278.960082 
-L 137.165313 240.804966 
-L 108.880341 240.804966 
+    <path d="M 108.880341 277.206827 
+L 137.165313 277.206827 
+L 137.165313 243.759717 
+L 108.880341 243.759717 
 z
-" clip-path="url(#pa4e3cd424f)" style="fill: #00a89e"/>
+" clip-path="url(#pa3234f1e70)" style="fill: #00a89e"/>
    </g>
    <g id="patch_4">
-    <path d="M 179.592771 278.960082 
-L 207.877744 278.960082 
-L 207.877744 257.980203 
-L 179.592771 257.980203 
+    <path d="M 179.592771 277.206827 
+L 207.877744 277.206827 
+L 207.877744 258.815681 
+L 179.592771 258.815681 
 z
-" clip-path="url(#pa4e3cd424f)" style="fill: #00a89e"/>
+" clip-path="url(#pa3234f1e70)" style="fill: #00a89e"/>
    </g>
    <g id="patch_5">
-    <path d="M 250.305202 278.960082 
-L 278.590174 278.960082 
-L 278.590174 204.171707 
-L 250.305202 204.171707 
+    <path d="M 250.305202 277.206827 
+L 278.590174 277.206827 
+L 278.590174 211.646679 
+L 250.305202 211.646679 
 z
-" clip-path="url(#pa4e3cd424f)" style="fill: #00a89e"/>
+" clip-path="url(#pa3234f1e70)" style="fill: #00a89e"/>
    </g>
    <g id="patch_6">
-    <path d="M 321.017632 278.960082 
-L 349.302604 278.960082 
-L 349.302604 246.457576 
-L 321.017632 246.457576 
+    <path d="M 321.017632 277.206827 
+L 349.302604 277.206827 
+L 349.302604 248.714844 
+L 321.017632 248.714844 
 z
-" clip-path="url(#pa4e3cd424f)" style="fill: #00a89e"/>
+" clip-path="url(#pa3234f1e70)" style="fill: #00a89e"/>
    </g>
    <g id="patch_7">
-    <path d="M 391.730063 278.960082 
-L 420.015035 278.960082 
-L 420.015035 91.119513 
-L 391.730063 91.119513 
+    <path d="M 391.730063 277.206827 
+L 420.015035 277.206827 
+L 420.015035 112.54413 
+L 391.730063 112.54413 
 z
-" clip-path="url(#pa4e3cd424f)" style="fill: #00a89e"/>
+" clip-path="url(#pa3234f1e70)" style="fill: #00a89e"/>
    </g>
    <g id="patch_8">
-    <path d="M 462.442493 278.960082 
-L 490.727465 278.960082 
-L 490.727465 240.804966 
-L 462.442493 240.804966 
+    <path d="M 462.442493 277.206827 
+L 490.727465 277.206827 
+L 490.727465 243.759717 
+L 462.442493 243.759717 
 z
-" clip-path="url(#pa4e3cd424f)" style="fill: #00a89e"/>
+" clip-path="url(#pa3234f1e70)" style="fill: #00a89e"/>
    </g>
    <g id="patch_9">
-    <path d="M 533.154923 278.960082 
-L 561.439896 278.960082 
-L 561.439896 111.012351 
-L 533.154923 111.012351 
+    <path d="M 533.154923 277.206827 
+L 561.439896 277.206827 
+L 561.439896 129.982367 
+L 533.154923 129.982367 
 z
-" clip-path="url(#pa4e3cd424f)" style="fill: #00a89e"/>
+" clip-path="url(#pa3234f1e70)" style="fill: #00a89e"/>
    </g>
    <g id="patch_10">
-    <path d="M 603.867354 278.960082 
-L 632.152326 278.960082 
-L 632.152326 258.523724 
-L 603.867354 258.523724 
+    <path d="M 603.867354 277.206827 
+L 632.152326 277.206827 
+L 632.152326 259.292136 
+L 603.867354 259.292136 
 z
-" clip-path="url(#pa4e3cd424f)" style="fill: #00a89e"/>
+" clip-path="url(#pa3234f1e70)" style="fill: #00a89e"/>
    </g>
    <g id="patch_11">
-    <path d="M 674.579784 278.960082 
-L 702.864756 278.960082 
-L 702.864756 267.220046 
-L 674.579784 267.220046 
+    <path d="M 674.579784 277.206827 
+L 702.864756 277.206827 
+L 702.864756 266.915409 
+L 674.579784 266.915409 
 z
-" clip-path="url(#pa4e3cd424f)" style="fill: #00a89e"/>
+" clip-path="url(#pa3234f1e70)" style="fill: #00a89e"/>
    </g>
    <g id="patch_12">
-    <path d="M 745.292215 278.960082 
-L 773.577187 278.960082 
-L 773.577187 241.45719 
-L 745.292215 241.45719 
+    <path d="M 745.292215 277.206827 
+L 773.577187 277.206827 
+L 773.577187 244.331462 
+L 745.292215 244.331462 
 z
-" clip-path="url(#pa4e3cd424f)" style="fill: #00a89e"/>
+" clip-path="url(#pa3234f1e70)" style="fill: #00a89e"/>
    </g>
    <g id="patch_13">
-    <path d="M 137.165313 278.960082 
-L 165.450285 278.960082 
-L 165.450285 240.804966 
-L 137.165313 240.804966 
+    <path d="M 137.165313 277.206827 
+L 165.450285 277.206827 
+L 165.450285 243.759717 
+L 137.165313 243.759717 
 z
-" clip-path="url(#pa4e3cd424f)" style="fill: #cc6633"/>
+" clip-path="url(#pa3234f1e70)" style="fill: #cc6633"/>
    </g>
    <g id="patch_14">
-    <path d="M 207.877744 278.960082 
-L 236.162716 278.960082 
-L 236.162716 258.741132 
-L 207.877744 258.741132 
+    <path d="M 207.877744 277.206827 
+L 236.162716 277.206827 
+L 236.162716 259.482718 
+L 207.877744 259.482718 
 z
-" clip-path="url(#pa4e3cd424f)" style="fill: #cc6633"/>
+" clip-path="url(#pa3234f1e70)" style="fill: #cc6633"/>
    </g>
    <g id="patch_15">
-    <path d="M 278.590174 278.960082 
-L 306.875146 278.960082 
-L 306.875146 198.519098 
-L 278.590174 198.519098 
+    <path d="M 278.590174 277.206827 
+L 306.875146 277.206827 
+L 306.875146 206.691552 
+L 278.590174 206.691552 
 z
-" clip-path="url(#pa4e3cd424f)" style="fill: #cc6633"/>
+" clip-path="url(#pa3234f1e70)" style="fill: #cc6633"/>
    </g>
    <g id="patch_16">
-    <path d="M 349.302604 278.960082 
-L 377.587577 278.960082 
-L 377.587577 249.283881 
-L 349.302604 249.283881 
+    <path d="M 349.302604 277.206827 
+L 377.587577 277.206827 
+L 377.587577 251.192408 
+L 349.302604 251.192408 
 z
-" clip-path="url(#pa4e3cd424f)" style="fill: #cc6633"/>
+" clip-path="url(#pa3234f1e70)" style="fill: #cc6633"/>
    </g>
    <g id="patch_17">
-    <path d="M 420.015035 278.960082 
-L 448.300007 278.960082 
-L 448.300007 31.332295 
-L 420.015035 31.332295 
+    <path d="M 420.015035 277.206827 
+L 448.300007 277.206827 
+L 448.300007 60.134128 
+L 420.015035 60.134128 
 z
-" clip-path="url(#pa4e3cd424f)" style="fill: #cc6633"/>
+" clip-path="url(#pa3234f1e70)" style="fill: #cc6633"/>
    </g>
    <g id="patch_18">
-    <path d="M 490.727465 278.960082 
-L 519.012437 278.960082 
-L 519.012437 240.804966 
-L 490.727465 240.804966 
+    <path d="M 490.727465 277.206827 
+L 519.012437 277.206827 
+L 519.012437 243.759717 
+L 490.727465 243.759717 
 z
-" clip-path="url(#pa4e3cd424f)" style="fill: #cc6633"/>
+" clip-path="url(#pa3234f1e70)" style="fill: #cc6633"/>
    </g>
    <g id="patch_19">
-    <path d="M 561.439896 278.960082 
-L 589.724868 278.960082 
-L 589.724868 169.929937 
-L 561.439896 169.929937 
+    <path d="M 561.439896 277.206827 
+L 589.724868 277.206827 
+L 589.724868 181.630042 
+L 561.439896 181.630042 
 z
-" clip-path="url(#pa4e3cd424f)" style="fill: #cc6633"/>
+" clip-path="url(#pa3234f1e70)" style="fill: #cc6633"/>
    </g>
    <g id="patch_20">
-    <path d="M 632.152326 278.960082 
-L 660.437298 278.960082 
-L 660.437298 260.262988 
-L 632.152326 260.262988 
+    <path d="M 632.152326 277.206827 
+L 660.437298 277.206827 
+L 660.437298 260.81679 
+L 632.152326 260.81679 
 z
-" clip-path="url(#pa4e3cd424f)" style="fill: #cc6633"/>
+" clip-path="url(#pa3234f1e70)" style="fill: #cc6633"/>
    </g>
    <g id="patch_21">
-    <path d="M 702.864756 278.960082 
-L 731.149729 278.960082 
-L 731.149729 266.024302 
-L 702.864756 266.024302 
+    <path d="M 702.864756 277.206827 
+L 731.149729 277.206827 
+L 731.149729 265.867209 
+L 702.864756 265.867209 
 z
-" clip-path="url(#pa4e3cd424f)" style="fill: #cc6633"/>
+" clip-path="url(#pa3234f1e70)" style="fill: #cc6633"/>
    </g>
    <g id="patch_22">
-    <path d="M 773.577187 278.960082 
-L 801.862159 278.960082 
-L 801.862159 244.283495 
-L 773.577187 244.283495 
+    <path d="M 773.577187 277.206827 
+L 801.862159 277.206827 
+L 801.862159 246.809026 
+L 773.577187 246.809026 
 z
-" clip-path="url(#pa4e3cd424f)" style="fill: #cc6633"/>
+" clip-path="url(#pa3234f1e70)" style="fill: #cc6633"/>
    </g>
    <g id="matplotlib.axis_1">
     <g id="xtick_1">
      <g id="line2d_1">
       <defs>
-       <path id="mc0648414ad" d="M 0 0 
+       <path id="m6afc987b00" d="M 0 0 
 L 0 3.5 
 " style="stroke: #000000; stroke-width: 0.8"/>
       </defs>
       <g>
-       <use xlink:href="#mc0648414ad" x="137.165313" y="278.960082" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#m6afc987b00" x="137.165313" y="277.206827" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_1">
       <!-- background -->
-      <g transform="translate(58.379476 370.147331) rotate(-45) scale(0.18 -0.18)">
+      <g transform="translate(58.379476 368.394077) rotate(-45) scale(0.18 -0.18)">
        <defs>
         <path id="CourierNewPSMT-62" d="M 931 3922 
 L 931 2181 
@@ -591,12 +591,12 @@ z
     <g id="xtick_2">
      <g id="line2d_2">
       <g>
-       <use xlink:href="#mc0648414ad" x="207.877744" y="278.960082" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#m6afc987b00" x="207.877744" y="277.206827" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_2">
       <!-- black_stain -->
-      <g transform="translate(120.365324 378.046598) rotate(-45) scale(0.18 -0.18)">
+      <g transform="translate(120.365324 376.293343) rotate(-45) scale(0.18 -0.18)">
        <defs>
         <path id="CourierNewPSMT-6c" d="M 2053 3922 
 L 2053 263 
@@ -761,12 +761,12 @@ z
     <g id="xtick_3">
      <g id="line2d_3">
       <g>
-       <use xlink:href="#mc0648414ad" x="278.590174" y="278.960082" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#m6afc987b00" x="278.590174" y="277.206827" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_3">
       <!-- corrosion -->
-      <g transform="translate(207.443078 362.508589) rotate(-45) scale(0.18 -0.18)">
+      <g transform="translate(207.443078 360.755335) rotate(-45) scale(0.18 -0.18)">
        <use xlink:href="#CourierNewPSMT-63"/>
        <use xlink:href="#CourierNewPSMT-6f" transform="translate(60.009766 0)"/>
        <use xlink:href="#CourierNewPSMT-72" transform="translate(120.019531 0)"/>
@@ -782,12 +782,12 @@ z
     <g id="xtick_4">
      <g id="line2d_4">
       <g>
-       <use xlink:href="#mc0648414ad" x="349.302604" y="278.960082" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#m6afc987b00" x="349.302604" y="277.206827" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_4">
       <!-- crack -->
-      <g transform="translate(308.710477 331.953621) rotate(-45) scale(0.18 -0.18)">
+      <g transform="translate(308.710477 330.200367) rotate(-45) scale(0.18 -0.18)">
        <use xlink:href="#CourierNewPSMT-63"/>
        <use xlink:href="#CourierNewPSMT-72" transform="translate(60.009766 0)"/>
        <use xlink:href="#CourierNewPSMT-61" transform="translate(120.019531 0)"/>
@@ -799,12 +799,12 @@ z
     <g id="xtick_5">
      <g id="line2d_5">
       <g>
-       <use xlink:href="#mc0648414ad" x="420.015035" y="278.960082" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#m6afc987b00" x="420.015035" y="277.206827" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_5">
       <!-- deformation -->
-      <g transform="translate(333.590455 377.786073) rotate(-45) scale(0.18 -0.18)">
+      <g transform="translate(333.590455 376.032819) rotate(-45) scale(0.18 -0.18)">
        <defs>
         <path id="CourierNewPSMT-65" d="M 3341 1291 
 L 666 1291 
@@ -946,12 +946,12 @@ z
     <g id="xtick_6">
      <g id="line2d_6">
       <g>
-       <use xlink:href="#mc0648414ad" x="490.727465" y="278.960082" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#m6afc987b00" x="490.727465" y="277.206827" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_6">
       <!-- missing_part -->
-      <g transform="translate(395.576304 385.68534) rotate(-45) scale(0.18 -0.18)">
+      <g transform="translate(395.576304 383.932085) rotate(-45) scale(0.18 -0.18)">
        <defs>
         <path id="CourierNewPSMT-70" d="M 931 2706 
 L 931 2228 
@@ -1013,12 +1013,12 @@ z
     <g id="xtick_7">
      <g id="line2d_7">
       <g>
-       <use xlink:href="#mc0648414ad" x="561.439896" y="278.960082" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#m6afc987b00" x="561.439896" y="277.206827" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_7">
       <!-- ok -->
-      <g transform="translate(543.763994 309.037395) rotate(-45) scale(0.18 -0.18)">
+      <g transform="translate(543.763994 307.284141) rotate(-45) scale(0.18 -0.18)">
        <use xlink:href="#CourierNewPSMT-6f"/>
        <use xlink:href="#CourierNewPSMT-6b" transform="translate(60.009766 0)"/>
       </g>
@@ -1027,12 +1027,12 @@ z
     <g id="xtick_8">
      <g id="line2d_8">
       <g>
-       <use xlink:href="#mc0648414ad" x="632.152326" y="278.960082" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#m6afc987b00" x="632.152326" y="277.206827" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_8">
       <!-- other -->
-      <g transform="translate(591.560198 331.953621) rotate(-45) scale(0.18 -0.18)">
+      <g transform="translate(591.560198 330.200367) rotate(-45) scale(0.18 -0.18)">
        <defs>
         <path id="CourierNewPSMT-68" d="M 1056 3922 
 L 1056 2306 
@@ -1091,12 +1091,12 @@ z
     <g id="xtick_9">
      <g id="line2d_9">
       <g>
-       <use xlink:href="#mc0648414ad" x="702.864756" y="278.960082" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#m6afc987b00" x="702.864756" y="277.206827" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_9">
       <!-- silicate_stain -->
-      <g transform="translate(592.436111 400.962824) rotate(-45) scale(0.18 -0.18)">
+      <g transform="translate(592.436111 399.209569) rotate(-45) scale(0.18 -0.18)">
        <use xlink:href="#CourierNewPSMT-73"/>
        <use xlink:href="#CourierNewPSMT-69" transform="translate(60.009766 0)"/>
        <use xlink:href="#CourierNewPSMT-6c" transform="translate(120.019531 0)"/>
@@ -1117,12 +1117,12 @@ z
     <g id="xtick_10">
      <g id="line2d_10">
       <g>
-       <use xlink:href="#mc0648414ad" x="773.577187" y="278.960082" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#m6afc987b00" x="773.577187" y="277.206827" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_10">
       <!-- water_stain -->
-      <g transform="translate(686.064768 378.046598) rotate(-45) scale(0.18 -0.18)">
+      <g transform="translate(686.064768 376.293343) rotate(-45) scale(0.18 -0.18)">
        <defs>
         <path id="CourierNewPSMT-77" d="M 2825 0 
 L 2500 -3 
@@ -1179,23 +1179,23 @@ z
    <g id="matplotlib.axis_2">
     <g id="ytick_1">
      <g id="line2d_11">
-      <path d="M 74.23125 278.960082 
-L 836.51125 278.960082 
-" clip-path="url(#pa4e3cd424f)" style="fill: none; stroke-dasharray: 2.96,1.28; stroke-dashoffset: 0; stroke: #b0b0b0; stroke-opacity: 0.7; stroke-width: 0.8"/>
+      <path d="M 74.23125 277.206827 
+L 836.51125 277.206827 
+" clip-path="url(#pa3234f1e70)" style="fill: none; stroke-dasharray: 2.96,1.28; stroke-dashoffset: 0; stroke: #b0b0b0; stroke-opacity: 0.7; stroke-width: 0.8"/>
      </g>
      <g id="line2d_12">
       <defs>
-       <path id="maffd7877ea" d="M 0 0 
+       <path id="m80d344ce53" d="M 0 0 
 L -3.5 0 
 " style="stroke: #000000; stroke-width: 0.8"/>
       </defs>
       <g>
-       <use xlink:href="#maffd7877ea" x="74.23125" y="278.960082" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#m80d344ce53" x="74.23125" y="277.206827" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_11">
       <!-- 0 -->
-      <g transform="translate(56.428438 284.475394) scale(0.18 -0.18)">
+      <g transform="translate(56.428438 282.72214) scale(0.18 -0.18)">
        <defs>
         <path id="CourierNewPSMT-30" d="M 3125 2284 
 L 3125 1634 
@@ -1239,18 +1239,18 @@ z
     </g>
     <g id="ytick_2">
      <g id="line2d_13">
-      <path d="M 74.23125 224.608065 
-L 836.51125 224.608065 
-" clip-path="url(#pa4e3cd424f)" style="fill: none; stroke-dasharray: 2.96,1.28; stroke-dashoffset: 0; stroke: #b0b0b0; stroke-opacity: 0.7; stroke-width: 0.8"/>
+      <path d="M 74.23125 229.561371 
+L 836.51125 229.561371 
+" clip-path="url(#pa3234f1e70)" style="fill: none; stroke-dasharray: 2.96,1.28; stroke-dashoffset: 0; stroke: #b0b0b0; stroke-opacity: 0.7; stroke-width: 0.8"/>
      </g>
      <g id="line2d_14">
       <g>
-       <use xlink:href="#maffd7877ea" x="74.23125" y="224.608065" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#m80d344ce53" x="74.23125" y="229.561371" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_12">
       <!-- 500 -->
-      <g transform="translate(34.822813 230.123378) scale(0.18 -0.18)">
+      <g transform="translate(34.822813 235.076684) scale(0.18 -0.18)">
        <defs>
         <path id="CourierNewPSMT-35" d="M 1197 3656 
 L 1197 2372 
@@ -1293,18 +1293,18 @@ z
     </g>
     <g id="ytick_3">
      <g id="line2d_15">
-      <path d="M 74.23125 170.256049 
-L 836.51125 170.256049 
-" clip-path="url(#pa4e3cd424f)" style="fill: none; stroke-dasharray: 2.96,1.28; stroke-dashoffset: 0; stroke: #b0b0b0; stroke-opacity: 0.7; stroke-width: 0.8"/>
+      <path d="M 74.23125 181.915915 
+L 836.51125 181.915915 
+" clip-path="url(#pa3234f1e70)" style="fill: none; stroke-dasharray: 2.96,1.28; stroke-dashoffset: 0; stroke: #b0b0b0; stroke-opacity: 0.7; stroke-width: 0.8"/>
      </g>
      <g id="line2d_16">
       <g>
-       <use xlink:href="#maffd7877ea" x="74.23125" y="170.256049" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#m80d344ce53" x="74.23125" y="181.915915" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_13">
       <!-- 1000 -->
-      <g transform="translate(24.02 175.771362) scale(0.18 -0.18)">
+      <g transform="translate(24.02 187.431227) scale(0.18 -0.18)">
        <defs>
         <path id="CourierNewPSMT-31" d="M 2050 3975 
 L 2050 263 
@@ -1339,18 +1339,18 @@ z
     </g>
     <g id="ytick_4">
      <g id="line2d_17">
-      <path d="M 74.23125 115.904033 
-L 836.51125 115.904033 
-" clip-path="url(#pa4e3cd424f)" style="fill: none; stroke-dasharray: 2.96,1.28; stroke-dashoffset: 0; stroke: #b0b0b0; stroke-opacity: 0.7; stroke-width: 0.8"/>
+      <path d="M 74.23125 134.270458 
+L 836.51125 134.270458 
+" clip-path="url(#pa3234f1e70)" style="fill: none; stroke-dasharray: 2.96,1.28; stroke-dashoffset: 0; stroke: #b0b0b0; stroke-opacity: 0.7; stroke-width: 0.8"/>
      </g>
      <g id="line2d_18">
       <g>
-       <use xlink:href="#maffd7877ea" x="74.23125" y="115.904033" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#m80d344ce53" x="74.23125" y="134.270458" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_14">
       <!-- 1500 -->
-      <g transform="translate(24.02 121.419345) scale(0.18 -0.18)">
+      <g transform="translate(24.02 139.785771) scale(0.18 -0.18)">
        <use xlink:href="#CourierNewPSMT-31"/>
        <use xlink:href="#CourierNewPSMT-35" transform="translate(60.009766 0)"/>
        <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
@@ -1360,18 +1360,18 @@ L 836.51125 115.904033
     </g>
     <g id="ytick_5">
      <g id="line2d_19">
-      <path d="M 74.23125 61.552016 
-L 836.51125 61.552016 
-" clip-path="url(#pa4e3cd424f)" style="fill: none; stroke-dasharray: 2.96,1.28; stroke-dashoffset: 0; stroke: #b0b0b0; stroke-opacity: 0.7; stroke-width: 0.8"/>
+      <path d="M 74.23125 86.625002 
+L 836.51125 86.625002 
+" clip-path="url(#pa3234f1e70)" style="fill: none; stroke-dasharray: 2.96,1.28; stroke-dashoffset: 0; stroke: #b0b0b0; stroke-opacity: 0.7; stroke-width: 0.8"/>
      </g>
      <g id="line2d_20">
       <g>
-       <use xlink:href="#maffd7877ea" x="74.23125" y="61.552016" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#m80d344ce53" x="74.23125" y="86.625002" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_15">
       <!-- 2000 -->
-      <g transform="translate(24.02 67.067329) scale(0.18 -0.18)">
+      <g transform="translate(24.02 92.140314) scale(0.18 -0.18)">
        <defs>
         <path id="CourierNewPSMT-32" d="M 791 263 
 L 2806 263 
@@ -1417,7 +1417,7 @@ z
     </g>
     <g id="text_16">
      <!-- Anz. Bilder -->
-     <g transform="translate(17.005 195.893791) rotate(-90) scale(0.16 -0.16)">
+     <g transform="translate(17.005 210.906936) rotate(-90) scale(0.16 -0.16)">
       <defs>
        <path id="CourierNewPSMT-41" d="M 2784 1222 
 L 1059 1222 
@@ -1559,28 +1559,28 @@ z
     </g>
    </g>
    <g id="patch_23">
-    <path d="M 74.23125 278.960082 
-L 74.23125 7.2 
+    <path d="M 74.23125 277.206827 
+L 74.23125 38.979546 
 " style="fill: none; stroke: #000000; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
    </g>
    <g id="patch_24">
-    <path d="M 836.51125 278.960082 
-L 836.51125 7.2 
+    <path d="M 836.51125 277.206827 
+L 836.51125 38.979546 
 " style="fill: none; stroke: #000000; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
    </g>
    <g id="patch_25">
-    <path d="M 74.23125 278.960082 
-L 836.51125 278.960082 
+    <path d="M 74.23125 277.206827 
+L 836.51125 277.206827 
 " style="fill: none; stroke: #000000; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
    </g>
    <g id="patch_26">
-    <path d="M 74.23125 7.2 
-L 836.51125 7.2 
+    <path d="M 74.23125 38.979546 
+L 836.51125 38.979546 
 " style="fill: none; stroke: #000000; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
    </g>
    <g id="text_17">
     <!-- 351 -->
-    <g transform="translate(104.822192 237.789966) scale(0.16 -0.16)">
+    <g transform="translate(104.822192 240.744717) scale(0.16 -0.16)">
      <defs>
       <path id="CourierNewPSMT-33" d="M 2459 2134 
 Q 2822 1972 3012 1689 
@@ -1630,7 +1630,7 @@ z
    </g>
    <g id="text_18">
     <!-- 351 -->
-    <g transform="translate(140.700935 237.789966) scale(0.16 -0.16)">
+    <g transform="translate(140.700935 240.744717) scale(0.16 -0.16)">
      <use xlink:href="#CourierNewPSMT-33"/>
      <use xlink:href="#CourierNewPSMT-35" transform="translate(60.009766 0)"/>
      <use xlink:href="#CourierNewPSMT-31" transform="translate(120.019531 0)"/>
@@ -1638,7 +1638,7 @@ z
    </g>
    <g id="text_19">
     <!-- 193 -->
-    <g transform="translate(175.534622 254.965203) scale(0.16 -0.16)">
+    <g transform="translate(175.534622 255.800681) scale(0.16 -0.16)">
      <defs>
       <path id="CourierNewPSMT-39" d="M 2997 2219 
 Q 2794 1859 2514 1678 
@@ -1685,7 +1685,7 @@ z
    </g>
    <g id="text_20">
     <!-- 186 -->
-    <g transform="translate(211.413365 255.726132) scale(0.16 -0.16)">
+    <g transform="translate(211.413365 256.467718) scale(0.16 -0.16)">
      <defs>
       <path id="CourierNewPSMT-38" d="M 2459 2034 
 Q 2788 1875 2955 1614 
@@ -1769,7 +1769,7 @@ z
    </g>
    <g id="text_21">
     <!-- 688 -->
-    <g transform="translate(246.247052 201.156707) scale(0.16 -0.16)">
+    <g transform="translate(246.247052 208.631679) scale(0.16 -0.16)">
      <use xlink:href="#CourierNewPSMT-36"/>
      <use xlink:href="#CourierNewPSMT-38" transform="translate(60.009766 0)"/>
      <use xlink:href="#CourierNewPSMT-38" transform="translate(120.019531 0)"/>
@@ -1777,7 +1777,7 @@ z
    </g>
    <g id="text_22">
     <!-- 740 -->
-    <g transform="translate(282.125795 195.504098) scale(0.16 -0.16)">
+    <g transform="translate(282.125795 203.676552) scale(0.16 -0.16)">
      <defs>
       <path id="CourierNewPSMT-37" d="M 2803 3538 
 L 2803 3656 
@@ -1840,7 +1840,7 @@ z
    </g>
    <g id="text_23">
     <!-- 299 -->
-    <g transform="translate(316.959483 243.442576) scale(0.16 -0.16)">
+    <g transform="translate(316.959483 245.699844) scale(0.16 -0.16)">
      <use xlink:href="#CourierNewPSMT-32"/>
      <use xlink:href="#CourierNewPSMT-39" transform="translate(60.009766 0)"/>
      <use xlink:href="#CourierNewPSMT-39" transform="translate(120.019531 0)"/>
@@ -1848,7 +1848,7 @@ z
    </g>
    <g id="text_24">
     <!-- 273 -->
-    <g transform="translate(352.838226 246.268881) scale(0.16 -0.16)">
+    <g transform="translate(352.838226 248.177408) scale(0.16 -0.16)">
      <use xlink:href="#CourierNewPSMT-32"/>
      <use xlink:href="#CourierNewPSMT-37" transform="translate(60.009766 0)"/>
      <use xlink:href="#CourierNewPSMT-33" transform="translate(120.019531 0)"/>
@@ -1856,7 +1856,7 @@ z
    </g>
    <g id="text_25">
     <!-- 1728 -->
-    <g transform="translate(378.069413 88.104513) scale(0.16 -0.16)">
+    <g transform="translate(378.069413 109.52913) scale(0.16 -0.16)">
      <use xlink:href="#CourierNewPSMT-31"/>
      <use xlink:href="#CourierNewPSMT-37" transform="translate(60.009766 0)"/>
      <use xlink:href="#CourierNewPSMT-32" transform="translate(120.019531 0)"/>
@@ -1865,7 +1865,7 @@ z
    </g>
    <g id="text_26">
     <!-- 2278 -->
-    <g transform="translate(423.550656 28.317295) scale(0.16 -0.16)">
+    <g transform="translate(423.550656 57.119128) scale(0.16 -0.16)">
      <use xlink:href="#CourierNewPSMT-32"/>
      <use xlink:href="#CourierNewPSMT-32" transform="translate(60.009766 0)"/>
      <use xlink:href="#CourierNewPSMT-37" transform="translate(120.019531 0)"/>
@@ -1874,7 +1874,7 @@ z
    </g>
    <g id="text_27">
     <!-- 351 -->
-    <g transform="translate(458.384344 237.789966) scale(0.16 -0.16)">
+    <g transform="translate(458.384344 240.744717) scale(0.16 -0.16)">
      <use xlink:href="#CourierNewPSMT-33"/>
      <use xlink:href="#CourierNewPSMT-35" transform="translate(60.009766 0)"/>
      <use xlink:href="#CourierNewPSMT-31" transform="translate(120.019531 0)"/>
@@ -1882,7 +1882,7 @@ z
    </g>
    <g id="text_28">
     <!-- 351 -->
-    <g transform="translate(494.263087 237.789966) scale(0.16 -0.16)">
+    <g transform="translate(494.263087 240.744717) scale(0.16 -0.16)">
      <use xlink:href="#CourierNewPSMT-33"/>
      <use xlink:href="#CourierNewPSMT-35" transform="translate(60.009766 0)"/>
      <use xlink:href="#CourierNewPSMT-31" transform="translate(120.019531 0)"/>
@@ -1890,7 +1890,7 @@ z
    </g>
    <g id="text_29">
     <!-- 1545 -->
-    <g transform="translate(519.494274 107.997351) scale(0.16 -0.16)">
+    <g transform="translate(519.494274 126.967367) scale(0.16 -0.16)">
      <use xlink:href="#CourierNewPSMT-31"/>
      <use xlink:href="#CourierNewPSMT-35" transform="translate(60.009766 0)"/>
      <use xlink:href="#CourierNewPSMT-34" transform="translate(120.019531 0)"/>
@@ -1899,7 +1899,7 @@ z
    </g>
    <g id="text_30">
     <!-- 1003 -->
-    <g transform="translate(564.975517 166.914937) scale(0.16 -0.16)">
+    <g transform="translate(564.975517 178.615042) scale(0.16 -0.16)">
      <use xlink:href="#CourierNewPSMT-31"/>
      <use xlink:href="#CourierNewPSMT-30" transform="translate(60.009766 0)"/>
      <use xlink:href="#CourierNewPSMT-30" transform="translate(120.019531 0)"/>
@@ -1908,7 +1908,7 @@ z
    </g>
    <g id="text_31">
     <!-- 188 -->
-    <g transform="translate(599.809205 255.508724) scale(0.16 -0.16)">
+    <g transform="translate(599.809205 256.277136) scale(0.16 -0.16)">
      <use xlink:href="#CourierNewPSMT-31"/>
      <use xlink:href="#CourierNewPSMT-38" transform="translate(60.009766 0)"/>
      <use xlink:href="#CourierNewPSMT-38" transform="translate(120.019531 0)"/>
@@ -1916,7 +1916,7 @@ z
    </g>
    <g id="text_32">
     <!-- 172 -->
-    <g transform="translate(635.687948 257.247988) scale(0.16 -0.16)">
+    <g transform="translate(635.687948 257.80179) scale(0.16 -0.16)">
      <use xlink:href="#CourierNewPSMT-31"/>
      <use xlink:href="#CourierNewPSMT-37" transform="translate(60.009766 0)"/>
      <use xlink:href="#CourierNewPSMT-32" transform="translate(120.019531 0)"/>
@@ -1924,7 +1924,7 @@ z
    </g>
    <g id="text_33">
     <!-- 108 -->
-    <g transform="translate(670.521635 264.205046) scale(0.16 -0.16)">
+    <g transform="translate(670.521635 263.900409) scale(0.16 -0.16)">
      <use xlink:href="#CourierNewPSMT-31"/>
      <use xlink:href="#CourierNewPSMT-30" transform="translate(60.009766 0)"/>
      <use xlink:href="#CourierNewPSMT-38" transform="translate(120.019531 0)"/>
@@ -1932,7 +1932,7 @@ z
    </g>
    <g id="text_34">
     <!-- 119 -->
-    <g transform="translate(706.400378 263.009302) scale(0.16 -0.16)">
+    <g transform="translate(706.400378 262.852209) scale(0.16 -0.16)">
      <use xlink:href="#CourierNewPSMT-31"/>
      <use xlink:href="#CourierNewPSMT-31" transform="translate(60.009766 0)"/>
      <use xlink:href="#CourierNewPSMT-39" transform="translate(120.019531 0)"/>
@@ -1940,7 +1940,7 @@ z
    </g>
    <g id="text_35">
     <!-- 345 -->
-    <g transform="translate(741.234065 238.44219) scale(0.16 -0.16)">
+    <g transform="translate(741.234065 241.316462) scale(0.16 -0.16)">
      <use xlink:href="#CourierNewPSMT-33"/>
      <use xlink:href="#CourierNewPSMT-34" transform="translate(60.009766 0)"/>
      <use xlink:href="#CourierNewPSMT-35" transform="translate(120.019531 0)"/>
@@ -1948,17 +1948,218 @@ z
    </g>
    <g id="text_36">
     <!-- 319 -->
-    <g transform="translate(777.112808 241.268495) scale(0.16 -0.16)">
+    <g transform="translate(777.112808 243.794026) scale(0.16 -0.16)">
      <use xlink:href="#CourierNewPSMT-33"/>
      <use xlink:href="#CourierNewPSMT-31" transform="translate(60.009766 0)"/>
      <use xlink:href="#CourierNewPSMT-39" transform="translate(120.019531 0)"/>
     </g>
    </g>
+   <g id="legend_1">
+    <g id="patch_27">
+     <path d="M 208.92375 34.215 
+L 701.81875 34.215 
+Q 705.01875 34.215 705.01875 31.015 
+L 705.01875 10.4 
+Q 705.01875 7.2 701.81875 7.2 
+L 208.92375 7.2 
+Q 205.72375 7.2 205.72375 10.4 
+L 205.72375 31.015 
+Q 205.72375 34.215 208.92375 34.215 
+z
+" style="fill: #ffffff; opacity: 0.8; stroke: #cccccc; stroke-linejoin: miter"/>
+    </g>
+    <g id="patch_28">
+     <path d="M 212.12375 24.8 
+L 244.12375 24.8 
+L 244.12375 13.6 
+L 212.12375 13.6 
+z
+" style="fill: #00a89e"/>
+    </g>
+    <g id="text_37">
+     <!-- Noisy Clustered New -->
+     <g transform="translate(256.92375 24.8) scale(0.16 -0.16)">
+      <defs>
+       <path id="CourierNewPSMT-4e" d="M 3206 0 
+L 2869 0 
+L 934 3272 
+L 934 263 
+L 1419 263 
+Q 1516 263 1556 227 
+Q 1597 191 1597 131 
+Q 1597 75 1556 37 
+Q 1516 0 1419 0 
+L 453 0 
+Q 356 0 315 37 
+Q 275 75 275 131 
+Q 275 191 315 227 
+Q 356 263 453 263 
+L 672 263 
+L 672 3394 
+L 319 3394 
+Q 225 3394 184 3430 
+Q 144 3466 144 3525 
+Q 144 3584 184 3620 
+Q 225 3656 319 3656 
+L 1006 3656 
+L 2944 378 
+L 2944 3394 
+L 2459 3394 
+Q 2366 3394 2325 3430 
+Q 2284 3466 2284 3525 
+Q 2284 3584 2323 3620 
+Q 2363 3656 2459 3656 
+L 3428 3656 
+Q 3522 3656 3562 3620 
+Q 3603 3584 3603 3525 
+Q 3603 3466 3562 3430 
+Q 3522 3394 3428 3394 
+L 3206 3394 
+L 3206 0 
+z
+" transform="scale(0.015625)"/>
+       <path id="CourierNewPSMT-79" d="M 1938 0 
+L 719 2441 
+L 641 2441 
+Q 547 2441 506 2478 
+Q 466 2516 466 2572 
+Q 466 2613 486 2645 
+Q 506 2678 539 2692 
+Q 572 2706 641 2706 
+L 1359 2706 
+Q 1453 2706 1493 2668 
+Q 1534 2631 1534 2572 
+Q 1534 2516 1493 2478 
+Q 1453 2441 1359 2441 
+L 1006 2441 
+L 2078 288 
+L 3134 2441 
+L 2781 2441 
+Q 2688 2441 2647 2478 
+Q 2606 2516 2606 2575 
+Q 2606 2631 2647 2668 
+Q 2688 2706 2781 2706 
+L 3497 2706 
+Q 3594 2706 3634 2668 
+Q 3675 2631 3675 2572 
+Q 3675 2531 3650 2497 
+Q 3625 2463 3594 2452 
+Q 3563 2441 3419 2441 
+L 1756 -944 
+L 2166 -944 
+Q 2259 -944 2300 -980 
+Q 2341 -1016 2341 -1075 
+Q 2341 -1131 2300 -1168 
+Q 2259 -1206 2166 -1206 
+L 653 -1206 
+Q 559 -1206 518 -1170 
+Q 478 -1134 478 -1075 
+Q 478 -1016 518 -980 
+Q 559 -944 653 -944 
+L 1475 -944 
+L 1938 0 
+z
+" transform="scale(0.015625)"/>
+       <path id="CourierNewPSMT-43" d="M 3075 3297 
+L 3075 3481 
+Q 3075 3575 3111 3615 
+Q 3147 3656 3206 3656 
+Q 3266 3656 3302 3615 
+Q 3338 3575 3338 3481 
+L 3338 2753 
+Q 3338 2656 3302 2615 
+Q 3266 2575 3206 2575 
+Q 3153 2575 3117 2612 
+Q 3081 2650 3075 2734 
+Q 3059 2997 2791 3200 
+Q 2428 3478 1966 3478 
+Q 1663 3478 1394 3344 
+Q 1194 3247 1075 3106 
+Q 869 2863 747 2566 
+Q 659 2347 659 2072 
+L 659 1613 
+Q 659 1025 1084 592 
+Q 1509 159 2072 159 
+Q 2409 159 2676 306 
+Q 2944 453 3194 750 
+Q 3247 816 3313 816 
+Q 3369 816 3403 781 
+Q 3438 747 3438 694 
+Q 3438 622 3303 475 
+Q 3047 188 2726 42 
+Q 2406 -103 2078 -103 
+Q 1794 -103 1500 6 
+Q 1275 91 1128 203 
+Q 981 316 767 583 
+Q 553 850 475 1076 
+Q 397 1303 397 1575 
+L 397 2109 
+Q 397 2497 605 2901 
+Q 813 3306 1173 3523 
+Q 1534 3741 1956 3741 
+Q 2606 3741 3075 3297 
+z
+" transform="scale(0.015625)"/>
+      </defs>
+      <use xlink:href="#CourierNewPSMT-4e"/>
+      <use xlink:href="#CourierNewPSMT-6f" transform="translate(60.009766 0)"/>
+      <use xlink:href="#CourierNewPSMT-69" transform="translate(120.019531 0)"/>
+      <use xlink:href="#CourierNewPSMT-73" transform="translate(180.029297 0)"/>
+      <use xlink:href="#CourierNewPSMT-79" transform="translate(240.039062 0)"/>
+      <use xlink:href="#CourierNewPSMT-20" transform="translate(300.048828 0)"/>
+      <use xlink:href="#CourierNewPSMT-43" transform="translate(360.058594 0)"/>
+      <use xlink:href="#CourierNewPSMT-6c" transform="translate(420.068359 0)"/>
+      <use xlink:href="#CourierNewPSMT-75" transform="translate(480.078125 0)"/>
+      <use xlink:href="#CourierNewPSMT-73" transform="translate(540.087891 0)"/>
+      <use xlink:href="#CourierNewPSMT-74" transform="translate(600.097656 0)"/>
+      <use xlink:href="#CourierNewPSMT-65" transform="translate(660.107422 0)"/>
+      <use xlink:href="#CourierNewPSMT-72" transform="translate(720.117188 0)"/>
+      <use xlink:href="#CourierNewPSMT-65" transform="translate(780.126953 0)"/>
+      <use xlink:href="#CourierNewPSMT-64" transform="translate(840.136719 0)"/>
+      <use xlink:href="#CourierNewPSMT-20" transform="translate(900.146484 0)"/>
+      <use xlink:href="#CourierNewPSMT-4e" transform="translate(960.15625 0)"/>
+      <use xlink:href="#CourierNewPSMT-65" transform="translate(1020.166016 0)"/>
+      <use xlink:href="#CourierNewPSMT-77" transform="translate(1080.175781 0)"/>
+     </g>
+    </g>
+    <g id="patch_29">
+     <path d="M 471.37125 24.8 
+L 503.37125 24.8 
+L 503.37125 13.6 
+L 471.37125 13.6 
+z
+" style="fill: #cc6633"/>
+    </g>
+    <g id="text_38">
+     <!-- Clean Clustered New -->
+     <g transform="translate(516.17125 24.8) scale(0.16 -0.16)">
+      <use xlink:href="#CourierNewPSMT-43"/>
+      <use xlink:href="#CourierNewPSMT-6c" transform="translate(60.009766 0)"/>
+      <use xlink:href="#CourierNewPSMT-65" transform="translate(120.019531 0)"/>
+      <use xlink:href="#CourierNewPSMT-61" transform="translate(180.029297 0)"/>
+      <use xlink:href="#CourierNewPSMT-6e" transform="translate(240.039062 0)"/>
+      <use xlink:href="#CourierNewPSMT-20" transform="translate(300.048828 0)"/>
+      <use xlink:href="#CourierNewPSMT-43" transform="translate(360.058594 0)"/>
+      <use xlink:href="#CourierNewPSMT-6c" transform="translate(420.068359 0)"/>
+      <use xlink:href="#CourierNewPSMT-75" transform="translate(480.078125 0)"/>
+      <use xlink:href="#CourierNewPSMT-73" transform="translate(540.087891 0)"/>
+      <use xlink:href="#CourierNewPSMT-74" transform="translate(600.097656 0)"/>
+      <use xlink:href="#CourierNewPSMT-65" transform="translate(660.107422 0)"/>
+      <use xlink:href="#CourierNewPSMT-72" transform="translate(720.117188 0)"/>
+      <use xlink:href="#CourierNewPSMT-65" transform="translate(780.126953 0)"/>
+      <use xlink:href="#CourierNewPSMT-64" transform="translate(840.136719 0)"/>
+      <use xlink:href="#CourierNewPSMT-20" transform="translate(900.146484 0)"/>
+      <use xlink:href="#CourierNewPSMT-4e" transform="translate(960.15625 0)"/>
+      <use xlink:href="#CourierNewPSMT-65" transform="translate(1020.166016 0)"/>
+      <use xlink:href="#CourierNewPSMT-77" transform="translate(1080.175781 0)"/>
+     </g>
+    </g>
+   </g>
   </g>
  </g>
  <defs>
-  <clipPath id="pa4e3cd424f">
-   <rect x="74.23125" y="7.2" width="762.28" height="271.760082"/>
+  <clipPath id="pa3234f1e70">
+   <rect x="74.23125" y="38.979546" width="762.28" height="238.227282"/>
   </clipPath>
  </defs>
 </svg>

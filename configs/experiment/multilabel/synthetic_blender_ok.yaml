@@ -38,7 +38,8 @@ data:
   train_path: /srv/defectDetectionDataset/surfaceClassification/full_clean_clustered_new/train
   val_path: /srv/defectDetectionDataset/surfaceClassification/full_clean_clustered_new/val
   test_path: /srv/defectDetectionDataset/surfaceClassification/full_clean_clustered_new/test
-  syn_path: /srv/defectDetectionDataset/sourceSets/synthetic
+  syn_path: /srv/defectDetectionDataset/sourceSets/blender_synthetic
+  synthetic_classes: [ok]
 
 callbacks:
   early_stopping:

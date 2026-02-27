@@ -1,4 +1,4 @@
-from typing import Any, Optional, Sequence
+from typing import Any, Dict, Optional, Sequence
 
 from torch.utils.data import DataLoader
 from lightning import LightningDataModule
@@ -13,7 +13,7 @@ from src.data.components.transforms import (
     MediumTransforms,
     StrongTransforms,
 )
-from src.data.components.utils import filter_classes
+from src.data.components.utils import filter_classes, merge_classes
 from src.data.components.dataloader import collate_keep_images_as_list
 
 class HoldoutDataModule(LightningDataModule):
@@ -24,6 +24,7 @@ class HoldoutDataModule(LightningDataModule):
         test_path: str,
         syn_path: Optional[str] = None,
         synthetic_classes: Optional[Sequence[str]] = None,
+        synthetic_class_map: Optional[Dict[str, str]] = None,
         classes: Optional[Sequence[str]] = None,
         transforms: str = "medium",
         image1k_norm: bool = True,
@@ -105,6 +106,13 @@ class HoldoutDataModule(LightningDataModule):
             syn_ds = filter_classes(syn_ds, self.hparams.synthetic_classes, allow_missing=False)
         else:
             syn_ds = filter_classes(syn_ds, self.hparams.classes, allow_missing=True)
+
+        if self.hparams.synthetic_class_map is not None:
+            merge_map: Dict[str, Sequence[str]] = {
+                real_name: [s for s, r in self.hparams.synthetic_class_map.items() if r == real_name]
+                for real_name in set(self.hparams.synthetic_class_map.values())
+            }
+            syn_ds = merge_classes(syn_ds, merge_map, allow_missing=False)
 
         combined_ds = CombinedImageFolder([dataset, syn_ds])
         return combined_ds
