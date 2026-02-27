@@ -21,20 +21,20 @@ model:
   optimizer:
     _target_: torch.optim.SGD
     _partial_: true
-    lr: 0.0415
-    momentum:  0.762
-    weight_decay: 0.000314
+    lr: 0.0459
+    momentum:  0.734
+    weight_decay: 2.610e-05
   scheduler:
     _target_: torch.optim.lr_scheduler.CosineAnnealingLR
     T_max: ${trainer.max_epochs}
   criterion:
     _target_: src.models.components.loss.CELoss
-  mixup_alpha: 0.182
-  cutmix_alpha: 0.183
+  mixup_alpha: 0.713
+  cutmix_alpha: 0.761
 
 data:
   batch_size: 32
-  weight_alpha: 0.291
+  weight_alpha: 0.523
   image1k_norm: true
   transforms: medium
   train_path: /srv/defectDetectionDataset/surfaceClassification/noisy_clustered_new/train
