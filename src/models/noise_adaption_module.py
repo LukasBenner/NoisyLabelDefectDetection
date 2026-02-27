@@ -56,6 +56,30 @@ class NoiseAdaptionModule(BaseRobustModule):
             return datamodule.val_dataloader()
         return None
 
+    def _prepare_batch(self, batch) -> tuple[torch.Tensor, torch.Tensor]:
+        """Apply datamodule eval preprocessing to a raw batch from the dataloader.
+
+        Batches produced by collate_keep_images_as_list arrive as (list[Tensor], labels).
+        The datamodule's on_after_batch_transfer normally handles stacking and GPU
+        transforms, but that hook isn't invoked when we iterate the loader manually.
+        """
+        inputs, targets = batch[0], batch[1]
+        if not isinstance(inputs, list):
+            return inputs.to(self.device, non_blocking=True), targets.to(self.device, non_blocking=True)
+
+        dm = getattr(getattr(self, "trainer", None), "datamodule", None)
+        test_tf = getattr(dm, "test_transforms", None)
+        to_float = getattr(dm, "to_float", None)
+        norm = getattr(dm, "norm", None)
+
+        processed = [test_tf(img.to(self.device)) if test_tf is not None else img.to(self.device) for img in inputs]
+        x = torch.stack(processed, dim=0)
+        if to_float is not None:
+            x = to_float(x)
+        if norm is not None:
+            x = norm(x)
+        return x, targets.to(self.device, non_blocking=True)
+
     def _compute_confusion_matrix(self, val_loader: DataLoader) -> torch.Tensor:
         num_classes = int(self.num_classes)
         cm = torch.zeros(num_classes, num_classes, device=self.device, dtype=torch.float32)
@@ -64,9 +88,8 @@ class NoiseAdaptionModule(BaseRobustModule):
         self.eval()
         with torch.no_grad():
             for batch in val_loader:
-                inputs, targets = batch
-                inputs = inputs.to(self.device, non_blocking=True)
-                targets = targets.to(self.device, non_blocking=True).view(-1)
+                inputs, targets = self._prepare_batch(batch)
+                targets = targets.view(-1)
                 logits = self.forward(inputs)
                 preds = torch.argmax(logits, dim=1)
 
