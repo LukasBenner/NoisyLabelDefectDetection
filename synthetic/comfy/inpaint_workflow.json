@@ -76,23 +76,6 @@
       "title": "Image height"
     }
   },
-  "8": {
-    "inputs": {
-      "width": [
-        "6",
-        0
-      ],
-      "height": [
-        "7",
-        0
-      ],
-      "batch_size": 1
-    },
-    "class_type": "EmptyFlux2LatentImage",
-    "_meta": {
-      "title": "Empty Flux 2 Latent"
-    }
-  },
   "9": {
     "inputs": {
       "noise": [
@@ -112,7 +95,7 @@
         0
       ],
       "latent_image": [
-        "8",
+        "44",
         0
       ]
     },
@@ -197,7 +180,7 @@
       "time_format": "%Y-%m-%d-%H%M%S",
       "show_preview": true,
       "images": [
-        "27",
+        "14",
         0
       ]
     },
@@ -222,49 +205,13 @@
       "title": "BasicGuider"
     }
   },
-  "26": {
-    "inputs": {
-      "torchscript_jit": "on",
-      "image": [
-        "14",
-        0
-      ]
-    },
-    "class_type": "InspyrenetRembg",
-    "_meta": {
-      "title": "Inspyrenet Rembg"
-    }
-  },
-  "27": {
-    "inputs": {
-      "x": 0,
-      "y": 0,
-      "resize_source": false,
-      "destination": [
-        "36",
-        0
-      ],
-      "source": [
-        "26",
-        0
-      ],
-      "mask": [
-        "26",
-        1
-      ]
-    },
-    "class_type": "ImageCompositeMasked",
-    "_meta": {
-      "title": "ImageCompositeMasked"
-    }
-  },
   "28": {
     "inputs": {
       "image": "20250514-104331_4.jpg"
     },
     "class_type": "LoadImage",
     "_meta": {
-      "title": "Load Image"
+      "title": "Load Background Image"
     }
   },
   "36": {
@@ -281,7 +228,7 @@
     },
     "class_type": "ResizeImageMaskNode",
     "_meta": {
-      "title": "Resize Image/Mask"
+      "title": "Resize Background to 512x512"
     }
   },
   "37": {
@@ -297,7 +244,80 @@
     },
     "class_type": "ImageCrop",
     "_meta": {
-      "title": "Image Crop"
+      "title": "Crop Background"
+    }
+  },
+  "40": {
+    "inputs": {
+      "pixels": [
+        "36",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ]
+    },
+    "class_type": "VAEEncode",
+    "_meta": {
+      "title": "VAE Encode Background"
+    }
+  },
+  "41": {
+    "inputs": {
+      "value": 1.0,
+      "width": 384,
+      "height": 384
+    },
+    "class_type": "SolidMask",
+    "_meta": {
+      "title": "Inner Mask (inpaint area)"
+    }
+  },
+  "42": {
+    "inputs": {
+      "value": 0.0,
+      "width": 512,
+      "height": 512
+    },
+    "class_type": "SolidMask",
+    "_meta": {
+      "title": "Outer Mask (preserve area)"
+    }
+  },
+  "43": {
+    "inputs": {
+      "destination": [
+        "42",
+        0
+      ],
+      "source": [
+        "41",
+        0
+      ],
+      "x": 64,
+      "y": 64,
+      "operation": "add"
+    },
+    "class_type": "MaskComposite",
+    "_meta": {
+      "title": "Combine into Center Mask"
+    }
+  },
+  "44": {
+    "inputs": {
+      "samples": [
+        "40",
+        0
+      ],
+      "mask": [
+        "43",
+        0
+      ]
+    },
+    "class_type": "SetLatentNoiseMask",
+    "_meta": {
+      "title": "Apply Inpaint Mask to Background Latent"
     }
   }
 }
