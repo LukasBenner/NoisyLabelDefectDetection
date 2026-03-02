@@ -92,7 +92,7 @@ class HoldoutNoisyDataModule(LightningDataModule):
         else:
             raise ValueError(f"Transforms '{transforms}' not recognized.")
 
-        self.cpu_resize = v2.Resize(480, antialias=True)
+        self.resize = v2.Resize(480, antialias=True)
         self.to_float = v2.ToDtype(torch.float32, scale=True)
         self.norm = v2.Normalize(mean=mean, std=std)
 
@@ -170,6 +170,7 @@ class HoldoutNoisyDataModule(LightningDataModule):
 
         # now shapes match -> stack
         x = torch.stack(imgs, dim=0)          # (B,C,480,480)
+        x = self.resize(x)                    # ensure CPU resize is applied
         x = self.to_float(x)                  # float in [0,1]
         x = self.norm(x)
 
@@ -188,7 +189,6 @@ class HoldoutNoisyDataModule(LightningDataModule):
                 self.train_ds,
                 idxs_train,
                 return_index=False,
-                cpu_transform=self.cpu_resize,
             )
 
             targets = torch.tensor(self.train_ds.targets, dtype=torch.long)
@@ -216,7 +216,6 @@ class HoldoutNoisyDataModule(LightningDataModule):
                 self.val_ds,
                 idxs_val,
                 return_index=False,
-                cpu_transform=self.cpu_resize,
             )
 
         if stage == "test" or stage == "predict":
@@ -227,7 +226,6 @@ class HoldoutNoisyDataModule(LightningDataModule):
                 self.test_ds,
                 idxs_test,
                 return_index=False,
-                cpu_transform=self.cpu_resize,
             )
 
     def train_dataloader(self) -> DataLoader:

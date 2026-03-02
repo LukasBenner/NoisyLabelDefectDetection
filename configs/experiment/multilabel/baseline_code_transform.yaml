@@ -7,7 +7,7 @@ defaults:
   - _self_
 
 experiment_name: "baseline"
-run_name_postfix: "mobile_s_longer_stopping"
+run_name_postfix: "mobile_s_code_transforms"
 
 n_runs: 10
 
@@ -28,11 +28,12 @@ model:
 
 data:
   batch_size: 32
+  transforms: baseline_code
   data_path: /srv/defectDetectionDataset/surfaceClassification/baseline
 
 callbacks:
   early_stopping:
-    patience: 30
+    patience: 10
 
 trainer:
-  max_epochs: 200
+  max_epochs: 50

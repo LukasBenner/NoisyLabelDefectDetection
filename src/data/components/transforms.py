@@ -1,27 +1,4 @@
-import torch
 from torchvision.transforms import v2
-
-class BaselineTransforms:
-    @staticmethod
-    def train_transforms():
-        transforms = v2.Compose(
-            [
-                v2.CenterCrop(480),
-                v2.RandomHorizontalFlip(),
-                v2.RandomVerticalFlip(),
-            ]
-        )
-        return transforms
-
-    @staticmethod
-    def eval_transforms():
-        transforms = v2.Compose(
-            [
-                v2.CenterCrop(480),
-            ]
-        )
-        return transforms
-
 
 class MediumTransforms:
     @staticmethod

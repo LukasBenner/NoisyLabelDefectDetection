@@ -7,7 +7,7 @@ defaults:
   - _self_
 
 experiment_name: "baseline"
-run_name_postfix: "mobile_s"
+run_name_postfix: "mobile_s_paper_transforms"
 
 n_runs: 10
 
@@ -28,6 +28,7 @@ model:
 
 data:
   batch_size: 32
+  transforms: baseline_paper
   data_path: /srv/defectDetectionDataset/surfaceClassification/baseline
 
 callbacks:

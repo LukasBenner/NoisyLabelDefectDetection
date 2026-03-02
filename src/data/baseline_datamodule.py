@@ -3,11 +3,10 @@ from typing import Any, Optional, Sequence
 from torch.utils.data import DataLoader, random_split
 from lightning import LightningDataModule
 from torchvision.datasets import ImageFolder
-from torchvision.transforms import v2
+from torchvision import transforms as T
 import torch
 
 from src.data.components.transform_subset import TransformSubset
-from src.data.components.transforms import BaselineTransforms
 
 from src.data.components.dataloader import collate_keep_images_as_list
 
@@ -19,6 +18,7 @@ class BaselineDataModule(LightningDataModule):
         batch_size: int = 32,
         num_workers: int = 4,
         pin_memory: bool = True,
+        transforms: str = "baseline_code",
         seed: int = 42,
     ) -> None:
         super().__init__()
@@ -29,12 +29,36 @@ class BaselineDataModule(LightningDataModule):
         mean = [0.485, 0.456, 0.406]
         std = [0.229, 0.224, 0.225]
         
-        self.train_transforms = BaselineTransforms.train_transforms()
-        self.test_transforms = BaselineTransforms.eval_transforms()
+        if transforms == "baseline_code":
+            self.train_transforms = T.Compose(
+            [
+                T.Resize((640, 480)),
+                T.RandomHorizontalFlip(),
+                T.RandomVerticalFlip(),
+            ])
+            self.test_transforms = T.Compose(
+            [
+                T.Resize((640, 480))
+            ])
+            
+        elif transforms == "baseline_paper":
+            self.train_transforms = T.Compose(
+            [
+                T.Resize((224, 224)),
+                T.RandomRotation(degrees=(180, 180)),
+                T.RandomHorizontalFlip(p=1.0),
+                T.RandomVerticalFlip(p=1.0),
+                T.ColorJitter(saturation=3.0, contrast=3.0),
+            ])
+            self.test_transforms = T.Compose(
+            [
+                T.Resize((224, 224))
+            ])
+        else:
+            raise ValueError(f"Unknown transform: {transforms}")
         
-        self.cpu_resize = v2.Resize(480, antialias=True)
-        self.to_float = v2.ToDtype(torch.float32, scale=True)
-        self.norm = v2.Normalize(mean=mean, std=std)
+        self.to_float = T.ConvertImageDtype(torch.float32)
+        self.norm = T.Normalize(mean=mean, std=std)
         
     @property
     def num_classes(self) -> int:
@@ -54,6 +78,9 @@ class BaselineDataModule(LightningDataModule):
             raise ValueError("Dataset not prepared. Call setup() first.")
 
     def setup(self, stage: Optional[str] = None):
+        if hasattr(self, 'val_dataset'):
+            return
+        
         self.ds = ImageFolder(self.hparams.data_path)
 
         n_train = int(0.8 * len(self.ds))
@@ -61,8 +88,8 @@ class BaselineDataModule(LightningDataModule):
         train_subset, val_subset = random_split(self.ds, [n_train, n_val])
 
         # Wrap subsets with TransformSubset to apply transforms properly
-        self.train_dataset = TransformSubset(self.ds, train_subset.indices, cpu_transform=self.cpu_resize)
-        self.val_dataset = TransformSubset(self.ds, val_subset.indices, cpu_transform=self.cpu_resize)
+        self.train_dataset = TransformSubset(self.ds, train_subset.indices)
+        self.val_dataset = TransformSubset(self.ds, val_subset.indices)
 
         # Calculate class weights from training set
         targets = torch.tensor([self.ds.targets[i] for i in train_subset.indices], dtype=torch.long)
@@ -85,7 +112,7 @@ class BaselineDataModule(LightningDataModule):
         imgs = [geom(img) for img in imgs]
 
         # now shapes match -> stack
-        x = torch.stack(imgs, dim=0)          # (B,C,480,480)
+        x = torch.stack(imgs, dim=0)         # (B,C,480,480)
         x = self.to_float(x)                  # float in [0,1]
         x = self.norm(x)
 

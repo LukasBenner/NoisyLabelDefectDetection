@@ -9,7 +9,6 @@ import torch
 from src.data.components.combined_image_folder import CombinedImageFolder
 from src.data.components.transform_subset import TransformSubset
 from src.data.components.transforms import (
-    BaselineTransforms,
     MediumTransforms,
     StrongTransforms,
 )
@@ -50,10 +49,7 @@ class CombinedHoldoutDataModule(LightningDataModule):
         mean = mean_image1k if image1k_norm else mean_custom
         std = std_image1k if image1k_norm else std_custom
 
-        if transforms == "baseline":
-            self.train_transforms = BaselineTransforms.train_transforms()
-            self.test_transforms = BaselineTransforms.eval_transforms()
-        elif transforms == "medium":
+        if transforms == "medium":
             self.train_transforms = MediumTransforms.train_transforms()
             self.test_transforms = MediumTransforms.eval_transforms()
         elif transforms == "strong":
@@ -62,7 +58,7 @@ class CombinedHoldoutDataModule(LightningDataModule):
         else:
             raise ValueError(f"Transforms '{transforms}' not recognized.")
 
-        self.cpu_resize = v2.Resize(480, antialias=True)
+        self.resize = v2.Resize(480, antialias=True)
         self.to_float = v2.ToDtype(torch.float32, scale=True)
         self.norm = v2.Normalize(mean=mean, std=std)
 
@@ -124,6 +120,7 @@ class CombinedHoldoutDataModule(LightningDataModule):
 
         # now shapes match -> stack
         x = torch.stack(imgs, dim=0)          # (B,C,480,480)
+        x = self.resize(x)                    # ensure CPU resize is applied
         x = self.to_float(x)                  # float in [0,1]
         x = self.norm(x)
 
@@ -141,7 +138,6 @@ class CombinedHoldoutDataModule(LightningDataModule):
                 self.train_ds,
                 idxs_train,
                 return_index=False,
-                cpu_transform=self.cpu_resize,
             )
 
             targets = torch.tensor(self.train_ds.targets, dtype=torch.long)
@@ -170,7 +166,6 @@ class CombinedHoldoutDataModule(LightningDataModule):
                 self.val_ds,
                 idxs_val,
                 return_index=False,
-                cpu_transform=self.cpu_resize,
             )
 
         if stage == "test" or stage == "predict":
@@ -181,7 +176,6 @@ class CombinedHoldoutDataModule(LightningDataModule):
                 self.test_ds,
                 idxs_test,
                 return_index=False,
-                cpu_transform=self.cpu_resize,
             )
 
     def train_dataloader(self) -> DataLoader:
