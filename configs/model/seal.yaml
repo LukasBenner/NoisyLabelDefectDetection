@@ -3,6 +3,7 @@ _target_: src.models.seal_module.SEALIterationModule
 num_classes: 9
 
 epochs_per_iteration: 10  # Number of epochs per iteration (T in algorithm)
+num_iterations: 3
 
 # Base network
 net:
@@ -21,8 +22,9 @@ optimizer:
 scheduler:
   _target_: torch.optim.lr_scheduler.CosineAnnealingLR
   _partial_: true
-  T_max: 30  # Total epochs = num_iterations * epochs_per_iteration
+  T_max: ${model.epochs_per_iteration}  # Scheduler resets each SEAL iteration
   eta_min: 0.00001
 
 # Model compilation
 compile: false
+log_per_class: true

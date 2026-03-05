@@ -11,6 +11,7 @@ from src.data.components.transform_subset import TransformSubset
 from src.data.components.transforms import (
     MediumTransforms,
     StrongTransforms,
+    NoCropTransforms
 )
 from src.data.components.utils import filter_classes, merge_classes
 from src.data.components.dataloader import collate_keep_images_as_list
@@ -55,6 +56,9 @@ class HoldoutDataModule(LightningDataModule):
         elif transforms == "strong":
             self.train_transforms = StrongTransforms.train_transforms()
             self.test_transforms = StrongTransforms.eval_transforms()
+        elif transforms == "no_crop":
+            self.train_transforms = NoCropTransforms.train_transforms()
+            self.test_transforms = NoCropTransforms.eval_transforms()
         else:
             raise ValueError(f"Transforms '{transforms}' not recognized.")
 

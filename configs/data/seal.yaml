@@ -1,9 +1,15 @@
 _target_: src.data.seal_datamodule.SEALDataModule
 
-train_path: /srv/defectDetectionDataset/surface_clustered_cleaned/train
-val_path: /srv/defectDetectionDataset/surface_clustered_cleaned/val
-test_path: /srv/defectDetectionDataset/surface_clustered_cleaned/test
+train_path: /srv/defectDetectionDataset/surfaceClassification/noisy_clustered_new/train
+val_path: /srv/defectDetectionDataset/surfaceClassification/noisy_clustered_new/val
+test_path: /srv/defectDetectionDataset/surfaceClassification/noisy_clustered_new/test
+classes: [background, black_stain, corrosion, crack, deformation, missing_part, ok, other, silicate_stain, water_stain]
 batch_size: 32
-num_workers: 4
+use_weighted_sampler: True
+weight_alpha: 1.0
+num_workers: 8
+prefetch_factor: 2
 pin_memory: True
+image1k_norm: true
+transforms: medium
 seed: ${seed}

@@ -1,0 +1,38 @@
+# @package _global_
+
+defaults:
+  - /model: seal
+  - override /data: seal
+  - override /callbacks: with_early_stopping
+  - _self_
+
+research_name: SurfaceDefectDetection
+experiment_name: seal
+run_name_postfix: pretrained
+
+n_runs: 3
+
+model:
+  num_classes: 10
+  net:
+    _target_: src.models.components.mobile_net.MobileNet
+    pretrained: true
+    variant: small
+  epochs_per_iteration: 40
+  num_iterations: 5
+  optimizer:
+    _target_: torch.optim.AdamW
+    _partial_: true
+    lr: 0.001
+    weight_decay: 0.01
+  scheduler:
+    _target_: torch.optim.lr_scheduler.CosineAnnealingLR
+    _partial_: true
+    T_max: ${model.epochs_per_iteration}
+    eta_min: 1.0e-6
+
+data:
+  batch_size: 32
+  weight_alpha: 0.6
+  transforms: no_crop
+  image1k_norm: true
