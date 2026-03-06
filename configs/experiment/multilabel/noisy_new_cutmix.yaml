@@ -7,7 +7,7 @@ defaults:
   - _self_
 
 research_name: SurfaceDefectDetection
-experiment_name: noisy_new_cutmix
+experiment_name: noisy_new
 run_name_postfix: cutmix
 
 n_runs: 10

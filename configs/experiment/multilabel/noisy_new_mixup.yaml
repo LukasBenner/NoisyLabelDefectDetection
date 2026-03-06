@@ -7,7 +7,7 @@ defaults:
   - _self_
 
 research_name: SurfaceDefectDetection
-experiment_name: noisy_new_mixup
+experiment_name: noisy_new
 run_name_postfix: mixup
 
 n_runs: 10

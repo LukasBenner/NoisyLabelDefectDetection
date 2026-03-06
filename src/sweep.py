@@ -222,10 +222,17 @@ def main(cfg: DictConfig) -> Optional[float]:
 
             # Instantiate trainer
             log.info(f"Instantiating trainer for trial {trial.number}")
+            trainer_kwargs = dict(callbacks=callbacks, logger=logger)
+
+            # SEAL requires max_epochs = epochs_per_iteration * num_iterations
+            if "epochs_per_iteration" in run_cfg.model and "num_iterations" in run_cfg.model:
+                seal_max_epochs = int(run_cfg.model.epochs_per_iteration) * int(run_cfg.model.num_iterations)
+                trainer_kwargs["max_epochs"] = seal_max_epochs
+                log.info(f"SEAL mode: max_epochs = {run_cfg.model.epochs_per_iteration} * {run_cfg.model.num_iterations} = {seal_max_epochs}")
+
             trainer: Trainer = hydra.utils.instantiate(
                 run_cfg.trainer,
-                callbacks=callbacks,
-                logger=logger
+                **trainer_kwargs
             )
 
             # Train the model

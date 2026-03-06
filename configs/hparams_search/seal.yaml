@@ -1,0 +1,49 @@
+# @package _global_
+
+defaults:
+  - default
+  - _self_
+
+study_name: seal
+run_name_postfix: seal
+
+trainer:
+  deterministic: False
+
+enqueue_trials:
+  - "model.optimizer.lr": 0.001
+    "model.optimizer.weight_decay": 0.01
+    "model.epochs_per_iteration": 40
+    "model.num_iterations": 5
+    "data.batch_size": 32
+    "data.weight_alpha": 0.6
+
+search_space:
+  model:
+    optimizer:
+      lr:
+        type: float
+        low: 1.0e-4
+        high: 1.0e-2
+        log: true
+      weight_decay:
+        type: float
+        low: 1.0e-5
+        high: 1.0e-1
+        log: true
+    epochs_per_iteration:
+      type: categorical
+      choices: [20, 30, 40, 50]
+    num_iterations:
+      type: int
+      low: 3
+      high: 8
+
+  data:
+    batch_size:
+      type: categorical
+      choices: [32, 64, 128]
+    weight_alpha:
+      type: float
+      low: 0.0
+      high: 1.0
