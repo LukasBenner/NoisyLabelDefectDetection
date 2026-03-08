@@ -41,15 +41,9 @@ class HoldoutDataModule(LightningDataModule):
         self.save_hyperparameters(logger=False)
         self.hparams: Any
 
-        mean_image1k = [0.485, 0.456, 0.406]
-        std_image1k = [0.229, 0.224, 0.225]
-
-        mean_custom = [0.3299, 0.3896, 0.4599]
-        std_custom = [0.2219, 0.2155, 0.2540]
-
-        mean = mean_image1k if image1k_norm else mean_custom
-        std = std_image1k if image1k_norm else std_custom
-
+        im_1k_mean = [0.485, 0.456, 0.406]
+        im_1k_std = [0.229, 0.224, 0.225]
+        
         if transforms == "medium":
             self.train_transforms = MediumTransforms.train_transforms()
             self.test_transforms = MediumTransforms.eval_transforms()
@@ -64,7 +58,7 @@ class HoldoutDataModule(LightningDataModule):
 
         self.resize = v2.Resize(480, antialias=True)
         self.to_float = v2.ToDtype(torch.float32, scale=True)
-        self.norm = v2.Normalize(mean=mean, std=std)
+        self.norm = v2.Normalize(mean=im_1k_mean, std=im_1k_std) if image1k_norm else None
 
     @property
     def num_classes(self) -> int:
@@ -133,15 +127,34 @@ class HoldoutDataModule(LightningDataModule):
         x = torch.stack(imgs, dim=0)          # (B,C,480,480)
         x = self.resize(x)                    # ensure CPU resize is applied
         x = self.to_float(x)                  # float in [0,1]
+        assert self.norm is not None, "Normalization not initialized. Call setup('fit') first."
         x = self.norm(x)
 
         return (x, y, idxs) if idxs is not None else (x, y)
     
 
+    def _compute_mean_std(self, dataset: ImageFolder) -> None:
+        loader = DataLoader(dataset, batch_size=1, num_workers=self.hparams.num_workers, shuffle=False)
+        pixel_sum = torch.zeros(3)
+        pixel_sq_sum = torch.zeros(3)
+        num_pixels = 0
+        to_float = v2.Compose([v2.Resize(480, antialias=True), v2.ToDtype(torch.float32, scale=True)])
+        for img, _ in loader:
+            img = to_float(img)
+            b, c, h, w = img.shape
+            pixel_sum += img.sum(dim=[0, 2, 3])
+            pixel_sq_sum += (img ** 2).sum(dim=[0, 2, 3])
+            num_pixels += b * h * w
+        mean = pixel_sum / num_pixels
+        std = (pixel_sq_sum / num_pixels - mean ** 2).sqrt()
+        self.norm = v2.Normalize(mean=mean.tolist(), std=std.tolist())
+
     def setup(self, stage: Optional[str] = None):
         if stage == "fit":
             self.train_ds = ImageFolder(self.hparams.train_path)
             self.train_ds = filter_classes(self.train_ds, self.hparams.classes)
+            if self.norm is None:
+                self._compute_mean_std(self.train_ds)
             if self.hparams.syn_path is not None:
                 self.train_ds = self._add_synthetic_data(self.train_ds)
             idxs_train = list(range(len(self.train_ds)))
