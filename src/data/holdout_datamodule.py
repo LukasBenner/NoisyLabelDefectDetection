@@ -134,17 +134,24 @@ class HoldoutDataModule(LightningDataModule):
     
 
     def _compute_mean_std(self, dataset: ImageFolder) -> None:
-        loader = DataLoader(dataset, batch_size=1, num_workers=self.hparams.num_workers, shuffle=False)
+        ds = TransformSubset(dataset, list(range(len(dataset))), return_index=False)
+        loader = DataLoader(
+            ds,
+            collate_fn=collate_keep_images_as_list,
+            batch_size=self.hparams.batch_size,
+            num_workers=self.hparams.num_workers,
+            shuffle=False,
+        )
         pixel_sum = torch.zeros(3)
         pixel_sq_sum = torch.zeros(3)
         num_pixels = 0
-        to_float = v2.Compose([v2.Resize(480, antialias=True), v2.ToDtype(torch.float32, scale=True)])
-        for img, _ in loader:
-            img = to_float(img)
-            b, c, h, w = img.shape
-            pixel_sum += img.sum(dim=[0, 2, 3])
-            pixel_sq_sum += (img ** 2).sum(dim=[0, 2, 3])
-            num_pixels += b * h * w
+        for imgs, _ in loader:
+            for img in imgs:
+                img = self.to_float(self.resize(img))  # (C, H, W)
+                c, h, w = img.shape
+                pixel_sum += img.sum(dim=[1, 2])
+                pixel_sq_sum += (img ** 2).sum(dim=[1, 2])
+                num_pixels += h * w
         mean = pixel_sum / num_pixels
         std = (pixel_sq_sum / num_pixels - mean ** 2).sqrt()
         self.norm = v2.Normalize(mean=mean.tolist(), std=std.tolist())
