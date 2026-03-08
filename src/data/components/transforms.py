@@ -58,7 +58,6 @@ class NoCropTransforms:
                 v2.RandomHorizontalFlip(p=0.5),
                 v2.RandomVerticalFlip(p=0.5),
                 v2.RandomRotation(degrees=(-45,45)),
-                v2.RandomApply([v2.GaussianBlur(kernel_size=(5,9), sigma=(0.1,5))], p=0.5),
             ]
         )
         return transforms

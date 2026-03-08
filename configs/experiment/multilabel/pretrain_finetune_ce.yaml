@@ -1,0 +1,103 @@
+# @package _global_
+#
+# Two-phase training: pretrain on synthetic → finetune on real (noisy) data.
+#
+# Usage:
+#   python src/pretrain_finetune.py experiment=multilabel/pretrain_finetune_ce
+#
+
+defaults:
+  - _self_
+
+research_name: SurfaceDefectDetection
+experiment_name: pretrain_finetune
+run_name_postfix: ce_mobile_s
+
+n_runs: 10
+
+# ── Phase 1: Pretrain on synthetic data ──
+pretrain:
+  trainer:
+    max_epochs: 50
+
+  model:
+    _target_: src.models.base_robust_module.BaseRobustModule
+    num_classes: 9
+    net:
+      _target_: src.models.components.mobile_net.MobileNet
+      pretrained: false
+      variant: small
+    optimizer:
+      _target_: torch.optim.SGD
+      _partial_: true
+      lr: 0.01
+      momentum: 0.9
+      weight_decay: 1e-4
+    scheduler:
+      _target_: torch.optim.lr_scheduler.CosineAnnealingLR
+      _partial_: true
+      T_max: 50
+    criterion:
+      _target_: src.models.components.loss.CELoss
+      _partial_: true
+
+  data:
+    _target_: src.data.holdout_datamodule.HoldoutDataModule
+    train_path: /srv/defectDetectionDataset/sourceSets/synthetic
+    classes: [background, black_stain, corrosion, crack, deformation, missing_part, ok, silicate_stain, silicate_discolor, water_stain]
+    synthetic_class_map:
+      silicate_stain: silicate_stain
+      silicate_discolor: silicate_stain
+    batch_size: 32
+    image1k_norm: true
+    transforms: no_crop
+    use_weighted_sampler: true
+
+  callbacks:
+    early_stopping:
+      patience: 15
+
+# ── Phase 2: Finetune on real data ──
+finetune:
+  trainer:
+    max_epochs: 200
+
+  model:
+    _target_: src.models.pretrain_finetune_module.PretrainFinetuneModule
+    num_classes: 9
+    net:
+      _target_: src.models.components.mobile_net.MobileNet
+      pretrained: false  # backbone weights come from pretrain phase
+      variant: small
+    optimizer:
+      _target_: torch.optim.SGD
+      _partial_: true
+      lr: 0.0129
+      momentum: 0.919
+      weight_decay: 1.185e-05
+    scheduler:
+      _target_: torch.optim.lr_scheduler.CosineAnnealingLR
+      _partial_: true
+      T_max: 200
+    criterion:
+      _target_: src.models.components.loss.CELoss
+      _partial_: true
+    # ── Finetune-specific settings ──
+    freeze_backbone_epochs: 5     # freeze backbone for first 5 epochs
+    backbone_lr_factor: 0.1       # backbone LR = 10% of head LR
+
+  data:
+    _target_: src.data.holdout_datamodule.HoldoutDataModule
+    train_path: /srv/defectDetectionDataset/surfaceClassification/full_clean_temporal_new/train
+    val_path: /srv/defectDetectionDataset/surfaceClassification/full_clean_temporal_new/val
+    test_path: /srv/defectDetectionDataset/surfaceClassification/full_clean_temporal_new/test
+    classes: [background, black_stain, corrosion, crack, deformation, missing_part, ok, silicate_stain, water_stain]
+    batch_size: 32
+    weight_alpha: 0.803
+    image1k_norm: true
+    transforms: no_crop
+    use_weighted_sampler: true
+
+  callbacks:
+    early_stopping:
+      patience: 30
