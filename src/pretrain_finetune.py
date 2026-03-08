@@ -86,36 +86,66 @@ def pretrain_phase(cfg: DictConfig, seed: int, save_dir: Path) -> str:
     datamodule.prepare_data()
     datamodule.setup(stage="fit")
 
+    has_val = datamodule.val_dataloader() is not None
+
     # Instantiate model (uses BaseRobustModule or PretrainFinetuneModule)
     model = hydra.utils.instantiate(pretrain_cfg.model, datamodule=datamodule)
 
     # Callbacks
     callbacks: List[Callback] = instantiate_callbacks(pretrain_cfg.get("callbacks"))
-    for callback in callbacks:
-        if isinstance(callback, ModelCheckpoint) and callback.dirpath is None:
-            callback.dirpath = str(pretrain_dir / "checkpoints")
+    if not has_val:
+        # Remove callbacks that monitor validation metrics
+        callbacks = [
+            cb for cb in callbacks
+            if not isinstance(cb, (ModelCheckpoint,))
+            and not hasattr(cb, "monitor")
+        ]
+        # Add epoch-based checkpoint (save last)
+        ckpt_cb = ModelCheckpoint(
+            dirpath=str(pretrain_dir / "checkpoints"),
+            filename="pretrain-epoch_{epoch:03d}",
+            save_last=True,
+            save_top_k=0,  # only save last
+        )
+        callbacks.append(ckpt_cb)
+        log.info("No validation data — using epoch-based checkpointing (save last).")
+    else:
+        for callback in callbacks:
+            if isinstance(callback, ModelCheckpoint) and callback.dirpath is None:
+                callback.dirpath = str(pretrain_dir / "checkpoints")
 
     logger = CSVLogger(save_dir=pretrain_dir, name="", version="")
 
-    # Trainer
+    # Trainer — disable validation if no val data
+    trainer_overrides = {}
+    if not has_val:
+        trainer_overrides["limit_val_batches"] = 0
+
     trainer: Trainer = hydra.utils.instantiate(
-        pretrain_cfg.trainer, callbacks=callbacks, logger=logger
+        pretrain_cfg.trainer, callbacks=callbacks, logger=logger, **trainer_overrides
     )
 
     # Train
     log.info("Starting pretraining...")
     trainer.fit(model=model, datamodule=datamodule)
 
-    best_path = trainer.checkpoint_callback.best_model_path if trainer.checkpoint_callback else None
+    # Resolve checkpoint path: prefer best (val-monitored), fall back to last
+    best_path = None
+    if trainer.checkpoint_callback:
+        best_path = trainer.checkpoint_callback.best_model_path or None
+        if not best_path and hasattr(trainer.checkpoint_callback, "last_model_path"):
+            best_path = trainer.checkpoint_callback.last_model_path or None
     if not best_path:
-        # Fallback: save last model manually
         fallback_path = str(pretrain_dir / "checkpoints" / "last_pretrain.ckpt")
         trainer.save_checkpoint(fallback_path)
         best_path = fallback_path
 
-    val_f1 = trainer.callback_metrics.get("val/f1_macro", 0.0)
-    log.info(f"Pretraining complete. Best checkpoint: {best_path}")
-    log.info(f"Pretrain val/f1_macro: {val_f1:.4f}")
+    if has_val:
+        val_f1 = trainer.callback_metrics.get("val/f1_macro", 0.0)
+        log.info(f"Pretraining complete. Best checkpoint: {best_path}")
+        log.info(f"Pretrain val/f1_macro: {val_f1:.4f}")
+    else:
+        log.info(f"Pretraining complete (no validation). Checkpoint: {best_path}")
 
     return best_path
 

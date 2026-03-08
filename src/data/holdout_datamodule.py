@@ -20,8 +20,8 @@ class HoldoutDataModule(LightningDataModule):
     def __init__(
         self,
         train_path: str,
-        val_path: str,
-        test_path: str,
+        val_path: Optional[str] = None,
+        test_path: Optional[str] = None,
         syn_path: Optional[str] = None,
         synthetic_classes: Optional[Sequence[str]] = None,
         synthetic_class_map: Optional[Dict[str, str]] = None,
@@ -189,23 +189,25 @@ class HoldoutDataModule(LightningDataModule):
                 )
 
         if stage == "fit" or stage == "validate":
-            self.val_ds = ImageFolder(self.hparams.val_path)
-            self.val_ds = filter_classes(self.val_ds, self.hparams.classes)
-            idxs_val = list(range(len(self.val_ds)))
-            self.val_dataset = TransformSubset(
-                self.val_ds,
-                idxs_val,
-                return_index=False,
-            )
+            if self.hparams.val_path is not None:
+                self.val_ds = ImageFolder(self.hparams.val_path)
+                self.val_ds = filter_classes(self.val_ds, self.hparams.classes)
+                idxs_val = list(range(len(self.val_ds)))
+                self.val_dataset = TransformSubset(
+                    self.val_ds,
+                    idxs_val,
+                    return_index=False,
+                )
 
         if stage == "test" or stage == "predict":
-            self.test_ds = ImageFolder(self.hparams.test_path)
-            self.test_ds = filter_classes(self.test_ds, self.hparams.classes)
-            idxs_test = list(range(len(self.test_ds)))
-            self.test_dataset = TransformSubset(
-                self.test_ds,
-                idxs_test,
-                return_index=False,
+            if self.hparams.test_path is not None:
+                self.test_ds = ImageFolder(self.hparams.test_path)
+                self.test_ds = filter_classes(self.test_ds, self.hparams.classes)
+                idxs_test = list(range(len(self.test_ds)))
+                self.test_dataset = TransformSubset(
+                    self.test_ds,
+                    idxs_test,
+                    return_index=False,
             )
 
     def train_dataloader(self) -> DataLoader:
@@ -222,7 +224,9 @@ class HoldoutDataModule(LightningDataModule):
             prefetch_factor=self.hparams.prefetch_factor,
         )
 
-    def val_dataloader(self) -> DataLoader:
+    def val_dataloader(self) -> Optional[DataLoader]:
+        if not hasattr(self, "val_dataset"):
+            return None
         return DataLoader(
             self.val_dataset,
             collate_fn=collate_keep_images_as_list,
@@ -233,7 +237,9 @@ class HoldoutDataModule(LightningDataModule):
             persistent_workers=True if self.hparams.num_workers > 0 else False,
         )
 
-    def test_dataloader(self) -> DataLoader:
+    def test_dataloader(self) -> Optional[DataLoader]:
+        if not hasattr(self, "test_dataset"):
+            return None
         return DataLoader(
             self.test_dataset,
             collate_fn=collate_keep_images_as_list,
