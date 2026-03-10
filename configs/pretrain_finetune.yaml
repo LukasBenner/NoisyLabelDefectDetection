@@ -91,4 +91,4 @@ finetune:
 
 hydra:
   run:
-    dir: ${log_path}/pretrain_finetune/${research_name}/${experiment_name}/${run_name}
+    dir: ${log_path}/train/${research_name}/${experiment_name}/${run_name}

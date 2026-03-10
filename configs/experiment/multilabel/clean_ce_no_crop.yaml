@@ -13,7 +13,7 @@ run_name_postfix: ce_no_crop
 n_runs: 10
 
 model:
-  num_classes: 10
+  num_classes: 9
   net:
     _target_: src.models.components.mobile_net.MobileNet
     pretrained: true

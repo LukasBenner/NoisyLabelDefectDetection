@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
 """
-Automated quality feedback for synthetic defect images.
+Automated quality feedback for synthetic images.
 
-Runs FID/KID evaluation per class, ranks classes by quality,
-and generates a structured report with actionable suggestions.
+Runs FID/KID/IS/Precision/Recall evaluation on flat real vs synthetic image
+folders and generates a structured quality report with actionable suggestions.
 
 Usage:
     python feedback.py \
-        --real_dir /path/to/real/train \
-        --syn_dir /path/to/synthetic \
-        --prompts_dir ./defects
+        --real_dir /path/to/real \
+        --syn_dir /path/to/synthetic
 """
 
 from __future__ import annotations
@@ -24,16 +23,11 @@ import torch
 from evaluate import evaluate, get_device
 
 
-def load_prompt(prompts_dir: Path, class_name: str) -> Optional[str]:
-    """Load the prompt file for a given class."""
-    prompt_file = prompts_dir / f"{class_name}.txt"
-    if prompt_file.exists():
-        return prompt_file.read_text(encoding="utf-8").strip()
-    return None
-
+# ---------------------------------------------------------------------------
+# Quality classification thresholds
+# ---------------------------------------------------------------------------
 
 def classify_fid(fid: float) -> str:
-    """Rough quality bucket for FID scores (domain-specific imagery)."""
     if fid < 80:
         return "good"
     if fid < 150:
@@ -44,7 +38,6 @@ def classify_fid(fid: float) -> str:
 
 
 def classify_kid(kid_mean: float) -> str:
-    """Rough quality bucket for KID scores."""
     if kid_mean < 0.02:
         return "good"
     if kid_mean < 0.05:
@@ -54,65 +47,143 @@ def classify_kid(kid_mean: float) -> str:
     return "very_poor"
 
 
-def generate_suggestions(result: dict, prompt: Optional[str]) -> list[str]:
-    """Generate actionable suggestions for a class based on its metrics."""
-    suggestions = []
-    n_real = result["n_real"]
-    n_syn = result["n_syn"]
-    fid = result.get("fid")
-    kid_mean = result.get("kid_mean")
+def classify_is(is_mean: float) -> str:
+    """Higher IS is better — more diverse and recognizable outputs."""
+    if is_mean >= 3.0:
+        return "good"
+    if is_mean >= 2.0:
+        return "moderate"
+    if is_mean >= 1.5:
+        return "poor"
+    return "very_poor"
 
-    # Data quantity issues
-    if n_real < 100:
-        suggestions.append(
-            f"Only {n_real} real reference images. Consider collecting more real samples "
-            "for this class to improve metric reliability and training."
-        )
+
+def classify_precision(p: float) -> str:
+    if p >= 0.7:
+        return "good"
+    if p >= 0.5:
+        return "moderate"
+    if p >= 0.3:
+        return "poor"
+    return "very_poor"
+
+
+def classify_recall(r: float) -> str:
+    if r >= 0.5:
+        return "good"
+    if r >= 0.3:
+        return "moderate"
+    if r >= 0.15:
+        return "poor"
+    return "very_poor"
+
+
+def overall_quality(metrics: dict) -> str:
+    """Aggregate quality label from individual metric ratings."""
+    ratings = []
+    if metrics.get("fid") is not None:
+        ratings.append(classify_fid(metrics["fid"]))
+    if metrics.get("kid_mean") is not None:
+        ratings.append(classify_kid(metrics["kid_mean"]))
+    if metrics.get("is_mean") is not None:
+        ratings.append(classify_is(metrics["is_mean"]))
+    if metrics.get("precision") is not None:
+        ratings.append(classify_precision(metrics["precision"]))
+    if metrics.get("recall") is not None:
+        ratings.append(classify_recall(metrics["recall"]))
+
+    if not ratings:
+        return "unknown"
+
+    order = {"very_poor": 0, "poor": 1, "moderate": 2, "good": 3}
+    avg = sum(order[r] for r in ratings) / len(ratings)
+    if avg >= 2.5:
+        return "good"
+    if avg >= 1.5:
+        return "moderate"
+    if avg >= 0.5:
+        return "poor"
+    return "very_poor"
+
+
+# ---------------------------------------------------------------------------
+# Suggestion generation
+# ---------------------------------------------------------------------------
+
+def generate_suggestions(metrics: dict, prompt: Optional[str]) -> list[str]:
+    suggestions = []
+    fid = metrics.get("fid")
+    kid_mean = metrics.get("kid_mean")
+    is_mean = metrics.get("is_mean")
+    precision = metrics.get("precision")
+    recall = metrics.get("recall")
+    n_syn = metrics.get("n_syn", 0)
+
+    # Data quantity
     if n_syn < 200:
         suggestions.append(
-            f"Only {n_syn} synthetic images. Generate more to improve distribution coverage "
-            "and reduce KID variance."
+            f"Only {n_syn} synthetic images. Generate more to improve distribution "
+            "coverage and reduce metric variance."
         )
 
-    # Quality issues based on FID
+    # FID
     if fid is not None:
-        quality = classify_fid(fid)
-        if quality == "very_poor":
+        q = classify_fid(fid)
+        if q == "very_poor":
             suggestions.append(
                 "FID is very high — synthetic images may look unrealistic. "
-                "Review prompt for overly generic descriptions. Add specific material/lighting details."
+                "Review prompts for overly generic descriptions. Add specific "
+                "material, lighting, and texture details."
             )
-        elif quality == "poor":
+        elif q == "poor":
             suggestions.append(
-                "FID indicates noticeable distribution gap. Consider refining texture descriptions, "
-                "adding surface finish details, or adjusting defect coverage percentages."
+                "FID indicates a noticeable distribution gap. Refine texture "
+                "descriptions, surface finish details, or defect characteristics."
             )
-        elif quality == "moderate":
+        elif q == "moderate":
             suggestions.append(
-                "FID is acceptable but could improve. Fine-tune defect severity descriptions "
+                "FID is acceptable but could improve. Fine-tune defect severity "
                 "and ensure lighting/background variety matches real data."
             )
 
-    # Quality issues based on KID
-    if kid_mean is not None:
-        kid_quality = classify_kid(kid_mean)
-        if kid_quality in ("poor", "very_poor"):
+    # KID
+    if kid_mean is not None and classify_kid(kid_mean) in ("poor", "very_poor"):
+        suggestions.append(
+            "High KID suggests feature-level mismatch. Synthetic images may have "
+            "systematic differences in texture, color, or structure."
+        )
+
+    # IS
+    if is_mean is not None:
+        q = classify_is(is_mean)
+        if q in ("poor", "very_poor"):
             suggestions.append(
-                "High KID suggests feature-level mismatch. The synthetic images may have "
-                "systematic differences in texture, color, or structure."
+                "Low Inception Score — synthetic images may lack diversity or "
+                "contain ambiguous content. Increase prompt variation and ensure "
+                "distinct visual features."
             )
 
-    # Prompt-specific suggestions
+    # Precision & Recall
+    if precision is not None and classify_precision(precision) in ("poor", "very_poor"):
+        suggestions.append(
+            f"Low precision ({precision:.2f}) — many synthetic images fall outside "
+            "the real data manifold. They may contain artifacts or unrealistic "
+            "features. Tighten prompts to stay closer to real image characteristics."
+        )
+
+    if recall is not None and classify_recall(recall) in ("poor", "very_poor"):
+        suggestions.append(
+            f"Low recall ({recall:.2f}) — synthetic images don't cover enough of "
+            "the real distribution. Increase prompt diversity, vary backgrounds, "
+            "angles, lighting, and defect severity."
+        )
+
+    # Prompt-specific
     if prompt is not None:
         if len(prompt) < 50:
             suggestions.append(
-                "Prompt is very short. Add more descriptive detail about defect appearance, "
-                "distribution, and material interaction."
-            )
-        if "distribution" not in prompt.lower() and "cover" not in prompt.lower():
-            suggestions.append(
-                "Prompt lacks spatial distribution info. Consider adding coverage percentages "
-                "and location patterns (e.g., 'near edges', 'across flat areas')."
+                "Prompt is very short. Add more descriptive detail about defect "
+                "appearance, distribution, and material interaction."
             )
 
     if not suggestions:
@@ -121,107 +192,82 @@ def generate_suggestions(result: dict, prompt: Optional[str]) -> list[str]:
     return suggestions
 
 
+# ---------------------------------------------------------------------------
+# Report generation
+# ---------------------------------------------------------------------------
+
 def generate_report(
-    results: list[dict],
-    prompts_dir: Optional[Path],
+    metrics: dict,
+    prompt: Optional[str],
     output_dir: Path,
 ) -> Path:
-    """Generate a markdown quality report."""
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     output_dir.mkdir(parents=True, exist_ok=True)
     report_path = output_dir / f"{timestamp}_quality_report.md"
 
-    # Filter to classes with computed metrics and sort by FID (worst first)
-    scored = [r for r in results if r.get("kid_mean") is not None]
-    # Sort: use FID if available, otherwise KID
-    scored.sort(key=lambda r: r.get("fid") or (r["kid_mean"] * 5000), reverse=True)
+    quality = overall_quality(metrics)
+    suggestions = generate_suggestions(metrics, prompt)
 
-    # Compute averages
-    fid_vals = [r["fid"] for r in scored if r["fid"] is not None]
-    kid_vals = [r["kid_mean"] for r in scored if r["kid_mean"] is not None]
-    avg_fid = sum(fid_vals) / len(fid_vals) if fid_vals else None
-    avg_kid = sum(kid_vals) / len(kid_vals) if kid_vals else None
+    fid_str = f"{metrics['fid']:.2f}" if metrics.get("fid") is not None else "N/A"
+    kid_str = (f"{metrics['kid_mean']:.4f} ± {metrics['kid_std']:.4f}"
+               if metrics.get("kid_mean") is not None else "N/A")
+    is_str = (f"{metrics['is_mean']:.2f} ± {metrics['is_std']:.2f}"
+              if metrics.get("is_mean") is not None else "N/A")
+    prec_str = f"{metrics['precision']:.4f}" if metrics.get("precision") is not None else "N/A"
+    rec_str = f"{metrics['recall']:.4f}" if metrics.get("recall") is not None else "N/A"
 
     lines = [
-        f"# Synthetic Image Quality Report",
+        "# Synthetic Image Quality Report",
         f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
         "",
-        "## Summary",
+        "## Dataset",
         "",
-        f"- **Classes evaluated:** {len(scored)}",
-        f"- **Average FID:** {avg_fid:.2f}" if avg_fid else "- **Average FID:** N/A",
-        f"- **Average KID:** {avg_kid:.4f}" if avg_kid else "- **Average KID:** N/A",
+        f"- **Real images:** {metrics.get('n_real', '?')}",
+        f"- **Synthetic images:** {metrics.get('n_syn', '?')}",
         "",
-        "## Per-Class Results (worst first)",
+        "## Metrics",
         "",
-        "| Rank | Class | N_real | N_syn | FID | KID | Quality |",
-        "|------|-------|--------|-------|-----|-----|---------|",
+        "| Metric | Value | Rating |",
+        "|--------|-------|--------|",
+        f"| FID ↓ | {fid_str} | {classify_fid(metrics['fid']) if metrics.get('fid') is not None else 'N/A'} |",
+        f"| KID ↓ | {kid_str} | {classify_kid(metrics['kid_mean']) if metrics.get('kid_mean') is not None else 'N/A'} |",
+        f"| IS ↑ | {is_str} | {classify_is(metrics['is_mean']) if metrics.get('is_mean') is not None else 'N/A'} |",
+        f"| Precision ↑ | {prec_str} | {classify_precision(metrics['precision']) if metrics.get('precision') is not None else 'N/A'} |",
+        f"| Recall ↑ | {rec_str} | {classify_recall(metrics['recall']) if metrics.get('recall') is not None else 'N/A'} |",
+        "",
+        f"**Overall quality: {quality}**",
+        "",
+        "## Suggestions",
+        "",
     ]
 
-    for i, r in enumerate(scored, 1):
-        fid_str = f"{r['fid']:.1f}" if r["fid"] is not None else "N/A"
-        kid_str = f"{r['kid_mean']:.4f}" if r["kid_mean"] is not None else "N/A"
-        if r["fid"] is not None:
-            quality = classify_fid(r["fid"])
-        elif r["kid_mean"] is not None:
-            quality = classify_kid(r["kid_mean"])
-        else:
-            quality = "unknown"
-        lines.append(
-            f"| {i} | {r['class']} | {r['n_real']} | {r['n_syn']} | {fid_str} | {kid_str} | {quality} |"
-        )
+    for s in suggestions:
+        lines.append(f"- {s}")
 
-    lines.extend(["", "## Detailed Analysis & Suggestions", ""])
-
-    for i, r in enumerate(scored, 1):
-        name = r["class"]
-        prompt = load_prompt(prompts_dir, name) if prompts_dir else None
-        suggestions = generate_suggestions(r, prompt)
-
-        fid_str = f"{r['fid']:.2f}" if r["fid"] is not None else "N/A"
-        kid_str = f"{r['kid_mean']:.4f}±{r['kid_std']:.4f}" if r["kid_mean"] is not None else "N/A"
-
-        lines.append(f"### {i}. {name}")
-        lines.append(f"- **FID:** {fid_str}  |  **KID:** {kid_str}")
-        lines.append(f"- **Images:** {r['n_real']} real, {r['n_syn']} synthetic")
-
-        if r["fid"] is not None and avg_fid is not None:
-            delta = r["fid"] - avg_fid
-            if delta > 20:
-                lines.append(f"- **{delta:.0f} above average FID** — priority for improvement")
-            elif delta < -20:
-                lines.append(f"- **{abs(delta):.0f} below average FID** — performing well")
-
-        lines.append("")
-        lines.append("**Suggestions:**")
-        for s in suggestions:
-            lines.append(f"- {s}")
-
-        if prompt is not None:
-            lines.append("")
-            lines.append(f"<details><summary>Current prompt ({name}.txt)</summary>")
-            lines.append("")
-            lines.append("```")
-            lines.append(prompt)
-            lines.append("```")
-            lines.append("</details>")
-
-        lines.append("")
-
-    # Priority action items
-    poor_classes = [r for r in scored if (r.get("fid") and classify_fid(r["fid"]) in ("poor", "very_poor"))
-                    or (r.get("kid_mean") and classify_kid(r["kid_mean"]) in ("poor", "very_poor"))]
-
-    if poor_classes:
+    if prompt is not None:
         lines.extend([
-            "## Priority Action Items",
             "",
-            "Classes needing immediate attention (poor/very_poor quality):",
+            "## Current Prompt",
             "",
+            "```",
+            prompt,
+            "```",
         ])
-        for r in poor_classes:
-            lines.append(f"1. **{r['class']}** — Revise prompt, increase variety, check reference images")
-        lines.append("")
+
+    # Metric interpretation guide
+    lines.extend([
+        "",
+        "## Metric Guide",
+        "",
+        "| Metric | What it measures | Good range |",
+        "|--------|-----------------|------------|",
+        "| **FID** | Overall distributional similarity (lower = more similar) | < 80 |",
+        "| **KID** | Unbiased distributional similarity, works with fewer samples | < 0.02 |",
+        "| **IS** | Diversity and recognizability of synthetic images (higher = better) | > 3.0 |",
+        "| **Precision** | Fidelity — fraction of synthetic images that look realistic | > 0.7 |",
+        "| **Recall** | Diversity — fraction of real distribution covered by synthetic | > 0.5 |",
+        "",
+    ])
 
     report_text = "\n".join(lines)
     report_path.write_text(report_text, encoding="utf-8")
@@ -229,28 +275,36 @@ def generate_report(
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Automated synthetic image quality feedback")
-    parser.add_argument("--real_dir", required=True, type=Path)
-    parser.add_argument("--syn_dir", required=True, type=Path)
-    parser.add_argument("--prompts_dir", type=Path, default=Path(__file__).parent / "defects",
-                        help="Directory with per-class .txt prompt files")
-    parser.add_argument("--report_dir", type=Path, default=Path(__file__).parent / "reports",
+    parser = argparse.ArgumentParser(
+        description="Automated synthetic image quality feedback")
+    parser.add_argument("--real_dir", required=True, type=Path,
+                        help="Folder containing real images")
+    parser.add_argument("--syn_dir", required=True, type=Path,
+                        help="Folder containing synthetic images")
+    parser.add_argument("--prompt_file", type=Path, default=None,
+                        help="Optional .txt file with the generation prompt")
+    parser.add_argument("--report_dir", type=Path,
+                        default=Path(__file__).parent / "reports",
                         help="Output directory for reports")
     parser.add_argument("--device", default=None)
     args = parser.parse_args()
 
     device = torch.device(args.device) if args.device else get_device()
 
+    prompt = None
+    if args.prompt_file and args.prompt_file.exists():
+        prompt = args.prompt_file.read_text(encoding="utf-8").strip()
+
     # Run evaluation
     csv_path = args.report_dir / "latest_metrics.csv"
-    results = evaluate(args.real_dir, args.syn_dir, output_csv=csv_path, device=device)
+    metrics = evaluate(args.real_dir, args.syn_dir, output_csv=csv_path, device=device)
 
-    if not results:
+    if not metrics:
         print("No results to report.")
         return
 
     # Generate report
-    report_path = generate_report(results, args.prompts_dir, args.report_dir)
+    report_path = generate_report(metrics, prompt, args.report_dir)
     print(f"\nReport saved to: {report_path}")
 
 

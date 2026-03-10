@@ -18,14 +18,15 @@ n_runs: 10
 # ── Phase 1: Pretrain on synthetic data ──
 pretrain:
   trainer:
-    max_epochs: 50
+    max_epochs: 25
 
   model:
     _target_: src.models.base_robust_module.BaseRobustModule
     num_classes: 9
     net:
       _target_: src.models.components.mobile_net.MobileNet
-      pretrained: false
+      num_classes: 9
+      pretrained: true
       variant: small
     optimizer:
       _target_: torch.optim.SGD
@@ -36,7 +37,7 @@ pretrain:
     scheduler:
       _target_: torch.optim.lr_scheduler.CosineAnnealingLR
       _partial_: true
-      T_max: 50
+      T_max: 25
     criterion:
       _target_: src.models.components.loss.CELoss
       _partial_: true
@@ -44,11 +45,8 @@ pretrain:
   data:
     _target_: src.data.holdout_datamodule.HoldoutDataModule
     train_path: /srv/defectDetectionDataset/sourceSets/synthetic
-    classes: [background, black_stain, corrosion, crack, deformation, missing_part, ok, silicate_stain, silicate_discolor, water_stain]
-    synthetic_class_map:
-      silicate_stain: silicate_stain
-      silicate_discolor: silicate_stain
-    batch_size: 32
+    classes: [background, black_stain, corrosion, crack, deformation, missing_part, ok, silicate_stain, water_stain]
+    batch_size: 16
     image1k_norm: true
     transforms: no_crop
     use_weighted_sampler: true
@@ -69,12 +67,13 @@ finetune:
       _target_: src.models.components.mobile_net.MobileNet
       pretrained: false  # backbone weights come from pretrain phase
       variant: small
+      num_classes: 9
     optimizer:
       _target_: torch.optim.SGD
       _partial_: true
-      lr: 0.0129
-      momentum: 0.919
-      weight_decay: 1.185e-05
+      lr: 0.01
+      momentum: 0.9
+      weight_decay: 1e-05
     scheduler:
       _target_: torch.optim.lr_scheduler.CosineAnnealingLR
       _partial_: true
@@ -83,7 +82,7 @@ finetune:
       _target_: src.models.components.loss.CELoss
       _partial_: true
     # ── Finetune-specific settings ──
-    freeze_backbone_epochs: 5     # freeze backbone for first 5 epochs
+    freeze_backbone_epochs: 20     # freeze backbone for first 5 epochs
     backbone_lr_factor: 0.1       # backbone LR = 10% of head LR
 
   data:
@@ -92,8 +91,7 @@ finetune:
     val_path: /srv/defectDetectionDataset/surfaceClassification/full_clean_temporal_new/val
     test_path: /srv/defectDetectionDataset/surfaceClassification/full_clean_temporal_new/test
     classes: [background, black_stain, corrosion, crack, deformation, missing_part, ok, silicate_stain, water_stain]
-    batch_size: 32
-    weight_alpha: 0.803
+    batch_size: 16
     image1k_norm: true
     transforms: no_crop
     use_weighted_sampler: true
