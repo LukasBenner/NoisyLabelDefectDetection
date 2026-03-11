@@ -16,7 +16,7 @@ log_path: ./logs
 
 seed: 42
 n_runs: 10
-run_test: false
+run_test: true
 
 hydra:
   run:
