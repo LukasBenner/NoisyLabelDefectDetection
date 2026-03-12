@@ -6,7 +6,7 @@ defaults:
   - override /callbacks: with_early_stopping
   - _self_
 
-research_name: SurfaceDefectDetection
+research_name: RobustLearning
 experiment_name: noisy_new
 run_name_postfix: seal_no_crop
 

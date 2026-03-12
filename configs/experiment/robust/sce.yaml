@@ -1,14 +1,14 @@
 # @package _global_
 
 defaults:
-  - /model: cutmix
+  - /model: base
   - override /data: holdout
   - override /callbacks: with_early_stopping
   - _self_
 
-research_name: SurfaceDefectDetection
+research_name: RobustLearning
 experiment_name: noisy_new
-run_name_postfix: cutmix
+run_name_postfix: sce
 
 n_runs: 10
 
@@ -21,22 +21,22 @@ model:
   optimizer:
     _target_: torch.optim.SGD
     _partial_: true
-    lr: 0.0459
-    momentum:  0.734
-    weight_decay: 2.610e-05
+    lr: 0.0422
+    momentum: 0.872
+    weight_decay: 4.841e-5
   scheduler:
     _target_: torch.optim.lr_scheduler.CosineAnnealingLR
     T_max: ${trainer.max_epochs}
   criterion:
-    _target_: src.models.components.loss.CELoss
-  mixup_alpha: 0.713
-  cutmix_alpha: 0.761
+    _target_: src.models.components.loss.SCELoss
+    alpha: 0.829
+    beta: 0.102
 
 data:
   batch_size: 32
-  weight_alpha: 0.523
+  weight_alpha: 0.550
+  transforms: no_crop
   image1k_norm: true
-  transforms: medium
   train_path: /srv/defectDetectionDataset/surfaceClassification/noisy_clustered_new/train
   val_path: /srv/defectDetectionDataset/surfaceClassification/noisy_clustered_new/val
   test_path: /srv/defectDetectionDataset/surfaceClassification/noisy_clustered_new/test

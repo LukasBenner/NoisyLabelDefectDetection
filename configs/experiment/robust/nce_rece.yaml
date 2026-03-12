@@ -1,14 +1,14 @@
 # @package _global_
 
 defaults:
-  - /model: mixup
+  - /model: base
   - override /data: holdout
   - override /callbacks: with_early_stopping
   - _self_
 
-research_name: SurfaceDefectDetection
+research_name: RobustLearning
 experiment_name: noisy_new
-run_name_postfix: mixup
+run_name_postfix: nce_rce
 
 n_runs: 10
 
@@ -21,21 +21,22 @@ model:
   optimizer:
     _target_: torch.optim.SGD
     _partial_: true
-    lr: 0.0112
-    momentum:  0.892
-    weight_decay: 1.407e-05
+    lr: 0.00678
+    momentum: 0.747
+    weight_decay: 5.128e-05
   scheduler:
     _target_: torch.optim.lr_scheduler.CosineAnnealingLR
     T_max: ${trainer.max_epochs}
   criterion:
-    _target_: src.models.components.loss.CELoss
-  mixup_alpha: 0.351
+    _target_: src.models.components.loss.NCEandRCE
+    alpha: 0.0726
+    beta: 0.328
 
 data:
   batch_size: 16
-  weight_alpha: 0.00474
+  weight_alpha: 0.983
+  transforms: no_crop
   image1k_norm: true
-  transforms: medium
   train_path: /srv/defectDetectionDataset/surfaceClassification/noisy_clustered_new/train
   val_path: /srv/defectDetectionDataset/surfaceClassification/noisy_clustered_new/val
   test_path: /srv/defectDetectionDataset/surfaceClassification/noisy_clustered_new/test

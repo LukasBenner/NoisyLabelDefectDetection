@@ -6,9 +6,8 @@ defaults:
   - override /callbacks: with_early_stopping
   - _self_
 
-research_name: SplitStrategie
-experiment_name: noisy
-run_name_postfix: temporal
+research_name: Synthetic
+experiment_name: baseline
 
 n_runs: 10
 
