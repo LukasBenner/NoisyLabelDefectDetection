@@ -1,13 +1,11 @@
 macro close-up inspection photo of a stainless steel {0.20::scissors|0.20::forceps|0.20::tongs|0.20::hammer|0.10::cube|0.10::sphere},
-single object only, top view, object directly below camera, camera very close, tight crop filling most of frame,
+single object only, top view, object directly below camera, object centered in frame with visible margins on all sides, entire object visible without cropping,
 
 material: stainless steel, realistic brushed/matt steel
 
 {{DEFECT_BLOCK}}
 
-lighting: {0.55::diffused softbox lighting very soft|0.25::overhead LED panel, soft|0.20::mixed ambient + LED},
-lighting color and white balance: {0.50::neutral daylight|0.50::white light},
-speculars: {1-2$$, $$soft controlled highlights|clean highlight rolloff|subtle reflections},
+lighting: {blueish|white|studio}, diffused softbox
 sharp focus, realistic camera look, mild sensor noise, slight compression artifacts,
 
 background: plain white backdrop,
