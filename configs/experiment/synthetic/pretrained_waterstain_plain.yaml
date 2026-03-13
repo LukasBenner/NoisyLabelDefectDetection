@@ -6,9 +6,9 @@ defaults:
   - override /callbacks: with_early_stopping
   - _self_
 
-research_name: SplitStrategie
-experiment_name: noisy
-run_name_postfix: temporal
+research_name: Synthetic
+experiment_name: pretrained
+run_name_postfix: waterstain_plain
 
 n_runs: 10
 
@@ -34,9 +34,11 @@ data:
   batch_size: 32
   transforms: no_crop
   image1k_norm: true
-  train_path: /srv/defectDetectionDataset/surfaceClassification/noisy_temporal/train
-  val_path: /srv/defectDetectionDataset/surfaceClassification/noisy_temporal/val
-  test_path: /srv/defectDetectionDataset/surfaceClassification/noisy_temporal/test
+  train_path: /workspace/data/full_clean_temporal_new/train
+  val_path: /workspace/data/full_clean_temporal_new/val
+  test_path: /workspace/data/full_clean_temporal_new/test
+  syn_path: /workspace/data/synthetic/pretrained/water_stain_plain
+  synthetic_classes: [water_stain]
 
 callbacks:
   early_stopping:

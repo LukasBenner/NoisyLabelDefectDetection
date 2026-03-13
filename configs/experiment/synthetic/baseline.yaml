@@ -33,9 +33,9 @@ data:
   batch_size: 32
   transforms: no_crop
   image1k_norm: true
-  train_path: /srv/defectDetectionDataset/surfaceClassification/noisy_clustered/train
-  val_path: /srv/defectDetectionDataset/surfaceClassification/noisy_clustered/val
-  test_path: /srv/defectDetectionDataset/surfaceClassification/noisy_clustered/test
+  train_path: /workspace/data/full_clean_temporal_new/train
+  val_path: /workspace/data/full_clean_temporal_new/val
+  test_path: /workspace/data/full_clean_temporal_new/test
 
 callbacks:
   early_stopping:
