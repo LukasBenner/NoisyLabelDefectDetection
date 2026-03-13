@@ -1,4 +1,4 @@
 noticeable portion of the object is snapped/broken off, leaving an uneven jagged end with clear fracture texture and stronger shadowing,
 geometry of the object looks incomplete (asymmetric), rest of object intact and functional-looking, break is not outside the frame,
 without corrosion, without rust, without heat tint rainbow discoloration, without soot/grease, surface remains metallic and mostly smooth (no pitting),
-missing area {0.33::20%|0.33::40%|0.33::60%} of visible object
+missing area {0.33::10%|0.33::30%|0.33::50%} of visible object

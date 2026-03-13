@@ -1,36 +1,20 @@
 #!/usr/bin/env python3
 """
-ComfyUI batch generator with two modes:
+Batch-generate synthetic defect images via ComfyUI API.
 
-  plain:      Generate instrument+defect on white background, save as-is.
-  composite:  Generate on white background, then remove background with
-              rembg and paste onto a random real background image locally.
-
-Nodes assumed (default IDs):
-    16 = DPRandomGenerator (inputs.text, inputs.seed)
-    17 = SaveImage (inputs.filename_prefix)
-    10 = RandomNoise (inputs.noise_seed)
+Runs on the server — images are saved to disk by the SaveImage node.
+No downloading needed. Use composite.py afterwards for background swap.
 
 Install:
-    pip install requests Pillow numpy transparent-background
+    pip install requests
 
 Usage:
-    # Plain white background
-    python main.py --mode plain \
+    python generate.py \
         --template workflow_plain.json \
-        --prompt_template_file defect_prompt_base.txt \
+        --prompt_template_file prompt_composite.txt \
         --defect_name water_stain \
         --defect_block_file ./defects/water_stain.txt \
-        --out_base ./output/plain --count 10
-
-    # Composite onto real backgrounds
-    python main.py --mode composite \
-        --template workflow_plain.json \
-        --prompt_template_file defect_prompt_base.txt \
-        --defect_name water_stain \
-        --defect_block_file ./defects/water_stain.txt \
-        --background_dir ./backgrounds \
-        --out_base ./output/composite --count 10
+        --count 10
 """
 
 from __future__ import annotations
@@ -42,12 +26,10 @@ import re
 import sys
 import time
 from dataclasses import dataclass
-from io import BytesIO
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Sequence
+from typing import Any, Dict, List, Optional
 
 import requests
-from PIL import Image
 
 
 # -------------------------
@@ -83,24 +65,18 @@ class ComfyClient:
             raise RuntimeError(f"Unexpected /prompt response: {js}")
         return js["prompt_id"]
 
-    def download_image(self, filename: str, subfolder: str = "", folder_type: str = "output") -> bytes:
-        params = {"filename": filename, "subfolder": subfolder, "type": folder_type}
-        r = requests.get(self._url("/view"), params=params, timeout=self.timeout_s)
-        r.raise_for_status()
-        return r.content
-
     def get_history(self, prompt_id: str) -> Dict[str, Any]:
         r = requests.get(self._url(f"/history/{prompt_id}"), timeout=self.timeout_s)
         r.raise_for_status()
         return r.json()
 
-    def wait_done(self, prompt_id: str, poll_s: float = 0.5, max_wait_s: float = 600.0) -> Dict[str, Any]:
+    def wait_done(self, prompt_id: str, poll_s: float = 0.5, max_wait_s: float = 600.0) -> None:
         t0 = time.time()
         while True:
             hist = self.get_history(prompt_id)
             item = hist.get(prompt_id)
             if isinstance(item, dict) and item.get("outputs") is not None:
-                return item
+                return
             if time.time() - t0 > max_wait_s:
                 raise TimeoutError(f"Timed out waiting for prompt {prompt_id} after {max_wait_s}s")
             time.sleep(poll_s)
@@ -109,47 +85,6 @@ class ComfyClient:
 # -------------------------
 # Helpers
 # -------------------------
-
-def download_outputs_from_history(client: ComfyClient, history_item: Dict[str, Any]) -> List[Image.Image]:
-    """Download all output images from a completed prompt's history as PIL Images."""
-    images: List[Image.Image] = []
-    outputs = history_item.get("outputs", {})
-    for _node_id, node_output in outputs.items():
-        for img_info in node_output.get("images", []):
-            data = client.download_image(
-                img_info["filename"],
-                subfolder=img_info.get("subfolder", ""),
-                folder_type=img_info.get("type", "output"),
-            )
-            images.append(Image.open(BytesIO(data)).convert("RGBA"))
-    return images
-
-
-_remover = None
-
-def get_remover():
-    global _remover
-    if _remover is None:
-        from transparent_background import Remover
-        _remover = Remover()
-    return _remover
-
-
-def remove_background(img: Image.Image) -> Image.Image:
-    """Remove background using transparent-background (InSPyReNet). Returns RGBA."""
-    return get_remover().process(img.convert("RGB"), type="rgba")
-
-
-def composite_on_background(
-    foreground: Image.Image,
-    background: Image.Image,
-) -> Image.Image:
-    """Remove background using transparent-background and composite onto background."""
-    fg_rgba = remove_background(foreground)
-    bg = background.convert("RGBA").resize(fg_rgba.size, Image.Resampling.LANCZOS)
-    bg.paste(fg_rgba, (0, 0), fg_rgba)
-    return bg.convert("RGB")
-
 
 def slugify(name: str) -> str:
     s = name.strip().lower()
@@ -163,18 +98,6 @@ def build_prompt_from_files(prompt_template: str, defect_block: str) -> str:
         raise ValueError("Prompt template is missing the {{DEFECT_BLOCK}} placeholder.")
     defect = defect_block.rstrip() + "\n"
     return prompt_template.replace("{{DEFECT_BLOCK}}", defect)
-
-
-def list_backgrounds(background_dir: Path) -> List[Path]:
-    exts = {".png", ".jpg", ".jpeg", ".webp"}
-    if not background_dir.exists():
-        raise FileNotFoundError(f"Background directory not found: {background_dir}")
-    if not background_dir.is_dir():
-        raise NotADirectoryError(f"Background path is not a directory: {background_dir}")
-    paths = [p for p in background_dir.iterdir() if p.is_file() and p.suffix.lower() in exts]
-    if not paths:
-        raise ValueError(f"No background images found in {background_dir} (expected {sorted(exts)})")
-    return sorted(paths)
 
 
 def patch_workflow(
@@ -281,25 +204,18 @@ class ProgressBar:
 
 def build_argparser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(description="Batch-generate synthetic defects via ComfyUI")
-    p.add_argument("--mode", choices=["plain", "composite"], default="plain",
-                    help="plain: save white-bg images as-is; composite: rembg + paste onto background")
     p.add_argument("--server", default="http://127.0.0.1:8188")
     p.add_argument("--timeout", type=int, default=60)
     p.add_argument("--max_wait", type=float, default=600.0)
 
     p.add_argument("--template", required=True, help="Workflow JSON template")
     p.add_argument("--prompt_template_file", required=True, help="Text file containing the full prompt template")
-    p.add_argument("--out_base", required=True, help="Local base output directory")
     p.add_argument("--count", type=int, default=10, help="Images per defect")
 
     # Defect sources
     p.add_argument("--defects_json", default="", help="JSON list of defects (optional)")
     p.add_argument("--defect_name", default="", help="Single defect name (if not using defects_json)")
     p.add_argument("--defect_block_file", default="", help="Single defect block file (if not using defects_json)")
-
-    # Backgrounds (composite mode only)
-    p.add_argument("--background_dir", default="", help="Directory of background images (required for composite mode)")
-
 
     # Node IDs
     p.add_argument("--prompt_node_id", default="16")
@@ -320,18 +236,7 @@ def main() -> None:
     wf_template = json.loads(Path(args.template).read_text(encoding="utf-8"))
     prompt_template = Path(args.prompt_template_file).read_text(encoding="utf-8")
 
-    out_base = Path(args.out_base).expanduser().resolve()
-    out_base.mkdir(parents=True, exist_ok=True)
-
     defects = load_defects(args.defects_json, args.defect_name, args.defect_block_file)
-
-    # Load backgrounds for composite mode
-    backgrounds: Sequence[Path] = []
-    if args.mode == "composite":
-        if not args.background_dir:
-            raise ValueError("--background_dir is required for composite mode")
-        backgrounds = list_backgrounds(Path(args.background_dir).expanduser().resolve())
-        print(f"Composite mode: {len(backgrounds)} background images loaded.")
 
     rng = random.Random(args.rng_seed)
 
@@ -342,10 +247,6 @@ def main() -> None:
     progress = ProgressBar(total=total)
 
     for d in defects:
-        dslug = slugify(d["name"])
-        local_defect_dir = out_base / dslug
-        local_defect_dir.mkdir(parents=True, exist_ok=True)
-
         for i in range(args.count):
             seed = (args.seed_base + i) if args.seed_base is not None else rng.randrange(0, 2**31 - 1)
             full_prompt = build_prompt_from_files(prompt_template, d["block"])
@@ -362,23 +263,8 @@ def main() -> None:
                 set_prompt_seed=seed,
             )
 
-            # Generate image via ComfyUI
             prompt_id = client.queue_prompt(wf_run, client_id="defect_batch")
-            history_item = client.wait_done(prompt_id, max_wait_s=args.max_wait)
-            generated = download_outputs_from_history(client, history_item)
-
-            for j, img in enumerate(generated):
-                suffix = f"_{j}" if len(generated) > 1 else ""
-                out_path = local_defect_dir / f"{dslug}_syn_{seed}{suffix}.png"
-
-                if args.mode == "plain":
-                    img.convert("RGB").save(out_path)
-                else:
-                    # Composite mode: remove white bg, paste onto background
-                    bg_path = rng.choice(backgrounds)
-                    bg_img = Image.open(bg_path)
-                    final = composite_on_background(img, bg_img)
-                    final.save(out_path)
+            client.wait_done(prompt_id, max_wait_s=args.max_wait)
 
             progress.update(message=f"defect={d['name']} seed={seed} prompt_id={prompt_id}")
 

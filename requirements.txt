@@ -29,3 +29,4 @@ onnx
 onnxruntime
 onnxscript
 plotly
+rembg
