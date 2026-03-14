@@ -1,0 +1,211 @@
+{
+  "9": {
+    "inputs": {
+      "filename_prefix": "lora/waterstain_plain/waterstain",
+      "images": [
+        "110",
+        0
+      ]
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "Save Image"
+    }
+  },
+  "106": {
+    "inputs": {
+      "model": [
+        "119",
+        0
+      ],
+      "conditioning": [
+        "117",
+        0
+      ]
+    },
+    "class_type": "BasicGuider",
+    "_meta": {
+      "title": "BasicGuider"
+    }
+  },
+  "107": {
+    "inputs": {
+      "sampler_name": "euler"
+    },
+    "class_type": "KSamplerSelect",
+    "_meta": {
+      "title": "KSamplerSelect"
+    }
+  },
+  "108": {
+    "inputs": {
+      "vae_name": "flux2-vae.safetensors"
+    },
+    "class_type": "VAELoader",
+    "_meta": {
+      "title": "Load VAE"
+    }
+  },
+  "109": {
+    "inputs": {
+      "noise": [
+        "113",
+        0
+      ],
+      "guider": [
+        "106",
+        0
+      ],
+      "sampler": [
+        "107",
+        0
+      ],
+      "sigmas": [
+        "112",
+        0
+      ],
+      "latent_image": [
+        "118",
+        0
+      ]
+    },
+    "class_type": "SamplerCustomAdvanced",
+    "_meta": {
+      "title": "SamplerCustomAdvanced"
+    }
+  },
+  "110": {
+    "inputs": {
+      "samples": [
+        "109",
+        0
+      ],
+      "vae": [
+        "108",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "111": {
+    "inputs": {
+      "clip_name": "mistral_3_small_flux2_bf16.safetensors",
+      "type": "flux2",
+      "device": "default"
+    },
+    "class_type": "CLIPLoader",
+    "_meta": {
+      "title": "Load CLIP"
+    }
+  },
+  "112": {
+    "inputs": {
+      "steps": [
+        "115",
+        0
+      ],
+      "width": 512,
+      "height": 512
+    },
+    "class_type": "Flux2Scheduler",
+    "_meta": {
+      "title": "Flux2Scheduler"
+    }
+  },
+  "113": {
+    "inputs": {
+      "noise_seed": 891048408407193
+    },
+    "class_type": "RandomNoise",
+    "_meta": {
+      "title": "RandomNoise"
+    }
+  },
+  "114": {
+    "inputs": {
+      "text": [
+        "120",
+        0
+      ],
+      "clip": [
+        "111",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Positive Prompt)"
+    }
+  },
+  "115": {
+    "inputs": {
+      "value": 20
+    },
+    "class_type": "PrimitiveInt",
+    "_meta": {
+      "title": "Steps"
+    }
+  },
+  "116": {
+    "inputs": {
+      "unet_name": "flux2_dev_fp8mixed.safetensors",
+      "weight_dtype": "default"
+    },
+    "class_type": "UNETLoader",
+    "_meta": {
+      "title": "Load Diffusion Model"
+    }
+  },
+  "117": {
+    "inputs": {
+      "guidance": 4,
+      "conditioning": [
+        "114",
+        0
+      ]
+    },
+    "class_type": "FluxGuidance",
+    "_meta": {
+      "title": "FluxGuidance"
+    }
+  },
+  "118": {
+    "inputs": {
+      "width": 512,
+      "height": 512,
+      "batch_size": 1
+    },
+    "class_type": "EmptyFlux2LatentImage",
+    "_meta": {
+      "title": "Empty Flux 2 Latent"
+    }
+  },
+  "119": {
+    "inputs": {
+      "lora_name": "waterstain_v4.safetensors",
+      "strength_model": 1,
+      "model": [
+        "116",
+        0
+      ]
+    },
+    "class_type": "LoraLoaderModelOnly",
+    "_meta": {
+      "title": "Load LoRA"
+    }
+  },
+  "120": {
+    "inputs": {
+      "text": "waterstain, stainless steel {object|tool|surface|surgical tool} with {slight brown|severe|light} water stain on the objects surface,\n{blueish|white|studio} lighting, {object held by hand|object} directly below camera, objects fills {30|60|80}% of the frame, \nsharp focus, realistic camera look, mild sensor noise, slight compression artifacts,\n\nbackground: {0.40::plain neutral gray surface|0.30::light blue sterile drape|0.30::simple matte table surface},\nbackground is clean, simple, slightly out of focus,",
+      "seed": 499,
+      "autorefresh": "No"
+    },
+    "class_type": "DPRandomGenerator",
+    "_meta": {
+      "title": "Random Prompts"
+    }
+  }
+}

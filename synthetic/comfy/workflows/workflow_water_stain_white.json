@@ -88,9 +88,9 @@
       ],
       "batch_size": 1
     },
-    "class_type": "EmptyFlux2LatentImage",
+    "class_type": "EmptyLatentImage",
     "_meta": {
-      "title": "Empty Flux 2 Latent"
+      "title": "Empty Latent Image"
     }
   },
   "9": {
@@ -100,7 +100,7 @@
         0
       ],
       "guider": [
-        "11",
+        "19",
         0
       ],
       "sampler": [
@@ -123,27 +123,11 @@
   },
   "10": {
     "inputs": {
-      "noise_seed": 205628067122605
+      "noise_seed": 782037906256358
     },
     "class_type": "RandomNoise",
     "_meta": {
       "title": "RandomNoise"
-    }
-  },
-  "11": {
-    "inputs": {
-      "model": [
-        "1",
-        0
-      ],
-      "conditioning": [
-        "5",
-        0
-      ]
-    },
-    "class_type": "BasicGuider",
-    "_meta": {
-      "title": "BasicGuider"
     }
   },
   "12": {
@@ -190,8 +174,8 @@
   },
   "16": {
     "inputs": {
-      "text": "defect description",
-      "seed": 933,
+      "text": "macro close-up inspection photo of a stainless steel {0.20::scissors|0.20::forceps|0.20::tongs|0.20::hammer|0.10::cube|0.10::sphere},\nsingle object only, top view, object directly below camera, object centered in frame with visible margins on all sides, entire object visible without cropping,\n\nmaterial: stainless steel, realistic brushed/matt steel\n\nwater-stain / rinse residue ON THE METAL SURFACE ONLY (not liquid), coalesced dried droplet marks forming a continuous \"map-like\" cellular pattern (irregular polygonal patches and soft boundaries), uneven translucent haze with patchy islands, low contrast neutral-gray with only a very slight brown tint, slight dulling of brushed steel sheen, subtle tide marks and gradients; NOT circular rings, NOT coffee-ring outlines, NOT isolated dots, NOT chalky white crust, NOT mineral scale, no corrosion pits, no rust; background/tabletop perfectly clean and dry, no wet patches, puddles, spills, or stains on the background,\ndistribution: global across object, {0.50::large continuous fields covering most surfaces|0.30::two to three big irregular patches with soft transitions|0.20::coverage heavier along one side/edge with gentle gradient}\n\nlighting: {blueish|white|studio}, diffused softbox\nsharp focus, realistic camera look, mild sensor noise, slight compression artifacts,\n\nbackground: plain white backdrop,\ninstrument is floating over the backdrop,\nbackground is perfectly clean, flat color, no texture, no pattern, no shadows, no objects,\nno vignette, no spotlight, no fisheye, no dark corners",
+      "seed": 757,
       "autorefresh": "Yes"
     },
     "class_type": "DPRandomGenerator",
@@ -201,25 +185,31 @@
   },
   "17": {
     "inputs": {
-      "filename": "silicate_stain_syn_%time",
-      "path": "/home/lukasb/Pictures/Comfy/silicate_stain",
-      "extension": "png",
-      "lossless_webp": true,
-      "quality_jpeg_or_webp": 100,
-      "optimize_png": true,
-      "embed_workflow": true,
-      "save_workflow_as_json": false,
-      "counter": 0,
-      "time_format": "%Y-%m-%d-%H%M%S",
-      "show_preview": true,
+      "filename_prefix": "water_stain_white/water_stain_white_syn",
       "images": [
         "14",
         0
       ]
     },
-    "class_type": "Image Saver Simple",
+    "class_type": "SaveImage",
     "_meta": {
-      "title": "Image Saver Simple"
+      "title": "Save Image"
+    }
+  },
+  "19": {
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "conditioning": [
+        "5",
+        0
+      ]
+    },
+    "class_type": "BasicGuider",
+    "_meta": {
+      "title": "BasicGuider"
     }
   }
 }

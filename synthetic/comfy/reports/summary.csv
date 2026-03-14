@@ -1,0 +1,9 @@
+model,defect_class,background,n_real,n_syn,fid,kid_mean,kid_std,is_mean,is_std,precision,recall
+lora,water_stain,plain,301,200,185.751,0.0802,0.0087,3.082,0.352,0.070,0.302
+lora,water_stain,white,301,200,196.799,0.0836,0.0098,3.482,0.253,0.035,0.262
+lora,missing_part,plain,296,199,164.175,0.0563,0.0067,3.165,0.460,0.075,0.419
+lora,missing_part,white,296,200,168.603,0.0643,0.0058,3.152,0.396,0.015,0.459
+pretrained,water_stain,plain,301,200,239.159,0.1030,0.0097,4.149,0.437,0.000,0.063
+pretrained,water_stain,composite,301,200,237.974,0.0951,0.0081,4.633,0.882,0.000,0.070
+pretrained,missing_part,plain,296,200,236.362,0.1251,0.0088,4.013,0.334,0.000,0.236
+pretrained,missing_part,composite,296,202,223.820,0.0976,0.0081,4.062,0.637,0.000,0.176

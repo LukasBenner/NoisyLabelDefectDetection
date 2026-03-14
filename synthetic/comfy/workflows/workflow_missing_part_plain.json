@@ -1,0 +1,215 @@
+{
+  "1": {
+    "inputs": {
+      "unet_name": "flux2_dev_fp8mixed.safetensors",
+      "weight_dtype": "default"
+    },
+    "class_type": "UNETLoader",
+    "_meta": {
+      "title": "Load Diffusion Model"
+    }
+  },
+  "2": {
+    "inputs": {
+      "clip_name": "mistral_3_small_flux2_bf16.safetensors",
+      "type": "stable_diffusion",
+      "device": "default"
+    },
+    "class_type": "CLIPLoader",
+    "_meta": {
+      "title": "Load CLIP"
+    }
+  },
+  "3": {
+    "inputs": {
+      "vae_name": "flux2-vae.safetensors"
+    },
+    "class_type": "VAELoader",
+    "_meta": {
+      "title": "Load VAE"
+    }
+  },
+  "4": {
+    "inputs": {
+      "text": [
+        "16",
+        0
+      ],
+      "clip": [
+        "2",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "Positive Prompt"
+    }
+  },
+  "5": {
+    "inputs": {
+      "guidance": 2,
+      "conditioning": [
+        "4",
+        0
+      ]
+    },
+    "class_type": "FluxGuidance",
+    "_meta": {
+      "title": "FluxGuidance"
+    }
+  },
+  "6": {
+    "inputs": {
+      "value": 512
+    },
+    "class_type": "PrimitiveInt",
+    "_meta": {
+      "title": "Image width"
+    }
+  },
+  "7": {
+    "inputs": {
+      "value": 512
+    },
+    "class_type": "PrimitiveInt",
+    "_meta": {
+      "title": "Image height"
+    }
+  },
+  "8": {
+    "inputs": {
+      "width": [
+        "6",
+        0
+      ],
+      "height": [
+        "7",
+        0
+      ],
+      "batch_size": 1
+    },
+    "class_type": "EmptyLatentImage",
+    "_meta": {
+      "title": "Empty Latent Image"
+    }
+  },
+  "9": {
+    "inputs": {
+      "noise": [
+        "10",
+        0
+      ],
+      "guider": [
+        "19",
+        0
+      ],
+      "sampler": [
+        "12",
+        0
+      ],
+      "sigmas": [
+        "13",
+        0
+      ],
+      "latent_image": [
+        "8",
+        0
+      ]
+    },
+    "class_type": "SamplerCustomAdvanced",
+    "_meta": {
+      "title": "SamplerCustomAdvanced"
+    }
+  },
+  "10": {
+    "inputs": {
+      "noise_seed": 267611255613716
+    },
+    "class_type": "RandomNoise",
+    "_meta": {
+      "title": "RandomNoise"
+    }
+  },
+  "12": {
+    "inputs": {
+      "sampler_name": "euler"
+    },
+    "class_type": "KSamplerSelect",
+    "_meta": {
+      "title": "KSamplerSelect"
+    }
+  },
+  "13": {
+    "inputs": {
+      "steps": 40,
+      "width": [
+        "6",
+        0
+      ],
+      "height": [
+        "7",
+        0
+      ]
+    },
+    "class_type": "Flux2Scheduler",
+    "_meta": {
+      "title": "Flux2Scheduler"
+    }
+  },
+  "14": {
+    "inputs": {
+      "samples": [
+        "9",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "16": {
+    "inputs": {
+      "text": "macro close-up inspection photo of a stainless steel {0.20::scissors|0.20::forceps|0.20::tongs|0.20::hammer|0.10::cube|0.10::sphere},\nsingle object only, top view, object directly below camera, object centered in frame with visible margins on all sides, entire object visible without cropping,\n\nmaterial: stainless steel, realistic brushed/matt steel\n\nnoticeable portion of the object is snapped/broken off, leaving an uneven jagged end with clear fracture texture and stronger shadowing,\ngeometry of the object looks incomplete (asymmetric), rest of object intact and functional-looking, break is not outside the frame,\nwithout corrosion, without rust, without heat tint rainbow discoloration, without soot/grease, surface remains metallic and mostly smooth (no pitting),\nmissing area {0.33::10%|0.33::30%|0.33::50%} of visible object\n\nlighting: {blueish|white|studio}, diffused softbox\nsharp focus, realistic camera look, mild sensor noise, slight compression artifacts,\n\nbackground: {0.40::plain neutral gray surface|0.30::light blue sterile drape|0.30::simple matte table surface},\nobject resting on the surface, natural contact, no floating,\nbackground is clean, simple, slightly out of focus,\nno vignette, no spotlight, no fisheye, no dark corners",
+      "seed": 616,
+      "autorefresh": "Yes"
+    },
+    "class_type": "DPRandomGenerator",
+    "_meta": {
+      "title": "Random Prompts"
+    }
+  },
+  "17": {
+    "inputs": {
+      "filename_prefix": "missing_part_white/missing_part_white_syn",
+      "images": [
+        "14",
+        0
+      ]
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "Save Image"
+    }
+  },
+  "19": {
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "conditioning": [
+        "5",
+        0
+      ]
+    },
+    "class_type": "BasicGuider",
+    "_meta": {
+      "title": "BasicGuider"
+    }
+  }
+}

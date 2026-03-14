@@ -43,7 +43,7 @@ from utils.utils import (
 # Configuration
 # ---------------------------------------------------------------------------
 LOG_ROOT = Path(
-    "/Users/lukasb/Projekte/NoisyLabelDefectDetection/logs/train/SurfaceClusterSplit/noisy_new"
+    "/Users/lukasb/Projekte/NoisyLabelDefectDetection/logs/train/RobustLearning/noisy_new"
 )
 N_RUNS = 10
 BASE_SEED = 42
@@ -179,7 +179,8 @@ def run_test(cfg, run_idx: int, seed: int, checkpoint_path: Path) -> Dict[str, A
         "test/f1_macro": to_float(cm.get("test/f1_macro")),
         "test/precision_macro": to_float(cm.get("test/precision_macro")),
         "test/recall_macro": to_float(cm.get("test/recall_macro")),
-        "test/acc": to_float(cm.get("test/acc")),
+        # recall_weighted == micro accuracy for single-label multiclass
+        "test/acc_micro": to_float(cm.get("test/recall_weighted")),
         "test/f1_weighted": to_float(cm.get("test/f1_weighted")),
         "test/precision_weighted": to_float(cm.get("test/precision_weighted")),
         "test/recall_weighted": to_float(cm.get("test/recall_weighted")),
@@ -210,14 +211,18 @@ def main():
         test_summary_dir = exp_dir / "test_summary"
         if (test_summary_dir / "summary_statistics.csv").exists():
             print(f"  SKIP {exp_dir.name}: test_summary already exists")
-            all_metrics_df = pd.read_csv(test_summary_dir / "all_runs_metrics.csv")
             summary_df = pd.read_csv(test_summary_dir / "summary_statistics.csv")
+            # Old CSVs have test/acc (macro, wrong) and test/recall_weighted;
+            # remap recall_weighted → acc_micro for display.
+            summary_df["metric"] = summary_df["metric"].replace(
+                {"test/recall_weighted": "test/acc_micro"}
+            )
             # Still print summary
             print(f"\n  Summary for {exp_dir.name}:")
             for _, row in summary_df.iterrows():
                 if row["metric"] in (
                     "test/f1_macro",
-                    "test/acc",
+                    "test/acc_micro",
                     "test/precision_macro",
                     "test/recall_macro",
                 ):
@@ -260,7 +265,7 @@ def main():
 
             print(
                 f"    test/f1_macro={test_metrics.get('test/f1_macro', 'N/A'):.4f}  "
-                f"test/acc={test_metrics.get('test/acc', 'N/A'):.4f}"
+                f"test/acc_micro={test_metrics.get('test/acc_micro', 'N/A'):.4f}"
             )
 
         if not all_metrics:
@@ -278,7 +283,7 @@ def main():
         for _, row in summary_df.iterrows():
             if row["metric"] in (
                 "test/f1_macro",
-                "test/acc",
+                "test/acc_micro",
                 "test/precision_macro",
                 "test/recall_macro",
             ):
@@ -391,10 +396,26 @@ def main():
 
     if comparison_results:
         comp_df = pd.DataFrame(comparison_results)
+
+        # Holm-Bonferroni correction for multiple comparisons
+        m = len(comp_df)
+        for p_col in ("p_ttest", "p_wilcoxon", "p_signflip"):
+            sorted_idx = comp_df[p_col].sort_values().index
+            adjusted = []
+            for rank, idx in enumerate(sorted_idx, start=1):
+                adjusted.append((idx, comp_df.loc[idx, p_col] * (m - rank + 1)))
+            # Enforce monotonicity and cap at 1.0
+            holm_vals = pd.Series(dtype=float, index=comp_df.index)
+            running_max = 0.0
+            for idx, val in adjusted:
+                running_max = max(running_max, val)
+                holm_vals[idx] = min(running_max, 1.0)
+            comp_df[f"{p_col}_holm"] = holm_vals
+
         comp_path = LOG_ROOT / "test_comparison_results.csv"
         comp_df.to_csv(comp_path, index=False)
         print(f"\nComparison results saved to: {comp_path}")
-        print("\nComparison summary:")
+        print("\nComparison summary (with Holm-corrected p-values):")
         print(comp_df.to_string(index=False))
 
 

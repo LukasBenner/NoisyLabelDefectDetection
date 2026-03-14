@@ -8,7 +8,7 @@ defaults:
 
 research_name: SplitStrategie
 experiment_name: noisy
-run_name_postfix: temporal
+run_name_postfix: time_based
 
 n_runs: 10
 
